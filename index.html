@@ -4661,7 +4661,7 @@
                     // فقط إذا كان المستخدم مسجلاً أصلاً (جلسة موجودة)
                     var _hasSess = false;
                     try {
-                        var _s = sessionStorage.getItem('mbSession');
+                        var _s = localStorage.getItem('mbSession');
                         if (_s) { var _so = JSON.parse(_s); _hasSess = !!(_so && _so.currentUser); }
                     } catch(e) {}
                     if (_hasSess || (typeof appData !== 'undefined' && appData.currentUser)) {
@@ -4718,8 +4718,8 @@
                     window._cloudAccessToken = _cloudAccessToken;
                     window._cloudTokenExpiry = _cloudTokenExpiry;
                     try {
-                        sessionStorage.setItem('mbGoogleUser', JSON.stringify(_googleAuthUser));
-                        sessionStorage.setItem('mbGoogleEmail', _cloudUserEmail);
+                        localStorage.setItem('mbGoogleUser', JSON.stringify(_googleAuthUser));
+                        localStorage.setItem('mbGoogleEmail', _cloudUserEmail);
                     } catch(e) {}
                     updateCloudUI();
                     updateGoogleUserDisplay();
@@ -4805,7 +4805,7 @@
                 var _savedAccId = appData.currentAccountId || null;
                 if (!_savedUser) {
                     try {
-                        var _s = sessionStorage.getItem('mbSession');
+                        var _s = localStorage.getItem('mbSession');
                         if (_s) { var _so = JSON.parse(_s); _savedUser = _so.currentUser || null; _savedAccId = _so.currentAccountId || null; }
                     } catch(e) {}
                 }
@@ -4825,11 +4825,11 @@
                     if (_exists) {
                         appData.currentUser = _savedUser;
                         appData.currentAccountId = _savedAccId;
-                        try { sessionStorage.setItem('mbSession', JSON.stringify({ currentUser: _savedUser, currentAccountId: _savedAccId })); } catch(e) {}
+                        try { localStorage.setItem('mbSession', JSON.stringify({ currentUser: _savedUser, currentAccountId: _savedAccId })); } catch(e) {}
                     } else {
                         appData.currentUser = null;
                         appData.currentAccountId = null;
-                        try { sessionStorage.removeItem('mbSession'); } catch(e) {}
+                        try { localStorage.removeItem('mbSession'); } catch(e) {}
                     }
                 }
 
@@ -5051,7 +5051,7 @@
         appData.currentAccountId = newAdmin.id;
         // (إصلاح) حفظ الجلسة
         try {
-            sessionStorage.setItem('mbSession', JSON.stringify({
+            localStorage.setItem('mbSession', JSON.stringify({
                 currentUser: appData.currentUser,
                 currentAccountId: appData.currentAccountId
             }));
@@ -5079,7 +5079,7 @@
         appData.currentAccountId = account.id;
         // (إصلاح) حفظ الجلسة في sessionStorage لتبقى بعد تحديث الصفحة
         try {
-            sessionStorage.setItem('mbSession', JSON.stringify({
+            localStorage.setItem('mbSession', JSON.stringify({
                 currentUser: appData.currentUser,
                 currentAccountId: appData.currentAccountId
             }));
@@ -5096,7 +5096,7 @@
         appData.currentUser = null;
         appData.currentAccountId = null;
         // (إصلاح) مسح الجلسة المحفوظة
-        try { sessionStorage.removeItem('mbSession'); } catch(e) {}
+        try { localStorage.removeItem('mbSession'); } catch(e) {}
         saveDataToLocalStorage();
         loginDropdownMenu.classList.add('hidden');
         document.getElementById('login-dropdown-backdrop')?.classList.add('hidden');
@@ -10573,7 +10573,7 @@
                 getAccounts();
                 // (إصلاح) استعادة الجلسة المحفوظة عند تحديث الصفحة
                 try {
-                    const saved = sessionStorage.getItem('mbSession');
+                    const saved = localStorage.getItem('mbSession');
                     if (saved) {
                         const sess = JSON.parse(saved);
                         if (sess && sess.currentUser) {
@@ -10584,8 +10584,8 @@
                 } catch(e) {}
                 // (إصلاح) استعادة بيانات Google Auth من sessionStorage فوراً
                 try {
-                    const savedGUser = sessionStorage.getItem('mbGoogleUser');
-                    const savedGEmail = sessionStorage.getItem('mbGoogleEmail');
+                    const savedGUser = localStorage.getItem('mbGoogleUser');
+                    const savedGEmail = localStorage.getItem('mbGoogleEmail');
                     if (savedGUser) {
                         _googleAuthUser = JSON.parse(savedGUser);
                         _cloudUserEmail = savedGEmail || _googleAuthUser.email || '';
@@ -13106,7 +13106,7 @@ function connectGoogleDrive() {
             }).then(r => r.json()).then(info => {
                 _cloudUserEmail = info.email || info.name || 'مستخدم Google';
                 // (إصلاح) حفظ بيانات Google في sessionStorage
-                try { sessionStorage.setItem('mbGoogleEmail', _cloudUserEmail); } catch(e) {}
+                try { localStorage.setItem('mbGoogleEmail', _cloudUserEmail); } catch(e) {}
                 updateCloudUI();
                 addSyncLog('تم الاتصال بـ ' + _cloudUserEmail, 'success');
                 if (typeof showToast === 'function') showToast('تم الاتصال بـ Google Drive', 'success');
@@ -13205,7 +13205,7 @@ async function loadFromDrivePrompt() {
             var _savedCurrentAccountId2 = appData.currentAccountId || null;
             if (!_savedCurrentUser2) {
                 try {
-                    var _sess2 = sessionStorage.getItem('mbSession');
+                    var _sess2 = localStorage.getItem('mbSession');
                     if (_sess2) {
                         var _sessObj2 = JSON.parse(_sess2);
                         _savedCurrentUser2 = _sessObj2.currentUser || null;
@@ -13231,10 +13231,10 @@ async function loadFromDrivePrompt() {
                     if (!_stillExists2) {
                         appData.currentUser = null;
                         appData.currentAccountId = null;
-                        try { sessionStorage.removeItem('mbSession'); } catch(e) {}
+                        try { localStorage.removeItem('mbSession'); } catch(e) {}
                     } else {
                         try {
-                            sessionStorage.setItem('mbSession', JSON.stringify({
+                            localStorage.setItem('mbSession', JSON.stringify({
                                 currentUser: appData.currentUser,
                                 currentAccountId: appData.currentAccountId
                             }));
@@ -13291,7 +13291,7 @@ async function loadFromDrivePromptSilent(accountName) {
             // محاولة استعادة الجلسة من sessionStorage إن لم تكن محفوظة في appData
             if (!_savedCurrentUser) {
                 try {
-                    var _sess = sessionStorage.getItem('mbSession');
+                    var _sess = localStorage.getItem('mbSession');
                     if (_sess) {
                         var _sessObj = JSON.parse(_sess);
                         _savedCurrentUser = _sessObj.currentUser || null;
@@ -13319,11 +13319,11 @@ async function loadFromDrivePromptSilent(accountName) {
                         // الحساب لم يعد موجوداً في البيانات الجديدة — لا نُبقي الجلسة
                         appData.currentUser = null;
                         appData.currentAccountId = null;
-                        try { sessionStorage.removeItem('mbSession'); } catch(e) {}
+                        try { localStorage.removeItem('mbSession'); } catch(e) {}
                     } else {
                         // تحديث sessionStorage بالجلسة المستعادة
                         try {
-                            sessionStorage.setItem('mbSession', JSON.stringify({
+                            localStorage.setItem('mbSession', JSON.stringify({
                                 currentUser: appData.currentUser,
                                 currentAccountId: appData.currentAccountId
                             }));
