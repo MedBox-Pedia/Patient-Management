@@ -3846,7 +3846,7 @@
         if (!acc || appData.currentUser !== 'developer') return;
         if (!acc.permissions) acc.permissions = {};
         acc.permissions[perm] = value;
-        saveUserDataToIDB(); // حفظ userData فقط (الحسابات)
+        saveDataToLocalStorage();
         showToast('تم تحديث الصلاحية', 'success');
     };
 
@@ -3919,7 +3919,7 @@
         acc.whatsapp = newWhatsapp;
         if (newPassword) acc.password = newPassword;
 
-        saveUserDataToIDB(); // حفظ userData فقط (الحسابات)
+        saveDataToLocalStorage();
         showToast('تم تحديث بيانات الحساب بنجاح', 'success');
         document.getElementById('edit-credentials-modal').classList.add('hidden');
 
@@ -3937,7 +3937,7 @@
         showConfirm('حذف الحساب', `هل أنت متأكد من حذف حساب "${acc.displayName || acc.username}"؟`).then(confirmed => {
             if (!confirmed) return;
             appData.accounts = accounts.filter(a => a.id !== accId);
-            saveUserDataToIDB(); // حفظ userData فقط (الحسابات)
+            saveDataToLocalStorage();
             showToast('تم حذف الحساب', 'success');
             renderAccountsManagementPage();
         });
@@ -3984,7 +3984,7 @@
         };
 
         accounts.push(newAcc);
-        saveUserDataToIDB(); // حفظ userData فقط (الحسابات)
+        saveDataToLocalStorage();
         showToast(`تم إنشاء الحساب: ${newAcc.displayName}`, 'success');
         renderAccountsManagementPage();
     };
@@ -4734,9 +4734,6 @@
                     _cloudAccessToken = response.access_token;
                     _cloudTokenExpiry = Date.now() + (response.expires_in * 1000);
                     _cloudUserEmail = _googleAuthUser.email;
-                        // إعادة تعيين fileId عند تغير المستخدم لإجبار البحث بالاسم الجديد
-                        _cloudDriveFileId = null;
-                        window._cloudDriveFileId = null;
                     // مزامنة مع window للحفظ التلقائي
                     window._cloudAccessToken = _cloudAccessToken;
                     window._cloudTokenExpiry = _cloudTokenExpiry;
@@ -5067,7 +5064,7 @@
         };
         if (!appData.accounts) appData.accounts = [];
         appData.accounts.push(newAdmin);
-        saveUserDataToIDB(); // حساب جديد
+        if (typeof saveDataToLocalStorage === 'function') saveDataToLocalStorage();
         document.getElementById('create-admin-form-modal')?.remove();
         // تسجيل الدخول تلقائياً بالحساب الجديد
         appData.currentUser = 'developer';
@@ -5120,7 +5117,7 @@
         appData.currentAccountId = null;
         // (إصلاح) مسح الجلسة المحفوظة
         try { localStorage.removeItem('mbSession'); } catch(e) {}
-        // لا حاجة للحفظ عند تسجيل الخروج (الجلسة فقط في localStorage)
+        saveDataToLocalStorage();
         loginDropdownMenu.classList.add('hidden');
         document.getElementById('login-dropdown-backdrop')?.classList.add('hidden');
         addMenuSection.classList.add('hidden');
@@ -5412,7 +5409,7 @@
         normalRanges = newRanges;
         normalRangesInbody = newInbodyRanges;
 
-        saveUserDataToIDB(); // إعدادات القيم الطبيعية
+        saveDataToLocalStorage();
         showToast('تم حفظ القيم الطبيعية بنجاح', 'success');
         closeRatesModal();
     }
@@ -5904,8 +5901,7 @@
         const savedPatientId = patient.id;
         const savedVisitIndex = patient.visits.length - 1;
 
-        // حفظ سريع للمريض الجديد/المعدّل فقط بدلاً من كل البيانات
-        savePatientFast(patient);
+        saveDataToLocalStorage(); 
         renderPatientList(); // <-- (إصلاح 1) تحديث القائمة الجانبية فوراً
         closePatientModal();
         showToast(`تم حفظ البيانات للمريض: ${visitData.personal.name_ar}`, 'success');
@@ -5970,8 +5966,7 @@
         // استبدال بيانات الزيارة القديمة بالجديدة
         patient.visits[visitIndex] = visitData;
 
-        // حفظ سريع للمريض المعدّل فقط
-        savePatientFast(patient);
+        saveDataToLocalStorage();
         closePatientModal();
         showToast(`تم حفظ التعديلات للمريض: ${visitData.personal.name_ar}`, 'success');
         
@@ -6694,10 +6689,7 @@
                 );
                 if (confirmed) {
                     appData.patients = appData.patients.filter(p => p.id !== patientId);
-                    // حذف مفتاح المريض من IDB + تحديث الفهرس
-                    deletePatientFromIDB(patientId);
-                    savePatientIndexToIDB();
-                    saveUserDataToIDB(); // تحديث userData للمواعيد إن تأثرت
+                    saveDataToLocalStorage();
                     renderPatientList();
                     showWelcomeView();
                     showToast('تم حذف المريض', 'success');
@@ -6734,12 +6726,8 @@
                         patient.visits.splice(visitIndex, 1);
                         if (patient.visits.length === 0) {
                             appData.patients = appData.patients.filter(p => p.id !== patientId);
-                            deletePatientFromIDB(patientId);
-                            savePatientIndexToIDB();
-                        } else {
-                            // حفظ سريع للمريض المعدّل فقط
-                            savePatientFast(patient);
                         }
+                        saveDataToLocalStorage();
                         renderPatientList();
                         // (إصلاح 4) العودة إلى شاشة إدارة المرضى بدلاً من الترحيب
                         // showWelcomeView();
@@ -9809,9 +9797,14 @@
             }
         }
         currentViewVisit.diet = collectDietData();
-        // حفظ في قاعدة البيانات المحلية — حفظ سريع للمريض المفتوح فقط
-        var _patientToSave = appData.patients.find(function(p) { return p.id === currentViewPatient.id; });
-        savePatientFast(_patientToSave)
+        // حفظ في قاعدة البيانات المحلية (إصلاح: نُظهر التوست بعد الحفظ الفعلي)
+        idbSet('medboxPediaData', (function() {
+            var d = Object.assign({}, appData);
+            delete d.currentUser;
+            delete d.currentAccountId;
+            if (!d.accounts) d.accounts = getAccounts();
+            return d;
+        })())
         .then(function() {
             isDataDirty = false;
             if (typeof showToast === 'function') showToast('تم حفظ البرنامج الغذائي بنجاح ✓', 'success');
@@ -10527,7 +10520,7 @@
 
     } // end initMealPlanTable
 
-    // --- دوال حفظ وتحميل البيانات (IndexedDB) - بنية مقسّمة ---
+    // --- دوال حفظ وتحميل البيانات (IndexedDB) ---
 
     // ===== IndexedDB Setup =====
     const DB_NAME = 'MedBoxPediaDB';
@@ -10568,199 +10561,82 @@
         }));
     }
 
-    function idbDelete(key) {
-        return openDB().then(db => new Promise((resolve, reject) => {
-            const tx = db.transaction(STORE_NAME, 'readwrite');
-            tx.objectStore(STORE_NAME).delete(key);
-            tx.oncomplete = () => resolve();
-            tx.onerror = (e) => reject(e.target.error);
-        }));
-    }
-
-    // ===== مفاتيح التخزين المقسّم =====
-    // userData     → الحسابات + الإعدادات + الموسوعة + المواعيد
-    // patientIndex → فهرس خفيف { id, name_ar, national_id, dob } لعرض القائمة
-    // patient_<id> → بيانات مريض واحد كاملة
-
-    // ── بناء فهرس المرضى الخفيف ──
-    function _buildPatientIndex(patients) {
-        return (patients || []).map(function(p) {
-            return { id: p.id, name_ar: p.name_ar, national_id: p.national_id, dob: p.dob, gender: p.gender };
-        });
-    }
-
-    // ── تجميع كل البيانات من المفاتيح المقسّمة إلى كائن واحد (للتصدير/الرفع السحابي) ──
-    async function _assembleFullData() {
-        const userData = await idbGet('userData') || {};
-        const patientIndex = await idbGet('patientIndex') || [];
-        const patients = [];
-        for (const entry of patientIndex) {
-            const p = await idbGet('patient_' + entry.id);
-            if (p) patients.push(p);
-        }
-        return Object.assign({}, userData, { patients: patients });
-    }
-
-    // ── حفظ مريض واحد فقط (يستدعى عند تعديل/إضافة مريض) ──
-    function savePatientToIDB(patient) {
-        if (!patient || !patient.id) return Promise.resolve();
-        return idbSet('patient_' + patient.id, patient);
-    }
-
-    // ── حذف مريض من IDB ──
-    function deletePatientFromIDB(patientId) {
-        if (!patientId) return Promise.resolve();
-        return idbDelete('patient_' + patientId);
-    }
-
-    // ── حفظ userData فقط (الإعدادات، الحسابات، الموسوعة، المواعيد) ──
-    function saveUserDataToIDB() {
-        const ud = {
-            accounts: getAccounts(),
-            appointments: appData.appointments || [],
-            encyclopedia: appData.encyclopedia || { anatomy:[], diseases:[], drugs:[], labs:[] },
-            settings: appData.settings || {}
-        };
-        return idbSet('userData', ud);
-    }
-
-    // ── تحديث فهرس المرضى ──
-    function savePatientIndexToIDB() {
-        return idbSet('patientIndex', _buildPatientIndex(appData.patients));
-    }
-
-    // ===== حفظ البيانات الكاملة (يستدعى عند التغييرات العامة) =====
+    // حفظ البيانات (غير متزامن) - يحل محل saveDataToLocalStorage
     function saveDataToLocalStorage() {
-        const saves = [];
+        const dataToSave = { ...appData };
+        delete dataToSave.currentUser;
+        delete dataToSave.currentAccountId;
+        if (!dataToSave.accounts) dataToSave.accounts = getAccounts();
 
-        // 1. حفظ userData
-        saves.push(saveUserDataToIDB());
-
-        // 2. حفظ كل مريض بمفتاحه
-        (appData.patients || []).forEach(function(p) {
-            saves.push(savePatientToIDB(p));
-        });
-
-        // 3. حفظ فهرس المرضى
-        saves.push(savePatientIndexToIDB());
-
-        Promise.all(saves)
-            .then(function() { isDataDirty = false; })
-            .catch(function(e) {
+        idbSet('medboxPediaData', dataToSave)
+            .then(() => { isDataDirty = false; })
+            .catch(e => {
                 console.error("Failed to save to IndexedDB", e);
                 showToast('فشل حفظ البيانات في قاعدة البيانات المحلية', 'error');
             });
     }
 
-    // ===== حفظ سريع لمريض واحد + فهرس (يستدعى بعد تعديل/إضافة مريض) =====
-    function savePatientFast(patient) {
-        if (!patient || !patient.id) { saveDataToLocalStorage(); return; }
-        return Promise.all([
-            savePatientToIDB(patient),
-            savePatientIndexToIDB()
-        ]).then(function() {
-            isDataDirty = false;
-        }).catch(function(e) {
-            console.error("Failed to save patient to IndexedDB", e);
-            showToast('فشل حفظ بيانات المريض', 'error');
-        });
-    }
-
-    // ===== تحميل البيانات (مع ترحيل تلقائي من البنية القديمة) =====
+    // تحميل البيانات (غير متزامن) - يحل محل loadDataFromLocalStorage
     function loadDataFromLocalStorage() {
-        // ── ترحيل localStorage القديم ──
-        const oldLSData = localStorage.getItem('medboxPediaData');
-        if (oldLSData) {
+        // محاولة ترحيل بيانات localStorage القديمة أولاً
+        const oldData = localStorage.getItem('medboxPediaData');
+        if (oldData) {
             try {
-                const parsed = JSON.parse(oldLSData);
-                // سيُرحَّل إلى البنية الجديدة أدناه
-                idbSet('medboxPediaData', parsed).then(function() {
+                const parsed = JSON.parse(oldData);
+                idbSet('medboxPediaData', parsed).then(() => {
                     localStorage.removeItem('medboxPediaData');
+                    console.log('تم ترحيل البيانات من localStorage إلى IndexedDB');
                 });
-            } catch(e) {}
+            } catch(e) { /* تجاهل أخطاء الترحيل */ }
         }
 
-        // ── محاولة التحميل من البنية المقسّمة أولاً ──
-        idbGet('userData').then(function(userData) {
-
-            if (userData) {
-                // ── بنية مقسّمة موجودة ──
-                return idbGet('patientIndex').then(function(patientIndex) {
-                    const index = patientIndex || [];
-                    const patientLoads = index.map(function(entry) {
-                        return idbGet('patient_' + entry.id);
-                    });
-                    return Promise.all(patientLoads).then(function(patients) {
-                        _applyLoadedData(Object.assign({}, userData, {
-                            patients: patients.filter(Boolean)
-                        }));
-                    });
-                });
-
-            } else {
-                // ── ترحيل من البنية القديمة (مفتاح واحد) ──
-                return idbGet('medboxPediaData').then(function(oldData) {
-                    if (oldData) {
-                        console.log('[MedBox] ترحيل البيانات من البنية القديمة إلى البنية المقسّمة...');
-                        // طبّق البيانات على appData أولاً ثم احفظها بالبنية الجديدة
-                        _applyLoadedData(oldData);
-                        // احفظ بالبنية الجديدة (في الخلفية)
-                        saveDataToLocalStorage();
-                        // احذف المفتاح القديم بعد الترحيل
-                        setTimeout(function() { idbDelete('medboxPediaData'); }, 2000);
-                        showToast('تم ترحيل البيانات إلى هيكل أسرع ✓', 'success');
-                    } else {
-                        getAccounts();
-                        updateUI();
+        idbGet('medboxPediaData').then(data => {
+            if (data) {
+                // (إصلاح) نسخ الخصائص بدلاً من إعادة التعيين للحفاظ على المراجع
+                Object.keys(appData).forEach(function(k) { delete appData[k]; });
+                Object.assign(appData, data);
+                window._appData = appData;
+                if (!Array.isArray(appData.appointments)) appData.appointments = [];
+                getAccounts();
+                // (إصلاح) استعادة الجلسة المحفوظة عند تحديث الصفحة
+                try {
+                    const saved = localStorage.getItem('mbSession');
+                    if (saved) {
+                        const sess = JSON.parse(saved);
+                        if (sess && sess.currentUser) {
+                            appData.currentUser = sess.currentUser;
+                            appData.currentAccountId = sess.currentAccountId || null;
+                        }
                     }
-                });
+                } catch(e) {}
+                // (إصلاح) استعادة بيانات Google Auth من sessionStorage فوراً
+                try {
+                    const savedGUser = localStorage.getItem('mbGoogleUser');
+                    const savedGEmail = localStorage.getItem('mbGoogleEmail');
+                    if (savedGUser) {
+                        _googleAuthUser = JSON.parse(savedGUser);
+                        _cloudUserEmail = savedGEmail || _googleAuthUser.email || '';
+                        updateGoogleUserDisplay();
+                        // إظهار قسم تسجيل الدخول كمستخدم إذا كان مسجلاً بـ Google فقط
+                        if (!appData.currentUser) {
+                            document.getElementById('user-login-section')?.classList.remove('hidden');
+                        }
+                        // تجديد توكن Google بشكل صامت في الخلفية
+                        _silentGoogleRefresh();
+                    }
+                } catch(e) {}
+                isDataDirty = false;
+                updateUI();
+                showToast('تم تحميل البيانات بنجاح', 'success');
+            } else {
+                getAccounts();
+                updateUI();
             }
-
-        }).catch(function(e) {
+        }).catch(e => {
             console.error("Failed to load from IndexedDB", e);
             getAccounts();
             updateUI();
         });
-    }
-
-    // ── دالة مساعدة: تطبيق البيانات المحمّلة على appData ──
-    function _applyLoadedData(data) {
-        Object.keys(appData).forEach(function(k) { delete appData[k]; });
-        Object.assign(appData, data);
-        window._appData = appData;
-        if (!Array.isArray(appData.appointments)) appData.appointments = [];
-        getAccounts();
-
-        // استعادة الجلسة
-        try {
-            const saved = localStorage.getItem('mbSession');
-            if (saved) {
-                const sess = JSON.parse(saved);
-                if (sess && sess.currentUser) {
-                    appData.currentUser = sess.currentUser;
-                    appData.currentAccountId = sess.currentAccountId || null;
-                }
-            }
-        } catch(e) {}
-
-        // استعادة بيانات Google Auth
-        try {
-            const savedGUser = localStorage.getItem('mbGoogleUser');
-            const savedGEmail = localStorage.getItem('mbGoogleEmail');
-            if (savedGUser) {
-                _googleAuthUser = JSON.parse(savedGUser);
-                _cloudUserEmail = savedGEmail || _googleAuthUser.email || '';
-                updateGoogleUserDisplay();
-                if (!appData.currentUser) {
-                    document.getElementById('user-login-section')?.classList.remove('hidden');
-                }
-                _silentGoogleRefresh();
-            }
-        } catch(e) {}
-
-        isDataDirty = false;
-        updateUI();
-        showToast('تم تحميل البيانات بنجاح', 'success');
     }
     
     async function saveDataAsJson() {
@@ -10769,14 +10645,7 @@
             return;
         }
 
-        // تجميع كل البيانات من المفاتيح المقسّمة لضمان الاكتمال
-        let dataToSave;
-        try {
-            dataToSave = await _assembleFullData();
-        } catch(e) {
-            // احتياطي: استخدم appData مباشرة
-            dataToSave = { ...appData };
-        }
+        const dataToSave = { ...appData };
         delete dataToSave.currentUser;
         delete dataToSave.currentAccountId;
         if (!dataToSave.accounts) dataToSave.accounts = getAccounts();
@@ -10821,7 +10690,6 @@
                     window._appData = appData;
                     getAccounts();
                     if (!Array.isArray(appData.appointments)) appData.appointments = [];
-                    // حفظ بالبنية المقسّمة الجديدة
                     saveDataToLocalStorage();
                     updateUI();
                     isDataDirty = false;
@@ -12354,7 +12222,7 @@
                     const id = btn.getAttribute('data-id');
                     appData.appointments = appData.appointments.filter(a => a.id !== id);
                     isDataDirty = true;
-                    saveUserDataToIDB(); // المواعيد فقط
+                    saveDataToLocalStorage();
                     renderBigCalendar();
                     renderBigCalSide();
                     renderMiniCalendar();
@@ -12407,7 +12275,7 @@
             if (!Array.isArray(appData.appointments)) appData.appointments = [];
             appData.appointments.push(newAppt);
             isDataDirty = true;
-            saveUserDataToIDB(); // المواعيد فقط
+            saveDataToLocalStorage();
             closeApptModal();
             showToast('تم حفظ الموعد', 'success');
             renderMiniCalendar();
@@ -12505,12 +12373,12 @@
             list.querySelectorAll('.snooze').forEach(b => b.addEventListener('click', () => {
                 const id = b.getAttribute('data-id');
                 const a = appData.appointments.find(x => x.id === id);
-                if (a) { a.dismissedFor = formatDateISO(today); isDataDirty = true; saveUserDataToIDB(); renderReminders(); }
+                if (a) { a.dismissedFor = formatDateISO(today); isDataDirty = true; saveDataToLocalStorage(); renderReminders(); }
             }));
             list.querySelectorAll('.del').forEach(b => b.addEventListener('click', () => {
                 const id = b.getAttribute('data-id');
                 appData.appointments = appData.appointments.filter(x => x.id !== id);
-                isDataDirty = true; saveUserDataToIDB(); // المواعيد فقط
+                isDataDirty = true; saveDataToLocalStorage();
                 renderReminders(); renderMiniCalendar(); renderBigCalendar();
             }));
 
@@ -12529,7 +12397,7 @@
                 }
             });
             // حفظ حالة آخر صوت تم تشغيله
-            saveUserDataToIDB(); // المواعيد فقط
+            saveDataToLocalStorage();
         }
 
         // تشغيل الصوت يحتاج إلى تفاعل المستخدم — نفعّله عند أول نقرة
@@ -13126,21 +12994,7 @@ function printQRCard(patient, qrData) {
 // ===== الحفظ السحابي - Google Drive API =====
 
 // --- الثوابت والحالة ---
-// اسم الملف السحابي يتغير حسب بريد المستخدم لضمان عزل بيانات كل حساب
-function _getCloudDriveFilename() {
-    var email = window._cloudUserEmail || (typeof _cloudUserEmail !== 'undefined' ? _cloudUserEmail : '');
-    if (email && email.length > 0) {
-        // تنظيف البريد الإلكتروني ليكون اسم ملف صالحاً
-        var safeEmail = email.toLowerCase().replace(/[^a-z0-9]/g, '_');
-        return 'medbox_pedia_' + safeEmail + '.mbx';
-    }
-    return 'medbox_pedia_cloud_backup.json'; // fallback للتوافق مع النسخ القديمة
-}
-// للتوافق مع الكود القديم الذي يستخدم CLOUD_DRIVE_FILENAME مباشرةً
-Object.defineProperty(window, 'CLOUD_DRIVE_FILENAME', {
-    get: function() { return _getCloudDriveFilename(); },
-    configurable: true
-});
+const CLOUD_DRIVE_FILENAME = 'medbox_pedia_cloud_backup.json';
 const CLOUD_SCOPE = 'https://www.googleapis.com/auth/drive.appdata https://www.googleapis.com/auth/drive.file';
 const AUTO_SYNC_INTERVAL_MS = 5 * 60 * 1000; // 5 دقائق
 
@@ -13441,7 +13295,6 @@ async function loadFromDrivePrompt() {
             }
 
             if (typeof getAccounts === 'function') getAccounts();
-            // حفظ بالبنية المقسّمة الجديدة (مريض واحد = مفتاح واحد)
             if (typeof saveDataToLocalStorage === 'function') saveDataToLocalStorage();
             if (typeof updateUI === 'function') updateUI();
             addSyncLog('تم تحميل البيانات وتطبيقها بنجاح ✓', 'success');
@@ -13531,7 +13384,6 @@ async function loadFromDrivePromptSilent(accountName) {
             }
 
             if (typeof getAccounts === 'function') getAccounts();
-            // حفظ بالبنية المقسّمة الجديدة بعد الاستعادة الصامتة
             if (typeof saveDataToLocalStorage === 'function') saveDataToLocalStorage();
             if (typeof updateUI === 'function') updateUI();
             addSyncLog('تم استعادة البيانات من Google Drive ✓', 'success');
@@ -13676,13 +13528,8 @@ async function uploadToGoogleDrive(silent) {
     try {
         addSyncLog('جاري رفع البيانات إلى Google Drive...', 'info');
 
-        // تجميع كل البيانات من المفاتيح المقسّمة قبل الرفع
-        let dataToSave;
-        try {
-            dataToSave = await _assembleFullData();
-        } catch(e) {
-            dataToSave = { ...appData };
-        }
+        // تجهيز البيانات وتشفيرها
+        const dataToSave = { ...appData };
         delete dataToSave.currentUser;
         delete dataToSave.currentAccountId;
         const encryptedBuffer = await _mbEncrypt(JSON.stringify(dataToSave));
@@ -13785,7 +13632,6 @@ async function downloadFromGoogleDrive() {
                 window._appData = appData;
                 if (!Array.isArray(appData.appointments)) appData.appointments = [];
                 if (typeof getAccounts === 'function') getAccounts();
-                // حفظ بالبنية المقسّمة الجديدة (مريض واحد = مفتاح واحد)
                 if (typeof saveDataToLocalStorage === 'function') saveDataToLocalStorage();
                 if (typeof updateUI === 'function') updateUI();
                 addSyncLog('تم تحميل البيانات وتطبيقها بنجاح ✓', 'success');
@@ -14130,27 +13976,20 @@ async function _triggerDriveSyncFallback(triggerLabel) {
         var _exp = window._cloudTokenExpiry || (typeof _cloudTokenExpiry !== 'undefined' ? _cloudTokenExpiry : 0);
         if (!_tok || Date.now() >= _exp) return;
         if (_tok) window._cloudAccessToken = _tok;
-
-        // ── إصلاح: استخدام _assembleFullData() لتجميع كل بيانات المرضى المقسّمة ──
-        var rawData;
-        try {
-            if (typeof _assembleFullData === 'function') {
-                rawData = await _assembleFullData();
-            } else {
-                rawData = Object.assign({}, appData);
-            }
-        } catch(e2) {
-            rawData = Object.assign({}, appData);
-        }
-        delete rawData.currentUser;
-        delete rawData.currentAccountId;
-        if (!rawData.accounts) rawData.accounts = (typeof getAccounts === 'function' ? getAccounts() : []);
-
-        var plainData = JSON.stringify(rawData);
+        var plainData = JSON.stringify((function() {
+            var d = Object.assign({}, appData);
+            delete d.currentUser;
+            delete d.currentAccountId;
+            if (!d.accounts) d.accounts = (typeof getAccounts === 'function' ? getAccounts() : []);
+            return d;
+        })());
         var dataToSave;
         if (typeof _mbEncrypt === 'function') {
             var encrypted = await _mbEncrypt(plainData);
-            dataToSave = new Uint8Array(encrypted);
+            var uint8 = new Uint8Array(encrypted);
+            var binaryStr = '';
+            uint8.forEach(function(b) { binaryStr += String.fromCharCode(b); });
+            dataToSave = btoa(binaryStr);
         } else {
             dataToSave = plainData;
         }
@@ -14163,8 +14002,8 @@ async function _triggerDriveSyncFallback(triggerLabel) {
         });
         var now = new Date();
         var timeStr = now.toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' });
-        if (typeof addSyncLog === 'function') addSyncLog('\u2705 \u062d\u0641\u0638 \u062a\u0644\u0642\u0627\u0626\u064a \u0628\u0639\u062f ' + (triggerLabel || '\u062d\u0641\u0638 \u064a\u062f\u0648\u064a') + ' \u2014 ' + timeStr, 'success');
-    } catch (e) { console.warn('\u0641\u0634\u0644 \u0627\u0644\u062d\u0641\u0638 \u0627\u0644\u062a\u0644\u0642\u0627\u0626\u064a \u0627\u0644\u0627\u062d\u062a\u064a\u0627\u0637\u064a:', e); }
+        if (typeof addSyncLogEntry === 'function') addSyncLogEntry('✅ حفظ تلقائي بعد ' + (triggerLabel || 'حفظ يدوي') + ' — ' + timeStr);
+    } catch (e) { console.warn('فشل الحفظ التلقائي الاحتياطي:', e); }
 }
 </script>
 
