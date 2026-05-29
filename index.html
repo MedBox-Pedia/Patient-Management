@@ -4734,6 +4734,9 @@
                     _cloudAccessToken = response.access_token;
                     _cloudTokenExpiry = Date.now() + (response.expires_in * 1000);
                     _cloudUserEmail = _googleAuthUser.email;
+                        // إعادة تعيين fileId عند تغير المستخدم لإجبار البحث بالاسم الجديد
+                        _cloudDriveFileId = null;
+                        window._cloudDriveFileId = null;
                     // مزامنة مع window للحفظ التلقائي
                     window._cloudAccessToken = _cloudAccessToken;
                     window._cloudTokenExpiry = _cloudTokenExpiry;
@@ -13123,7 +13126,21 @@ function printQRCard(patient, qrData) {
 // ===== الحفظ السحابي - Google Drive API =====
 
 // --- الثوابت والحالة ---
-const CLOUD_DRIVE_FILENAME = 'medbox_pedia_cloud_backup.json';
+// اسم الملف السحابي يتغير حسب بريد المستخدم لضمان عزل بيانات كل حساب
+function _getCloudDriveFilename() {
+    var email = window._cloudUserEmail || (typeof _cloudUserEmail !== 'undefined' ? _cloudUserEmail : '');
+    if (email && email.length > 0) {
+        // تنظيف البريد الإلكتروني ليكون اسم ملف صالحاً
+        var safeEmail = email.toLowerCase().replace(/[^a-z0-9]/g, '_');
+        return 'medbox_pedia_' + safeEmail + '.mbx';
+    }
+    return 'medbox_pedia_cloud_backup.json'; // fallback للتوافق مع النسخ القديمة
+}
+// للتوافق مع الكود القديم الذي يستخدم CLOUD_DRIVE_FILENAME مباشرةً
+Object.defineProperty(window, 'CLOUD_DRIVE_FILENAME', {
+    get: function() { return _getCloudDriveFilename(); },
+    configurable: true
+});
 const CLOUD_SCOPE = 'https://www.googleapis.com/auth/drive.appdata https://www.googleapis.com/auth/drive.file';
 const AUTO_SYNC_INTERVAL_MS = 5 * 60 * 1000; // 5 دقائق
 
@@ -14113,20 +14130,27 @@ async function _triggerDriveSyncFallback(triggerLabel) {
         var _exp = window._cloudTokenExpiry || (typeof _cloudTokenExpiry !== 'undefined' ? _cloudTokenExpiry : 0);
         if (!_tok || Date.now() >= _exp) return;
         if (_tok) window._cloudAccessToken = _tok;
-        var plainData = JSON.stringify((function() {
-            var d = Object.assign({}, appData);
-            delete d.currentUser;
-            delete d.currentAccountId;
-            if (!d.accounts) d.accounts = (typeof getAccounts === 'function' ? getAccounts() : []);
-            return d;
-        })());
+
+        // ── إصلاح: استخدام _assembleFullData() لتجميع كل بيانات المرضى المقسّمة ──
+        var rawData;
+        try {
+            if (typeof _assembleFullData === 'function') {
+                rawData = await _assembleFullData();
+            } else {
+                rawData = Object.assign({}, appData);
+            }
+        } catch(e2) {
+            rawData = Object.assign({}, appData);
+        }
+        delete rawData.currentUser;
+        delete rawData.currentAccountId;
+        if (!rawData.accounts) rawData.accounts = (typeof getAccounts === 'function' ? getAccounts() : []);
+
+        var plainData = JSON.stringify(rawData);
         var dataToSave;
         if (typeof _mbEncrypt === 'function') {
             var encrypted = await _mbEncrypt(plainData);
-            var uint8 = new Uint8Array(encrypted);
-            var binaryStr = '';
-            uint8.forEach(function(b) { binaryStr += String.fromCharCode(b); });
-            dataToSave = btoa(binaryStr);
+            dataToSave = new Uint8Array(encrypted);
         } else {
             dataToSave = plainData;
         }
@@ -14139,8 +14163,8 @@ async function _triggerDriveSyncFallback(triggerLabel) {
         });
         var now = new Date();
         var timeStr = now.toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' });
-        if (typeof addSyncLogEntry === 'function') addSyncLogEntry('✅ حفظ تلقائي بعد ' + (triggerLabel || 'حفظ يدوي') + ' — ' + timeStr);
-    } catch (e) { console.warn('فشل الحفظ التلقائي الاحتياطي:', e); }
+        if (typeof addSyncLog === 'function') addSyncLog('\u2705 \u062d\u0641\u0638 \u062a\u0644\u0642\u0627\u0626\u064a \u0628\u0639\u062f ' + (triggerLabel || '\u062d\u0641\u0638 \u064a\u062f\u0648\u064a') + ' \u2014 ' + timeStr, 'success');
+    } catch (e) { console.warn('\u0641\u0634\u0644 \u0627\u0644\u062d\u0641\u0638 \u0627\u0644\u062a\u0644\u0642\u0627\u0626\u064a \u0627\u0644\u0627\u062d\u062a\u064a\u0627\u0637\u064a:', e); }
 }
 </script>
 
