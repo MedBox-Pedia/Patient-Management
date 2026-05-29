@@ -12351,7 +12351,7 @@
                     const id = btn.getAttribute('data-id');
                     appData.appointments = appData.appointments.filter(a => a.id !== id);
                     isDataDirty = true;
-                    saveUserDataToIDB() // المواعيد فقط;
+                    saveUserDataToIDB(); // المواعيد فقط
                     renderBigCalendar();
                     renderBigCalSide();
                     renderMiniCalendar();
@@ -12404,7 +12404,7 @@
             if (!Array.isArray(appData.appointments)) appData.appointments = [];
             appData.appointments.push(newAppt);
             isDataDirty = true;
-            saveUserDataToIDB() // المواعيد فقط;
+            saveUserDataToIDB(); // المواعيد فقط
             closeApptModal();
             showToast('تم حفظ الموعد', 'success');
             renderMiniCalendar();
@@ -12502,12 +12502,12 @@
             list.querySelectorAll('.snooze').forEach(b => b.addEventListener('click', () => {
                 const id = b.getAttribute('data-id');
                 const a = appData.appointments.find(x => x.id === id);
-                if (a) { a.dismissedFor = formatDateISO(today); isDataDirty = true; saveUserDataToIDB() // المواعيد فقط; renderReminders(); }
+                if (a) { a.dismissedFor = formatDateISO(today); isDataDirty = true; saveUserDataToIDB(); renderReminders(); }
             }));
             list.querySelectorAll('.del').forEach(b => b.addEventListener('click', () => {
                 const id = b.getAttribute('data-id');
                 appData.appointments = appData.appointments.filter(x => x.id !== id);
-                isDataDirty = true; saveUserDataToIDB() // المواعيد فقط;
+                isDataDirty = true; saveUserDataToIDB(); // المواعيد فقط
                 renderReminders(); renderMiniCalendar(); renderBigCalendar();
             }));
 
@@ -12526,7 +12526,7 @@
                 }
             });
             // حفظ حالة آخر صوت تم تشغيله
-            saveUserDataToIDB() // المواعيد فقط;
+            saveUserDataToIDB(); // المواعيد فقط
         }
 
         // تشغيل الصوت يحتاج إلى تفاعل المستخدم — نفعّله عند أول نقرة
