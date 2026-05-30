@@ -15467,22 +15467,8 @@ ${context}
         document.getElementById('ocr-scan-btn').disabled = true;
 
         try {
-            var prompt = `أنت محلل طبي متخصص. قم بقراءة صورة ورقة التحاليل المخبرية هذه بدقة.
-
-استخرج جميع القيم الرقمية للفحوصات المخبرية الموجودة في الصورة، وأرجع النتيجة **حصراً** كـ JSON بالتنسيق التالي (لا تضف أي نص قبله أو بعده):
-
-{
-  "results": [
-    {"test": "اسم الفحص بالإنجليزية أو العربية", "value": رقم_عشري, "unit": "الوحدة", "flag": "H أو L أو normal"}
-  ],
-  "notes": "أي ملاحظات مهمة مثل اسم المختبر أو التاريخ أو قيم لم تستطع قراءتها"
-}
-
-قواعد مهمة:
-- القيمة (value) يجب أن تكون رقماً فقط وليس نصاً
-- إذا كانت القيمة تعبيراً مثل ">200" أو "<5"، فاستخدم الرقم فقط (200 أو 5)
-- أدرج فقط الفحوصات التي لها قيمة رقمية واضحة في الصورة
-- لا تخترع قيماً غير موجودة في الصورة`;
+            // الـ prompt بالإنجليزية لضمان JSON نظيف ومكتمل من Gemini
+            var prompt = "You are a medical lab report reader. Extract all numeric test results from this lab report image.\n\nCRITICAL RULES:\n1. Return ONLY a single valid complete JSON object. No text before or after. No markdown fences.\n2. The JSON MUST be complete and properly closed - never truncate it.\n3. Every value must be a plain number (float or int), never a string.\n4. For values like >200 or <5 use only the number 200 or 5.\n5. Only include tests with a clearly visible numeric result in the image.\n6. Keep notes very short under 50 chars or empty string.\n\nExact output format (no deviations):\n{\"results\":[{\"test\":\"WBC\",\"value\":6.5,\"unit\":\"10^3/uL\",\"flag\":\"normal\"},{\"test\":\"HB\",\"value\":11.2,\"unit\":\"g/dL\",\"flag\":\"L\"}],\"notes\":\"\"}\n\nNow extract from the image:";
 
             // ── اختيار النموذج تلقائياً: يحاول القائمة المفضّلة أولاً ──────────────
             var MODEL_PRIORITY = [
@@ -15526,25 +15512,44 @@ ${context}
                 if (candidates.length === 0) candidates = MODEL_PRIORITY.slice();
 
                 var lastErr = null;
+
+                async function _tryFetch(modelName, bodyObj) {
+                    var url = 'https://generativelanguage.googleapis.com/v1beta/models/' + modelName + ':generateContent?key=' + apiKey;
+                    var res = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(bodyObj) });
+                    return res;
+                }
+
                 for (var i = 0; i < candidates.length; i++) {
                     var modelName = candidates[i];
                     try {
-                        var res = await fetch(
-                            'https://generativelanguage.googleapis.com/v1beta/models/' + modelName + ':generateContent?key=' + apiKey,
-                            { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }
-                        );
+                        // المحاولة الأولى: مع responseMimeType
+                        var res = await _tryFetch(modelName, body);
+
+                        // إذا فشل بسبب responseMimeType غير مدعوم → أعد المحاولة بدونه
+                        if (!res.ok) {
+                            var errClone = await res.clone().json().catch(function() { return {}; });
+                            var errMsg1 = (errClone.error && errClone.error.message) ? errClone.error.message : '';
+                            if (errMsg1.indexOf('responseMimeType') !== -1 || errMsg1.indexOf('Unknown field') !== -1) {
+                                var bodyWithout = JSON.parse(JSON.stringify(body));
+                                if (bodyWithout.generationConfig) delete bodyWithout.generationConfig.responseMimeType;
+                                res = await _tryFetch(modelName, bodyWithout);
+                            }
+                        }
+
                         if (res.ok) return { response: res, model: modelName };
+
                         var errJson = await res.json().catch(function() { return {}; });
                         var errMsg = (errJson.error && errJson.error.message) ? errJson.error.message : 'HTTP ' + res.status;
-                        // إذا الخطأ "not found" نجرب النموذج التالي، غيره نرمي الخطأ فوراً
+                        // إذا الخطأ "not found" نجرب النموذج التالي، غيره نرمي الخطأ
                         if (res.status === 404 || errMsg.indexOf('not found') !== -1 || errMsg.indexOf('not supported') !== -1) {
-                            lastErr = errMsg;
+                            lastErr = '[' + modelName + '] ' + errMsg;
                             continue;
                         }
                         throw new Error(errMsg);
                     } catch(fetchErr) {
-                        if (fetchErr.message && (fetchErr.message.indexOf('not found') !== -1 || fetchErr.message.indexOf('not supported') !== -1)) {
-                            lastErr = fetchErr.message; continue;
+                        var fMsg = fetchErr.message || '';
+                        if (fMsg.indexOf('not found') !== -1 || fMsg.indexOf('not supported') !== -1) {
+                            lastErr = fMsg; continue;
                         }
                         throw fetchErr;
                     }
@@ -15559,9 +15564,14 @@ ${context}
                         { inline_data: { mime_type: _ocrImageMime, data: _ocrImageBase64 } }
                     ]
                 }],
-                generationConfig: { temperature: 0.1, maxOutputTokens: 2048 }
+                generationConfig: {
+                    temperature: 0.1,
+                    maxOutputTokens: 8192,
+                    responseMimeType: 'application/json'
+                }
             };
 
+            // responseMimeType قد لا يدعمه بعض النماذج القديمة — نتعامل مع ذلك في _callGeminiWithBestModel
             var { response, model: usedModel } = await _callGeminiWithBestModel(apiKey, requestBody);
             console.log('[OCR] تم استخدام النموذج:', usedModel);
 
@@ -15570,20 +15580,111 @@ ${context}
                 ? data.candidates[0].content.parts.map(function(p) { return p.text || ''; }).join('')
                 : '';
 
-            // تنظيف JSON من الـ markdown
-            rawText = rawText.replace(/```json/gi,'').replace(/```/g,'').trim();
+            // ── تنظيف النص من الـ markdown وأي محتوى زائد ──────────────────────
+            rawText = rawText
+                .replace(/```json\s*/gi, '')
+                .replace(/```\s*/g, '')
+                .trim();
 
-            var parsed;
-            try {
-                parsed = JSON.parse(rawText);
-            } catch(e) {
-                // محاولة استخراج JSON من النص
-                var jsonMatch = rawText.match(/\{[\s\S]*\}/);
-                if (jsonMatch) {
-                    parsed = JSON.parse(jsonMatch[0]);
-                } else {
-                    throw new Error('لم يتمكن Gemini من إرجاع بيانات منظمة. يرجى المحاولة مجدداً بصورة أوضح.');
+            // ── دالة إصلاح JSON المكسور ──────────────────────────────────────────
+            function _repairJSON(str) {
+                // 1) استخراج أول كتلة { ... } من النص
+                var start = str.indexOf('{');
+                if (start === -1) return null;
+                str = str.slice(start);
+
+                // 2) إزالة فواصل زائدة قبل ] أو }  مثل  , ]  أو  , }
+                str = str.replace(/,\s*([\]}])/g, '$1');
+
+                // 3) إصلاح قيم value المكسورة: "value": 1.  →  "value": 1.0
+                str = str.replace(/"value"\s*:\s*(\d+)\.\s*([,}\]])/g, '"value": $1.0$2');
+
+                // 4) محاولة إغلاق JSON المبتور عبر حساب الأقواس المفتوحة
+                var opens = { '{': 0, '[': 0 };
+                var closes = { '{': '}', '[': ']' };
+                var inStr = false, escape = false;
+                for (var i = 0; i < str.length; i++) {
+                    var c = str[i];
+                    if (escape) { escape = false; continue; }
+                    if (c === '\\') { escape = true; continue; }
+                    if (c === '"') { inStr = !inStr; continue; }
+                    if (!inStr) {
+                        if (c === '{') opens['{']++;
+                        else if (c === '[') opens['[']++;
+                        else if (c === '}') opens['{']--;
+                        else if (c === ']') opens['[']--;
+                    }
                 }
+                // أضف الأقواس الناقصة (بترتيب عكسي: أغلق [ قبل {)
+                var tail = '';
+                while (opens['['] > 0) { tail += ']'; opens['[']--; }
+                while (opens['{'] > 0) { tail += '}'; opens['{']--; }
+                return str + tail;
+            }
+
+            // ── دالة استخراج النتائج بالـ Regex كحل أخير ─────────────────────────
+            function _parseByRegex(str) {
+                var items = [];
+                // ابحث عن كل كتلة { "test":..., "value":..., ... }
+                var blockRe = /\{[^{}]*"test"\s*:[^{}]*"value"\s*:[^{}]*\}/gi;
+                var block;
+                while ((block = blockRe.exec(str)) !== null) {
+                    try {
+                        // تنظيف الكتلة وتحليلها
+                        var clean = block[0].replace(/,\s*([\]}])/g, '$1');
+                        var item = JSON.parse(clean);
+                        if (item.test && item.value !== undefined) items.push(item);
+                    } catch(e) {
+                        // استخراج القيم يدوياً
+                        var testM  = block[0].match(/"test"\s*:\s*"([^"]+)"/);
+                        var valueM = block[0].match(/"value"\s*:\s*([\d.]+)/);
+                        var unitM  = block[0].match(/"unit"\s*:\s*"([^"]*)"/);
+                        var flagM  = block[0].match(/"flag"\s*:\s*"([^"]*)"/);
+                        if (testM && valueM) {
+                            items.push({
+                                test:  testM[1],
+                                value: parseFloat(valueM[1]),
+                                unit:  unitM  ? unitM[1]  : '',
+                                flag:  flagM  ? flagM[1]  : ''
+                            });
+                        }
+                    }
+                }
+                return items.length ? { results: items, notes: '' } : null;
+            }
+
+            // ── تسلسل المحاولات ───────────────────────────────────────────────────
+            var parsed = null;
+
+            // المحاولة 1: JSON مباشر
+            try { parsed = JSON.parse(rawText); } catch(e1) {}
+
+            // المحاولة 2: بعد إصلاح الأقواس المفتوحة والفواصل الزائدة
+            if (!parsed) {
+                try {
+                    var repaired = _repairJSON(rawText);
+                    if (repaired) parsed = JSON.parse(repaired);
+                } catch(e2) {}
+            }
+
+            // المحاولة 3: استخراج JSON من وسط النص
+            if (!parsed) {
+                try {
+                    var jsonMatch = rawText.match(/\{[\s\S]*\}/);
+                    if (jsonMatch) {
+                        var repaired2 = _repairJSON(jsonMatch[0]);
+                        parsed = JSON.parse(repaired2 || jsonMatch[0]);
+                    }
+                } catch(e3) {}
+            }
+
+            // المحاولة 4: تحليل بالـ Regex (الحل الأخير)
+            if (!parsed) {
+                parsed = _parseByRegex(rawText);
+            }
+
+            if (!parsed) {
+                throw new Error('تعذّر تحليل استجابة Gemini. يرجى التأكد من وضوح الصورة والمحاولة مجدداً.\n\nالاستجابة الخام: ' + rawText.slice(0, 200));
             }
 
             _renderOcrResults(parsed);
