@@ -15484,27 +15484,86 @@ ${context}
 - أدرج فقط الفحوصات التي لها قيمة رقمية واضحة في الصورة
 - لا تخترع قيماً غير موجودة في الصورة`;
 
-            var response = await fetch(
-                'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=' + apiKey,
-                {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        contents: [{
-                            parts: [
-                                { text: prompt },
-                                { inline_data: { mime_type: _ocrImageMime, data: _ocrImageBase64 } }
-                            ]
-                        }],
-                        generationConfig: { temperature: 0.1, maxOutputTokens: 2048 }
-                    })
-                }
-            );
+            // ── اختيار النموذج تلقائياً: يحاول القائمة المفضّلة أولاً ──────────────
+            var MODEL_PRIORITY = [
+                'gemini-2.5-flash',
+                'gemini-2.0-flash',
+                'gemini-2.0-flash-lite',
+                'gemini-1.5-flash',
+                'gemini-1.5-flash-latest',
+                'gemini-1.5-pro',
+                'gemini-pro-vision'
+            ];
 
-            if (!response.ok) {
-                var errData = await response.json().catch(() => ({}));
-                throw new Error(errData.error && errData.error.message ? errData.error.message : 'خطأ في API (' + response.status + ')');
+            async function _callGeminiWithBestModel(apiKey, body) {
+                // أولاً: جلب النماذج المتاحة لهذا المفتاح
+                var availableModels = [];
+                try {
+                    var listRes = await fetch(
+                        'https://generativelanguage.googleapis.com/v1beta/models?key=' + apiKey
+                    );
+                    if (listRes.ok) {
+                        var listData = await listRes.json();
+                        availableModels = (listData.models || [])
+                            .filter(function(m) {
+                                return m.name &&
+                                       m.name.indexOf('gemini') !== -1 &&
+                                       (m.supportedGenerationMethods || []).includes('generateContent');
+                            })
+                            .map(function(m) {
+                                // الاسم يكون بصيغة "models/gemini-2.0-flash" — نأخذ الجزء بعد "models/"
+                                return m.name.replace(/^models\//, '');
+                            });
+                    }
+                } catch(e) { /* تجاهل خطأ جلب القائمة */ }
+
+                // ترتيب الأولوية: المفضّلة أولاً، ثم أي نموذج متاح
+                var ordered = MODEL_PRIORITY.filter(function(m) { return availableModels.indexOf(m) !== -1; });
+                var remaining = availableModels.filter(function(m) { return MODEL_PRIORITY.indexOf(m) === -1; });
+                var candidates = ordered.concat(remaining);
+
+                // إذا لم نجد قائمة، نجرب المفضّلة مباشرةً
+                if (candidates.length === 0) candidates = MODEL_PRIORITY.slice();
+
+                var lastErr = null;
+                for (var i = 0; i < candidates.length; i++) {
+                    var modelName = candidates[i];
+                    try {
+                        var res = await fetch(
+                            'https://generativelanguage.googleapis.com/v1beta/models/' + modelName + ':generateContent?key=' + apiKey,
+                            { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }
+                        );
+                        if (res.ok) return { response: res, model: modelName };
+                        var errJson = await res.json().catch(function() { return {}; });
+                        var errMsg = (errJson.error && errJson.error.message) ? errJson.error.message : 'HTTP ' + res.status;
+                        // إذا الخطأ "not found" نجرب النموذج التالي، غيره نرمي الخطأ فوراً
+                        if (res.status === 404 || errMsg.indexOf('not found') !== -1 || errMsg.indexOf('not supported') !== -1) {
+                            lastErr = errMsg;
+                            continue;
+                        }
+                        throw new Error(errMsg);
+                    } catch(fetchErr) {
+                        if (fetchErr.message && (fetchErr.message.indexOf('not found') !== -1 || fetchErr.message.indexOf('not supported') !== -1)) {
+                            lastErr = fetchErr.message; continue;
+                        }
+                        throw fetchErr;
+                    }
+                }
+                throw new Error('لم يتم العثور على نموذج Gemini مدعوم لمفتاحك. آخر خطأ: ' + (lastErr || 'غير معروف'));
             }
+
+            var requestBody = {
+                contents: [{
+                    parts: [
+                        { text: prompt },
+                        { inline_data: { mime_type: _ocrImageMime, data: _ocrImageBase64 } }
+                    ]
+                }],
+                generationConfig: { temperature: 0.1, maxOutputTokens: 2048 }
+            };
+
+            var { response, model: usedModel } = await _callGeminiWithBestModel(apiKey, requestBody);
+            console.log('[OCR] تم استخدام النموذج:', usedModel);
 
             var data = await response.json();
             var rawText = (data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts)
