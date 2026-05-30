@@ -2313,22 +2313,33 @@
                                 <p class="text-xs text-gray-500">اختر التحاليل المطلوبة واطبع طلباً رسمياً للمختبر</p>
                             </div>
                         </div>
-                        <div class="flex items-center gap-2">
                         <button type="button" id="open-lab-request-btn" class="bg-[#0790AC] text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-[#056a80] transition duration-200 flex items-center gap-2 shadow">
                             <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                             </svg>
                             فتح طلب التحاليل
                         </button>
-                        <!-- زر OCR الجديد -->
-                        <button type="button" id="open-ocr-btn" onclick="window._openOCRModal()" class="bg-purple-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-purple-700 transition duration-200 flex items-center gap-2 shadow" title="رفع صورة تحليل ورقي وقراءته تلقائياً بالذكاء الاصطناعي">
-                            <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M6.827 6.175A2.31 2.31 0 015.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 00-1.134-.175 2.31 2.31 0 01-1.64-1.055l-.822-1.316a2.192 2.192 0 00-1.736-1.039 48.774 48.774 0 00-5.232 0 2.192 2.192 0 00-1.736 1.039l-.821 1.316z" />
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 12.75a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0zM18.75 10.5h.008v.008h-.008V10.5z" />
-                            </svg>
-                            📋 OCR قراءة تحليل
-                        </button>
+                    </div>
+
+                    <!-- زر OCR لرفع صورة التحليل -->
+                    <div class="flex items-center justify-between bg-gradient-to-r from-purple-50 to-white border border-purple-200 rounded-xl px-5 py-3 shadow-sm">
+                        <div class="flex items-center gap-3">
+                            <span class="bg-purple-600 text-white rounded-full p-2">
+                                <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
+                                </svg>
+                            </span>
+                            <div>
+                                <p class="font-bold text-purple-700 text-sm">📷 قراءة نتائج التحليل بالذكاء الاصطناعي (OCR)</p>
+                                <p class="text-xs text-gray-500">ارفع صورة ورقة التحليل المخبري وسيقوم Gemini بتفريغ الأرقام تلقائياً</p>
+                            </div>
                         </div>
+                        <button type="button" onclick="window._openOcrModal()" class="bg-purple-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-purple-700 transition duration-200 flex items-center gap-2 shadow">
+                            <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
+                            </svg>
+                            رفع صورة التحليل
+                        </button>
                     </div>
 
                     <!-- A. قسم التحاليل الدموية -->
@@ -3137,87 +3148,6 @@
             </div>
         </div>
     </div>
-
-<!-- ====================== نافذة OCR - قراءة التحليل الورقي ====================== -->
-<div id="ocr-modal" style="display:none;position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,0.65);align-items:center;justify-content:center;font-family:'Cairo',sans-serif;" dir="rtl">
-    <div style="background:#fff;border-radius:20px;box-shadow:0 24px 80px rgba(0,0,0,0.3);width:94vw;max-width:640px;max-height:92vh;display:flex;flex-direction:column;overflow:hidden;animation:slideUpModal 0.25s ease;">
-        
-        <!-- رأس النافذة -->
-        <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 22px;border-bottom:2px solid #ede9fe;background:linear-gradient(135deg,#f5f3ff 0%,#fff 100%);">
-            <div style="display:flex;align-items:center;gap:10px;">
-                <div style="width:40px;height:40px;background:linear-gradient(135deg,#7c3aed,#4f46e5);border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-                    <svg xmlns="http://www.w3.org/2000/svg" style="width:20px;height:20px;" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="white">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M6.827 6.175A2.31 2.31 0 015.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 00-1.134-.175 2.31 2.31 0 01-1.64-1.055l-.822-1.316a2.192 2.192 0 00-1.736-1.039 48.774 48.774 0 00-5.232 0 2.192 2.192 0 00-1.736 1.039l-.821 1.316z" />
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 12.75a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0zM18.75 10.5h.008v.008h-.008V10.5z" />
-                    </svg>
-                </div>
-                <div>
-                    <div style="font-size:1.05rem;font-weight:700;color:#4f46e5;">&#128203; قراءة تحليل ورقي بالذكاء الاصطناعي</div>
-                    <div style="font-size:0.78rem;color:#6b7280;">ارفع صورة التحليل وسيقوم Gemini بتفريغ الأرقام تلقائياً</div>
-                </div>
-            </div>
-            <button onclick="window._closeOCRModal()" style="width:32px;height:32px;border-radius:8px;border:none;background:#fee2e2;color:#dc2626;font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;">&#10005;</button>
-        </div>
-
-        <!-- محتوى النافذة -->
-        <div style="flex:1;overflow-y:auto;padding:20px 22px;display:flex;flex-direction:column;gap:16px;">
-
-            <!-- مفتاح API -->
-            <div style="background:#f5f3ff;border:1.5px solid #c4b5fd;border-radius:12px;padding:14px 16px;">
-                <label style="font-size:0.82rem;font-weight:700;color:#4f46e5;display:block;margin-bottom:8px;">&#128273; مفتاح Gemini API</label>
-                <div style="display:flex;gap:8px;align-items:center;">
-                    <input type="password" id="ocr-api-key-input" placeholder="AIza..." style="flex:1;padding:9px 12px;border:1.5px solid #c4b5fd;border-radius:9px;font-family:'Cairo',sans-serif;font-size:0.88rem;outline:none;direction:ltr;" />
-                    <button onclick="window._saveOCRApiKey()" style="padding:9px 16px;background:#4f46e5;color:#fff;border:none;border-radius:9px;font-family:'Cairo',sans-serif;font-size:0.82rem;font-weight:700;cursor:pointer;white-space:nowrap;">حفظ</button>
-                </div>
-                <div id="ocr-key-status" style="font-size:0.77rem;color:#7c3aed;margin-top:6px;"></div>
-                <div style="font-size:0.75rem;color:#9ca3af;margin-top:4px;">نفس مفتاح Gemini الموجود في تقارير AI &mdash; <a href="https://aistudio.google.com/app/apikey" target="_blank" style="color:#4f46e5;">احصل على مفتاح مجاني</a></div>
-            </div>
-
-            <!-- منطقة رفع الصورة -->
-            <div id="ocr-upload-zone" style="border:2.5px dashed #c4b5fd;border-radius:14px;padding:28px 20px;text-align:center;cursor:pointer;transition:all 0.2s;background:#faf5ff;" onclick="document.getElementById('ocr-file-input').click()" ondragover="event.preventDefault();this.style.borderColor='#7c3aed';this.style.background='#ede9fe';" ondragleave="this.style.borderColor='#c4b5fd';this.style.background='#faf5ff';" ondrop="window._handleOCRDrop(event)">
-                <div id="ocr-upload-placeholder">
-                    <svg xmlns="http://www.w3.org/2000/svg" style="width:48px;height:48px;color:#a78bfa;margin:0 auto 10px;display:block;" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="#a78bfa">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
-                    </svg>
-                    <p style="font-weight:700;color:#4f46e5;font-size:0.95rem;">اسحب وأفلت صورة التحليل هنا</p>
-                    <p style="color:#9ca3af;font-size:0.8rem;margin-top:4px;">أو انقر للاختيار من الجهاز &middot; JPG, PNG, WEBP</p>
-                    <p style="color:#9ca3af;font-size:0.75rem;margin-top:2px;">يمكنك أيضاً التقاط صورة مباشرة من الكاميرا</p>
-                </div>
-                <img id="ocr-preview-img" src="" alt="" style="display:none;max-height:280px;max-width:100%;border-radius:10px;border:2px solid #c4b5fd;object-fit:contain;" />
-            </div>
-            <input type="file" id="ocr-file-input" accept="image/*" capture="environment" style="display:none;" onchange="window._handleOCRFileSelect(event)" />
-
-            <!-- نتائج OCR -->
-            <div id="ocr-results-area" style="display:none;">
-                <div style="font-size:0.85rem;font-weight:700;color:#374151;margin-bottom:10px;display:flex;align-items:center;gap:6px;">
-                    <span>&#10003; القيم المستخرجة من التحليل</span>
-                    <span style="font-size:0.75rem;font-weight:400;color:#6b7280;">(راجع القيم قبل تطبيقها)</span>
-                </div>
-                <div id="ocr-results-grid" style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px;"></div>
-                <div style="margin-top:6px;font-size:0.75rem;color:#9ca3af;" id="ocr-not-found-note"></div>
-            </div>
-
-            <!-- رسالة الخطأ -->
-            <div id="ocr-error-area" style="display:none;background:#fef2f2;border:1.5px solid #fca5a5;border-radius:10px;padding:12px 16px;">
-                <div style="font-weight:700;color:#dc2626;margin-bottom:6px;">&#9888; حدث خطأ</div>
-                <div id="ocr-error-msg" style="font-size:0.82rem;color:#7f1d1d;"></div>
-            </div>
-        </div>
-
-        <!-- أزرار الإجراءات -->
-        <div style="padding:14px 22px;border-top:1px solid #f3f4f6;background:#fafafa;display:flex;gap:10px;justify-content:flex-end;align-items:center;flex-wrap:wrap;">
-            <span id="ocr-status-text" style="font-size:0.82rem;color:#6b7280;flex:1;min-width:0;"></span>
-            <button onclick="window._closeOCRModal()" style="padding:9px 20px;background:#f3f4f6;color:#374151;border:none;border-radius:9px;font-family:'Cairo',sans-serif;font-size:0.88rem;font-weight:700;cursor:pointer;">إلغاء</button>
-            <button id="ocr-analyze-btn" onclick="window._runOCR()" style="padding:9px 22px;background:linear-gradient(135deg,#7c3aed,#4f46e5);color:#fff;border:none;border-radius:9px;font-family:'Cairo',sans-serif;font-size:0.88rem;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:8px;opacity:0.5;" disabled>
-                &#10024; تحليل بـ Gemini AI
-            </button>
-            <button id="ocr-apply-btn" onclick="window._applyOCRResults()" style="display:none;padding:9px 22px;background:#16a34a;color:#fff;border:none;border-radius:9px;font-family:'Cairo',sans-serif;font-size:0.88rem;font-weight:700;cursor:pointer;">
-                &#10003; تطبيق القيم في الحقول
-            </button>
-        </div>
-    </div>
-</div>
-<!-- ====================== نهاية نافذة OCR ====================== -->
 
 <!-- منطقة طباعة البرنامج الغذائي (مخفية) -->
 <div id="diet-print-area" aria-hidden="true"></div>
@@ -15273,6 +15203,449 @@ ${context}
 })();
 </script>
 
+<!-- ====== نافذة OCR التحاليل المخبرية ====== -->
+<div id="ocr-lab-modal" style="display:none;position:fixed;inset:0;z-index:99998;background:rgba(0,0,0,0.65);align-items:center;justify-content:center;animation:fadeInModal 0.2s ease;font-family:'Cairo',sans-serif;direction:rtl;">
+    <div style="background:#fff;border-radius:20px;box-shadow:0 24px 80px rgba(0,0,0,0.35);width:96vw;max-width:680px;max-height:92vh;display:flex;flex-direction:column;overflow:hidden;animation:slideUpModal 0.25s ease;">
+
+        <!-- Header -->
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:18px 24px;border-bottom:2px solid #ede9fe;background:linear-gradient(135deg,#f5f3ff 0%,#fff 100%);flex-shrink:0;">
+            <div style="display:flex;align-items:center;gap:10px;">
+                <div style="width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,#7c3aed 0%,#a855f7 100%);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z"/></svg>
+                </div>
+                <div>
+                    <div style="font-size:1.05rem;font-weight:700;color:#7c3aed;">📷 قراءة التحاليل بالذكاء الاصطناعي — OCR</div>
+                    <div style="font-size:0.82rem;color:#6b7280;">ارفع صورة ورقة التحليل وسيقوم Gemini بتفريغ الأرقام تلقائياً</div>
+                </div>
+            </div>
+            <button onclick="window._closeOcrModal()" style="width:34px;height:34px;border-radius:8px;border:2px solid #e5e7eb;background:#fff;cursor:pointer;color:#6b7280;font-size:18px;display:flex;align-items:center;justify-content:center;transition:all 0.15s;" onmouseover="this.style.borderColor='#ef4444';this.style.color='#ef4444'" onmouseout="this.style.borderColor='#e5e7eb';this.style.color='#6b7280'">✕</button>
+        </div>
+
+        <!-- API Key Row -->
+        <div id="ocr-apikey-section" style="padding:14px 24px;background:#fafbfc;border-bottom:1px solid #f0f0f0;flex-shrink:0;">
+            <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+                <label style="font-size:0.82rem;font-weight:700;color:#374151;white-space:nowrap;flex-shrink:0;">🔑 Gemini API Key:</label>
+                <input id="ocr-api-key-input" type="password" placeholder="أدخل مفتاح Gemini API"
+                    style="flex:1;min-width:200px;padding:8px 12px;border:1.5px solid #d1d5db;border-radius:8px;font-family:'Cairo',sans-serif;font-size:0.82rem;outline:none;transition:border-color 0.15s;"
+                    onfocus="this.style.borderColor='#7c3aed'" onblur="this.style.borderColor='#d1d5db'">
+                <button onclick="window._saveOcrApiKey()" style="padding:8px 14px;background:#7c3aed;color:#fff;border:none;border-radius:8px;font-family:'Cairo',sans-serif;font-size:0.82rem;font-weight:700;cursor:pointer;white-space:nowrap;" onmouseover="this.style.background='#6d28d9'" onmouseout="this.style.background='#7c3aed'">حفظ</button>
+                <a href="https://aistudio.google.com/app/apikey" target="_blank" style="font-size:0.76rem;color:#7c3aed;text-decoration:none;white-space:nowrap;">احصل على مفتاح ↗</a>
+            </div>
+            <div id="ocr-key-status" style="font-size:0.76rem;margin-top:5px;color:#6b7280;"></div>
+        </div>
+
+        <!-- Body -->
+        <div style="flex:1;overflow-y:auto;padding:22px 24px;display:flex;flex-direction:column;gap:16px;">
+
+            <!-- Upload area -->
+            <div id="ocr-upload-area" style="border:2.5px dashed #c4b5fd;border-radius:14px;padding:32px 20px;text-align:center;cursor:pointer;transition:all 0.2s;background:#faf5ff;"
+                onclick="document.getElementById('ocr-file-input').click()"
+                ondragover="event.preventDefault();this.style.borderColor='#7c3aed';this.style.background='#ede9fe';"
+                ondragleave="this.style.borderColor='#c4b5fd';this.style.background='#faf5ff';"
+                ondrop="event.preventDefault();this.style.borderColor='#c4b5fd';this.style.background='#faf5ff';window._handleOcrFileDrop(event);">
+                <div style="font-size:2.5rem;margin-bottom:10px;">🖼️</div>
+                <div style="font-size:1rem;font-weight:700;color:#7c3aed;margin-bottom:4px;">انقر لرفع صورة أو اسحب وأفلت هنا</div>
+                <div style="font-size:0.82rem;color:#9ca3af;">يدعم: JPG، PNG، WEBP، PDF (حتى 10 ميغابايت)</div>
+                <input id="ocr-file-input" type="file" accept="image/*,application/pdf" style="display:none" onchange="window._handleOcrFileSelect(event)">
+            </div>
+
+            <!-- Image preview -->
+            <div id="ocr-preview-wrap" style="display:none;text-align:center;">
+                <img id="ocr-preview-img" style="max-width:100%;max-height:280px;border-radius:10px;border:2px solid #ede9fe;object-fit:contain;" alt="معاينة التحليل">
+                <div style="margin-top:8px;display:flex;align-items:center;justify-content:center;gap:10px;">
+                    <span id="ocr-file-name" style="font-size:0.8rem;color:#6b7280;"></span>
+                    <button onclick="window._clearOcrImage()" style="font-size:0.75rem;color:#ef4444;border:none;background:none;cursor:pointer;font-family:'Cairo',sans-serif;">× حذف</button>
+                </div>
+            </div>
+
+            <!-- Loading state -->
+            <div id="ocr-loading" style="display:none;text-align:center;padding:30px 0;">
+                <div style="width:48px;height:48px;border-radius:50%;border:4px solid #ede9fe;border-top:4px solid #7c3aed;animation:spin 1s linear infinite;margin:0 auto 14px;"></div>
+                <div style="font-size:0.95rem;font-weight:700;color:#374151;">يقوم Gemini بقراءة التحليل...</div>
+                <div style="font-size:0.82rem;color:#9ca3af;margin-top:4px;">جارٍ استخراج الأرقام من الصورة</div>
+            </div>
+
+            <!-- Result preview table -->
+            <div id="ocr-result-section" style="display:none;">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+                    <h3 style="font-size:0.95rem;font-weight:700;color:#374151;margin:0;">✅ النتائج المستخرجة</h3>
+                    <span style="font-size:0.78rem;color:#6b7280;background:#f3f4f6;padding:3px 10px;border-radius:20px;" id="ocr-matched-count"></span>
+                </div>
+                <div style="background:#faf5ff;border:1px solid #ede9fe;border-radius:12px;overflow:hidden;">
+                    <table style="width:100%;border-collapse:collapse;font-size:0.85rem;">
+                        <thead>
+                            <tr style="background:#7c3aed;color:#fff;">
+                                <th style="padding:9px 14px;text-align:right;font-weight:700;">الفحص</th>
+                                <th style="padding:9px 14px;text-align:center;font-weight:700;">القيمة المقروءة</th>
+                                <th style="padding:9px 14px;text-align:center;font-weight:700;">الوحدة</th>
+                                <th style="padding:9px 14px;text-align:center;font-weight:700;">ملاحظة</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ocr-result-table-body"></tbody>
+                    </table>
+                </div>
+                <!-- Raw Gemini notes -->
+                <div id="ocr-raw-notes" style="display:none;margin-top:10px;background:#fffbeb;border:1px solid #fde68a;border-radius:10px;padding:12px 16px;font-size:0.82rem;color:#92400e;line-height:1.7;"></div>
+            </div>
+
+            <!-- Error state -->
+            <div id="ocr-error" style="display:none;background:#fef2f2;border-radius:12px;padding:16px;border:1.5px solid #fca5a5;">
+                <div style="font-size:0.9rem;font-weight:700;color:#dc2626;margin-bottom:4px;">⚠️ حدث خطأ</div>
+                <div id="ocr-error-msg" style="font-size:0.82rem;color:#7f1d1d;"></div>
+            </div>
+
+        </div>
+
+        <!-- Footer -->
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 24px;border-top:1px solid #e5e7eb;background:#fafafa;flex-shrink:0;gap:10px;flex-wrap:wrap;">
+            <div style="font-size:0.75rem;color:#9ca3af;">⚠️ يرجى مراجعة القيم قبل الحفظ — الذكاء الاصطناعي قد لا يقرأ كل قيمة بدقة</div>
+            <div style="display:flex;gap:8px;">
+                <button id="ocr-apply-btn" onclick="window._applyOcrResults()" style="display:none;padding:9px 22px;background:linear-gradient(135deg,#7c3aed 0%,#a855f7 100%);color:#fff;border:none;border-radius:8px;font-family:'Cairo',sans-serif;font-size:0.88rem;font-weight:700;cursor:pointer;box-shadow:0 2px 10px rgba(124,58,237,0.3);transition:all 0.15s;" onmouseover="this.style.transform='translateY(-1px)'" onmouseout="this.style.transform='translateY(0)'">✍️ تعبئة الحقول تلقائياً</button>
+                <button id="ocr-scan-btn" onclick="window._startOcrScan()" style="padding:9px 22px;background:#7c3aed;color:#fff;border:none;border-radius:8px;font-family:'Cairo',sans-serif;font-size:0.88rem;font-weight:700;cursor:pointer;transition:all 0.15s;" onmouseover="this.style.background='#6d28d9'" onmouseout="this.style.background='#7c3aed'">🔍 بدء القراءة</button>
+                <button onclick="window._closeOcrModal()" style="padding:9px 16px;background:#fff;color:#6b7280;border:1.5px solid #e5e7eb;border-radius:8px;font-family:'Cairo',sans-serif;font-size:0.82rem;font-weight:700;cursor:pointer;">إغلاق</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+<!-- ====== نهاية نافذة OCR ====== -->
+
+<script>
+// ===== منطق OCR التحاليل المخبرية باستخدام Gemini Vision =====
+(function() {
+
+    var _ocrImageBase64 = null;
+    var _ocrImageMime = 'image/jpeg';
+    var _ocrExtractedData = {};
+
+    // خريطة الحقول: اسم Gemini → ID الحقل في النموذج + التسمية العربية
+    var OCR_FIELD_MAP = [
+        { keys: ['wbc','كريات بيضاء','WBC'],       id: 'lab_wbc',           label: 'WBC (كريات بيضاء)',    unit: '×10³/µL' },
+        { keys: ['rbc','كريات حمراء','RBC'],        id: 'lab_rbc',           label: 'RBC (كريات حمراء)',    unit: '×10⁶/µL' },
+        { keys: ['hb','hemoglobin','خضاب','HB','هيموغلوبين'], id: 'lab_hb', label: 'HB (هيموغلوبين)',      unit: 'g/dL' },
+        { keys: ['ht','hematocrit','هيماتوكريت','HT'], id: 'lab_ht',         label: 'HT (هيماتوكريت)',      unit: '%' },
+        { keys: ['mcv','MCV'],                       id: 'lab_mcv',          label: 'MCV',                  unit: 'fL' },
+        { keys: ['mch','MCH'],                       id: 'lab_mch',          label: 'MCH',                  unit: 'pg' },
+        { keys: ['mchc','MCHC'],                     id: 'lab_mchc',         label: 'MCHC',                 unit: 'g/dL' },
+        { keys: ['rdw','RDW'],                       id: 'lab_rdw',          label: 'RDW',                  unit: '%' },
+        { keys: ['platelets','صفيحات','PLT'],        id: 'lab_platelets',    label: 'Platelets (صفيحات)',   unit: '×10³/µL' },
+        { keys: ['esr','ترسب','ESR'],                id: 'lab_esr',          label: 'ESR (ترسب الكريات)',   unit: 'mm/hr' },
+        { keys: ['glucose fasting','سكر صيامي','fasting glucose','FBS','سكر الصيام'], id: 'lab_glucose_fast', label: 'سكر صيامي', unit: 'mg/dL' },
+        { keys: ['glucose random','سكر عشوائي','random glucose','RBS'],      id: 'lab_glucose_random', label: 'سكر عشوائي', unit: 'mg/dL' },
+        { keys: ['homa','insulin resistance','مقاومة انسولين','HOMA-IR'],   id: 'lab_homa_ir',      label: 'HOMA-IR',              unit: '' },
+        { keys: ['creatinine','كرياتينين','Cr','cr'],id: 'lab_cr',           label: 'Creatinine (كرياتينين)',unit: 'mg/dL' },
+        { keys: ['urea','يوريا','BUN'],              id: 'lab_urea',         label: 'Urea (يوريا)',         unit: 'mg/dL' },
+        { keys: ['uric acid','حمض اليوريك','UA','ua'], id: 'lab_ua',         label: 'Uric Acid',            unit: 'mg/dL' },
+        { keys: ['crcl','creatinine clearance'],     id: 'lab_crcl',         label: 'CrCl',                 unit: 'mL/min' },
+        { keys: ['egfr','eGFR','معدل الترشيح'],      id: 'lab_egfr',         label: 'eGFR',                 unit: 'mL/min' },
+        { keys: ['alt','alanine','ناقلة أمين الألانين','SGPT'], id: 'lab_alt', label: 'ALT (SGPT)',          unit: 'U/L' },
+        { keys: ['ast','aspartate','ناقلة أمين الأسبارتات','SGOT'], id: 'lab_ast', label: 'AST (SGOT)',      unit: 'U/L' },
+        { keys: ['bilirubin total','بيليروبين كلي','T.bili','total bilirubin'], id: 'lab_bili_t', label: 'بيليروبين كلي', unit: 'mg/dL' },
+        { keys: ['albumin','ألبومين'],               id: 'lab_albumin',      label: 'Albumin (ألبومين)',    unit: 'g/dL' },
+        { keys: ['crp','c-reactive','بروتين تفاعلي','CRP'], id: 'lab_crp',   label: 'CRP',                  unit: 'mg/L' },
+        { keys: ['vitamin b6','b6','vit b6','فيتامين ب6','B6'], id: 'lab_vit_b6', label: 'Vit B6',           unit: 'ng/mL' },
+        { keys: ['folate','folic','b9','vit b9','حمض الفوليك'], id: 'lab_vit_b9', label: 'Folate/B9',        unit: 'ng/mL' },
+        { keys: ['b12','vitamin b12','vit b12','فيتامين ب12','cobalamin'], id: 'lab_vit_b12', label: 'Vit B12', unit: 'pg/mL' },
+        { keys: ['vitamin d','vit d','25-oh','d3','فيتامين د'], id: 'lab_vit_d3', label: 'Vit D3',           unit: 'ng/mL' },
+        { keys: ['potassium','بوتاسيوم','K','k+'],  id: 'lab_k',            label: 'K (بوتاسيوم)',         unit: 'mEq/L' },
+        { keys: ['sodium','صوديوم','Na','na+'],      id: 'lab_na',           label: 'Na (صوديوم)',          unit: 'mEq/L' },
+        { keys: ['chloride','كلور','Cl','cl-'],      id: 'lab_cl',           label: 'Cl (كلور)',            unit: 'mEq/L' },
+        { keys: ['magnesium','مغنيسيوم','Mg','mg'],  id: 'lab_mg',           label: 'Mg (مغنيسيوم)',        unit: 'mg/dL' },
+        { keys: ['phosphorus','فوسفور','P','phosphate'], id: 'lab_p',        label: 'P (فوسفور)',           unit: 'mg/dL' },
+        { keys: ['calcium','كالسيوم','Ca'],          id: 'lab_ca',           label: 'Ca (كالسيوم)',         unit: 'mg/dL' },
+        { keys: ['tsh','thyroid stimulating','ثيروتروبين','TSH'], id: 'lab_tsh', label: 'TSH',               unit: 'µIU/mL' },
+        { keys: ['t3','triiodothyronine','ثيرونين'],  id: 'lab_t3',          label: 'T3',                   unit: 'ng/dL' },
+        { keys: ['t4','thyroxine','ثيروكسين'],        id: 'lab_t4',          label: 'T4',                   unit: 'µg/dL' },
+        { keys: ['fsh','follicle stimulating','هرمون تنبيه الجريب'], id: 'lab_fsh', label: 'FSH',             unit: 'mIU/mL' },
+        { keys: ['lh','luteinizing','هرمون الجسم الأصفر'], id: 'lab_lh',    label: 'LH',                   unit: 'mIU/mL' },
+        { keys: ['testosterone','تستوستيرون'],        id: 'lab_testo',       label: 'Testosterone',         unit: 'ng/dL' },
+        { keys: ['pth','parathyroid','الغدة الجار درقية'], id: 'lab_pth',    label: 'PTH',                  unit: 'pg/mL' },
+    ];
+
+    // فتح النافذة
+    window._openOcrModal = function() {
+        var savedKey = localStorage.getItem('_gemini_api_key') || '';
+        document.getElementById('ocr-api-key-input').value = savedKey;
+        document.getElementById('ocr-key-status').textContent = savedKey ? '✅ المفتاح محفوظ' : '';
+        _resetOcrModal();
+        document.getElementById('ocr-lab-modal').style.display = 'flex';
+    };
+
+    window._closeOcrModal = function() {
+        document.getElementById('ocr-lab-modal').style.display = 'none';
+    };
+
+    // إغلاق عند النقر خارج النافذة
+    document.getElementById('ocr-lab-modal').addEventListener('click', function(e) {
+        if (e.target === this) window._closeOcrModal();
+    });
+
+    // حفظ مفتاح API
+    window._saveOcrApiKey = function() {
+        var key = document.getElementById('ocr-api-key-input').value.trim();
+        if (!key) { document.getElementById('ocr-key-status').textContent = '⚠️ يرجى إدخال المفتاح أولاً'; return; }
+        localStorage.setItem('_gemini_api_key', key);
+        document.getElementById('ocr-key-status').textContent = '✅ تم حفظ المفتاح بنجاح';
+    };
+
+    // إعادة ضبط النافذة
+    function _resetOcrModal() {
+        _ocrImageBase64 = null;
+        _ocrExtractedData = {};
+        document.getElementById('ocr-preview-wrap').style.display = 'none';
+        document.getElementById('ocr-preview-img').src = '';
+        document.getElementById('ocr-file-name').textContent = '';
+        document.getElementById('ocr-loading').style.display = 'none';
+        document.getElementById('ocr-result-section').style.display = 'none';
+        document.getElementById('ocr-error').style.display = 'none';
+        document.getElementById('ocr-apply-btn').style.display = 'none';
+        document.getElementById('ocr-scan-btn').style.display = 'inline-block';
+        document.getElementById('ocr-file-input').value = '';
+    }
+
+    // اختيار الملف
+    window._handleOcrFileSelect = function(event) {
+        var file = event.target.files[0];
+        if (file) _loadOcrFile(file);
+    };
+
+    window._handleOcrFileDrop = function(event) {
+        var file = event.dataTransfer.files[0];
+        if (file) _loadOcrFile(file);
+    };
+
+    function _loadOcrFile(file) {
+        if (file.size > 10 * 1024 * 1024) {
+            _showOcrError('حجم الملف كبير جداً. الحد الأقصى 10 ميغابايت.');
+            return;
+        }
+        var reader = new FileReader();
+        reader.onload = function(e) {
+            var dataUrl = e.target.result;
+            var parts = dataUrl.split(',');
+            _ocrImageBase64 = parts[1];
+            _ocrImageMime = file.type || 'image/jpeg';
+
+            document.getElementById('ocr-preview-img').src = dataUrl;
+            document.getElementById('ocr-file-name').textContent = file.name;
+            document.getElementById('ocr-preview-wrap').style.display = 'block';
+            document.getElementById('ocr-result-section').style.display = 'none';
+            document.getElementById('ocr-error').style.display = 'none';
+            document.getElementById('ocr-apply-btn').style.display = 'none';
+        };
+        reader.readAsDataURL(file);
+    }
+
+    window._clearOcrImage = function() {
+        _ocrImageBase64 = null;
+        document.getElementById('ocr-preview-wrap').style.display = 'none';
+        document.getElementById('ocr-preview-img').src = '';
+        document.getElementById('ocr-file-input').value = '';
+        document.getElementById('ocr-result-section').style.display = 'none';
+        document.getElementById('ocr-apply-btn').style.display = 'none';
+    };
+
+    // بدء المسح الضوئي
+    window._startOcrScan = async function() {
+        if (!_ocrImageBase64) {
+            _showOcrError('يرجى رفع صورة التحليل أولاً.');
+            return;
+        }
+        var apiKey = document.getElementById('ocr-api-key-input').value.trim()
+                  || localStorage.getItem('_gemini_api_key') || '';
+        if (!apiKey) {
+            _showOcrError('يرجى إدخال مفتاح Gemini API أولاً.');
+            document.getElementById('ocr-api-key-input').focus();
+            return;
+        }
+
+        // إظهار حالة التحميل
+        document.getElementById('ocr-loading').style.display = 'block';
+        document.getElementById('ocr-result-section').style.display = 'none';
+        document.getElementById('ocr-error').style.display = 'none';
+        document.getElementById('ocr-apply-btn').style.display = 'none';
+        document.getElementById('ocr-scan-btn').disabled = true;
+
+        try {
+            var prompt = `أنت محلل طبي متخصص. قم بقراءة صورة ورقة التحاليل المخبرية هذه بدقة.
+
+استخرج جميع القيم الرقمية للفحوصات المخبرية الموجودة في الصورة، وأرجع النتيجة **حصراً** كـ JSON بالتنسيق التالي (لا تضف أي نص قبله أو بعده):
+
+{
+  "results": [
+    {"test": "اسم الفحص بالإنجليزية أو العربية", "value": رقم_عشري, "unit": "الوحدة", "flag": "H أو L أو normal"}
+  ],
+  "notes": "أي ملاحظات مهمة مثل اسم المختبر أو التاريخ أو قيم لم تستطع قراءتها"
+}
+
+قواعد مهمة:
+- القيمة (value) يجب أن تكون رقماً فقط وليس نصاً
+- إذا كانت القيمة تعبيراً مثل ">200" أو "<5"، فاستخدم الرقم فقط (200 أو 5)
+- أدرج فقط الفحوصات التي لها قيمة رقمية واضحة في الصورة
+- لا تخترع قيماً غير موجودة في الصورة`;
+
+            var response = await fetch(
+                'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=' + apiKey,
+                {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{
+                            parts: [
+                                { text: prompt },
+                                { inline_data: { mime_type: _ocrImageMime, data: _ocrImageBase64 } }
+                            ]
+                        }],
+                        generationConfig: { temperature: 0.1, maxOutputTokens: 2048 }
+                    })
+                }
+            );
+
+            if (!response.ok) {
+                var errData = await response.json().catch(() => ({}));
+                throw new Error(errData.error && errData.error.message ? errData.error.message : 'خطأ في API (' + response.status + ')');
+            }
+
+            var data = await response.json();
+            var rawText = (data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts)
+                ? data.candidates[0].content.parts.map(function(p) { return p.text || ''; }).join('')
+                : '';
+
+            // تنظيف JSON من الـ markdown
+            rawText = rawText.replace(/```json/gi,'').replace(/```/g,'').trim();
+
+            var parsed;
+            try {
+                parsed = JSON.parse(rawText);
+            } catch(e) {
+                // محاولة استخراج JSON من النص
+                var jsonMatch = rawText.match(/\{[\s\S]*\}/);
+                if (jsonMatch) {
+                    parsed = JSON.parse(jsonMatch[0]);
+                } else {
+                    throw new Error('لم يتمكن Gemini من إرجاع بيانات منظمة. يرجى المحاولة مجدداً بصورة أوضح.');
+                }
+            }
+
+            _renderOcrResults(parsed);
+
+        } catch(err) {
+            _showOcrError(err.message || 'حدث خطأ غير متوقع');
+        } finally {
+            document.getElementById('ocr-loading').style.display = 'none';
+            document.getElementById('ocr-scan-btn').disabled = false;
+        }
+    };
+
+    // عرض نتائج OCR
+    function _renderOcrResults(parsed) {
+        var results = parsed.results || [];
+        var notes = parsed.notes || '';
+
+        _ocrExtractedData = {};
+
+        var tbody = document.getElementById('ocr-result-table-body');
+        tbody.innerHTML = '';
+
+        var matchedCount = 0;
+
+        results.forEach(function(item) {
+            var testName = (item.test || '').toLowerCase();
+            var value = parseFloat(item.value);
+            if (isNaN(value)) return;
+
+            // البحث عن الحقل المطابق
+            var matchedField = null;
+            for (var i = 0; i < OCR_FIELD_MAP.length; i++) {
+                var fieldDef = OCR_FIELD_MAP[i];
+                var matched = fieldDef.keys.some(function(key) {
+                    return testName.indexOf(key.toLowerCase()) !== -1 || key.toLowerCase().indexOf(testName) !== -1;
+                });
+                if (matched) {
+                    matchedField = fieldDef;
+                    break;
+                }
+            }
+
+            var flagBadge = '';
+            if (item.flag === 'H') flagBadge = '<span style="background:#fee2e2;color:#dc2626;padding:2px 8px;border-radius:20px;font-size:0.75rem;font-weight:700;">▲ مرتفع</span>';
+            else if (item.flag === 'L') flagBadge = '<span style="background:#dbeafe;color:#2563eb;padding:2px 8px;border-radius:20px;font-size:0.75rem;font-weight:700;">▼ منخفض</span>';
+            else if (item.flag === 'normal') flagBadge = '<span style="background:#dcfce7;color:#16a34a;padding:2px 8px;border-radius:20px;font-size:0.75rem;font-weight:700;">✓ طبيعي</span>';
+
+            var rowStyle = matchedField ? '' : 'opacity:0.55;';
+            var fieldLabel = matchedField ? matchedField.label : (item.test + ' <span style="font-size:0.72rem;color:#9ca3af;">(غير مدعوم)</span>');
+
+            var tr = document.createElement('tr');
+            tr.style.cssText = rowStyle + 'border-bottom:1px solid #ede9fe;';
+            tr.innerHTML = '<td style="padding:8px 14px;font-weight:600;color:#374151;">' + fieldLabel + '</td>' +
+                           '<td style="padding:8px 14px;text-align:center;font-weight:800;color:#7c3aed;font-size:1rem;">' + value + '</td>' +
+                           '<td style="padding:8px 14px;text-align:center;color:#6b7280;font-size:0.8rem;">' + (item.unit || '') + '</td>' +
+                           '<td style="padding:8px 14px;text-align:center;">' + flagBadge + '</td>';
+            tbody.appendChild(tr);
+
+            if (matchedField) {
+                _ocrExtractedData[matchedField.id] = value;
+                matchedCount++;
+            }
+        });
+
+        document.getElementById('ocr-matched-count').textContent = matchedCount + ' حقل سيتم تعبئته';
+
+        if (notes) {
+            var notesEl = document.getElementById('ocr-raw-notes');
+            notesEl.style.display = 'block';
+            notesEl.textContent = '💡 ' + notes;
+        }
+
+        document.getElementById('ocr-result-section').style.display = 'block';
+        if (matchedCount > 0) {
+            document.getElementById('ocr-apply-btn').style.display = 'inline-block';
+        }
+    }
+
+    // تطبيق النتائج على حقول النموذج
+    window._applyOcrResults = function() {
+        var count = 0;
+        Object.keys(_ocrExtractedData).forEach(function(fieldId) {
+            var el = document.getElementById(fieldId);
+            if (el) {
+                el.value = _ocrExtractedData[fieldId];
+                // إطلاق حدث input لتفعيل مؤشرات الحالة
+                el.dispatchEvent(new Event('input', { bubbles: true }));
+                el.dispatchEvent(new Event('change', { bubbles: true }));
+                // تأثير بصري
+                el.style.transition = 'background 0.4s';
+                el.style.background = '#ede9fe';
+                setTimeout(function(e) { e.style.background = ''; }.bind(null, el), 1200);
+                count++;
+            }
+        });
+
+        window._closeOcrModal();
+
+        if (typeof showToast === 'function') {
+            showToast('✅ تم تعبئة ' + count + ' حقل تلقائياً من صورة التحليل', 'success');
+        }
+
+        // التمرير إلى قسم التحاليل
+        var labSection = document.querySelector('.lab-section');
+        if (labSection) {
+            setTimeout(function() {
+                labSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 300);
+        }
+    };
+
+    // إظهار رسالة الخطأ
+    function _showOcrError(msg) {
+        document.getElementById('ocr-loading').style.display = 'none';
+        document.getElementById('ocr-error').style.display = 'block';
+        document.getElementById('ocr-error-msg').textContent = msg;
+    }
+
+})();
+</script>
+
 <script>
 // ===== زر الطباعة متعدد المهام =====
 (function() {
@@ -15375,478 +15748,6 @@ ${context}
     };
 
 })();
-</script>
-
-<script>
-// ====================== منطق OCR - قراءة التحاليل بالذكاء الاصطناعي ======================
-(function() {
-    var _ocrImageBase64 = null;
-    var _ocrImageMime = 'image/jpeg';
-    var _ocrExtractedValues = {};
-
-    // خريطة حقول التحاليل: اسم الحقل الطبي => ID العنصر في الصفحة
-    var OCR_FIELD_MAP = {
-        // التحاليل الدموية
-        'wbc':        'lab_wbc',
-        'rbc':        'lab_rbc',
-        'hb':         'lab_hb',
-        'hemoglobin': 'lab_hb',
-        'hgb':        'lab_hb',
-        'ht':         'lab_ht',
-        'hct':        'lab_ht',
-        'hematocrit': 'lab_ht',
-        'mcv':        'lab_mcv',
-        'mch':        'lab_mch',
-        'mchc':       'lab_mchc',
-        'rdw':        'lab_rdw',
-        'platelets':  'lab_platelets',
-        'plt':        'lab_platelets',
-        // السكر
-        'glucose':      'lab_glucose',
-        'fbs':          'lab_glucose',
-        'blood_sugar':  'lab_glucose',
-        'hba1c':        'lab_hba1c',
-        'a1c':          'lab_hba1c',
-        'insulin':      'lab_insulin',
-        'c_peptide':    'lab_c_peptide',
-        // الكلى
-        'urea':         'lab_urea',
-        'bun':          'lab_urea',
-        'creatinine':   'lab_creatinine',
-        'uric_acid':    'lab_uric_acid',
-        // الكبد
-        'alt':          'lab_alt',
-        'sgpt':         'lab_alt',
-        'ast':          'lab_ast',
-        'sgot':         'lab_ast',
-        'alp':          'lab_alp',
-        'ggt':          'lab_ggt',
-        'total_bilirubin': 'lab_total_bilirubin',
-        'direct_bilirubin': 'lab_direct_bilirubin',
-        'albumin':      'lab_albumin',
-        'total_protein': 'lab_total_protein',
-        // الدهون
-        'cholesterol':  'lab_cholesterol',
-        'total_cholesterol': 'lab_cholesterol',
-        'triglycerides': 'lab_triglycerides',
-        'tg':           'lab_triglycerides',
-        'hdl':          'lab_hdl',
-        'ldl':          'lab_ldl',
-        // الفيتامينات
-        'vitamin_d':    'lab_vitamin_d',
-        'vit_d':        'lab_vitamin_d',
-        '25oh':         'lab_vitamin_d',
-        'vitamin_b12':  'lab_vitamin_b12',
-        'b12':          'lab_vitamin_b12',
-        'folate':       'lab_folate',
-        'folic_acid':   'lab_folate',
-        'ferritin':     'lab_ferritin',
-        'iron':         'lab_iron',
-        'tibc':         'lab_tibc',
-        // الشوارد
-        'sodium':       'lab_sodium',
-        'na':           'lab_sodium',
-        'potassium':    'lab_potassium',
-        'k':            'lab_potassium',
-        'calcium':      'lab_calcium',
-        'ca':           'lab_calcium',
-        'phosphorus':   'lab_phosphorus',
-        'magnesium':    'lab_magnesium',
-        // الهرمونات
-        'tsh':          'lab_tsh',
-        't3':           'lab_t3',
-        't4':           'lab_t4',
-        'ft3':          'lab_ft3',
-        'ft4':          'lab_ft4',
-        // قلب
-        'troponin':     'lab_troponin',
-        'ck_mb':        'lab_ck_mb',
-        'bnp':          'lab_bnp',
-        'ldh':          'lab_ldh',
-    };
-
-    // ----- فتح النافذة -----
-    window._openOCRModal = function() {
-        var savedKey = localStorage.getItem('_gemini_api_key') || '';
-        var inp = document.getElementById('ocr-api-key-input');
-        if (inp) inp.value = savedKey;
-        var status = document.getElementById('ocr-key-status');
-        if (status) status.textContent = savedKey ? '✅ المفتاح محفوظ من تقارير AI' : '';
-
-        _resetOCRState();
-        var modal = document.getElementById('ocr-modal');
-        if (modal) modal.style.display = 'flex';
-    };
-
-    // ----- إغلاق النافذة -----
-    window._closeOCRModal = function() {
-        var modal = document.getElementById('ocr-modal');
-        if (modal) modal.style.display = 'none';
-    };
-
-    // إغلاق بالنقر خارج
-    document.getElementById('ocr-modal').addEventListener('click', function(e) {
-        if (e.target === this) window._closeOCRModal();
-    });
-
-    // ----- حفظ مفتاح API -----
-    window._saveOCRApiKey = function() {
-        var key = (document.getElementById('ocr-api-key-input').value || '').trim();
-        if (!key) { document.getElementById('ocr-key-status').textContent = '⚠️ يرجى إدخال المفتاح'; return; }
-        localStorage.setItem('_gemini_api_key', key);
-        document.getElementById('ocr-key-status').textContent = '✅ تم الحفظ';
-    };
-
-    // ----- إعادة ضبط الحالة -----
-    function _resetOCRState() {
-        _ocrImageBase64 = null;
-        _ocrExtractedValues = {};
-
-        var placeholder = document.getElementById('ocr-upload-placeholder');
-        var preview = document.getElementById('ocr-preview-img');
-        if (placeholder) placeholder.style.display = 'block';
-        if (preview) { preview.style.display = 'none'; preview.src = ''; }
-
-        var results = document.getElementById('ocr-results-area');
-        if (results) results.style.display = 'none';
-        var errArea = document.getElementById('ocr-error-area');
-        if (errArea) errArea.style.display = 'none';
-        var grid = document.getElementById('ocr-results-grid');
-        if (grid) grid.innerHTML = '';
-        var note = document.getElementById('ocr-not-found-note');
-        if (note) note.textContent = '';
-
-        var analyzeBtn = document.getElementById('ocr-analyze-btn');
-        if (analyzeBtn) { analyzeBtn.disabled = true; analyzeBtn.style.opacity = '0.5'; }
-        var applyBtn = document.getElementById('ocr-apply-btn');
-        if (applyBtn) applyBtn.style.display = 'none';
-
-        var statusText = document.getElementById('ocr-status-text');
-        if (statusText) statusText.textContent = '';
-
-        var fileInp = document.getElementById('ocr-file-input');
-        if (fileInp) fileInp.value = '';
-    }
-
-    // ----- معالجة اختيار الملف -----
-    window._handleOCRFileSelect = function(event) {
-        var file = event.target.files && event.target.files[0];
-        if (file) _loadOCRImage(file);
-    };
-
-    window._handleOCRDrop = function(event) {
-        event.preventDefault();
-        var zone = document.getElementById('ocr-upload-zone');
-        if (zone) { zone.style.borderColor = '#c4b5fd'; zone.style.background = '#faf5ff'; }
-        var file = event.dataTransfer.files && event.dataTransfer.files[0];
-        if (file && file.type.startsWith('image/')) _loadOCRImage(file);
-    };
-
-    function _loadOCRImage(file) {
-        _ocrImageMime = file.type || 'image/jpeg';
-        var reader = new FileReader();
-        reader.onload = function(e) {
-            var dataUrl = e.target.result;
-            // استخراج base64 فقط
-            _ocrImageBase64 = dataUrl.split(',')[1];
-
-            // عرض المعاينة
-            var placeholder = document.getElementById('ocr-upload-placeholder');
-            var preview = document.getElementById('ocr-preview-img');
-            if (placeholder) placeholder.style.display = 'none';
-            if (preview) { preview.src = dataUrl; preview.style.display = 'block'; }
-
-            // تفعيل زر التحليل
-            var analyzeBtn = document.getElementById('ocr-analyze-btn');
-            if (analyzeBtn) { analyzeBtn.disabled = false; analyzeBtn.style.opacity = '1'; }
-
-            // إخفاء نتائج سابقة
-            var results = document.getElementById('ocr-results-area');
-            if (results) results.style.display = 'none';
-            var applyBtn = document.getElementById('ocr-apply-btn');
-            if (applyBtn) applyBtn.style.display = 'none';
-            var errArea = document.getElementById('ocr-error-area');
-            if (errArea) errArea.style.display = 'none';
-
-            var statusText = document.getElementById('ocr-status-text');
-            if (statusText) statusText.textContent = '✅ تم تحميل الصورة — اضغط "تحليل بـ Gemini AI"';
-        };
-        reader.readAsDataURL(file);
-    }
-
-    // ----- تشغيل OCR عبر Gemini Vision -----
-    window._runOCR = async function() {
-        var apiKey = (document.getElementById('ocr-api-key-input').value || '').trim()
-                     || (localStorage.getItem('_gemini_api_key') || '');
-        if (!apiKey) {
-            document.getElementById('ocr-key-status').textContent = '⚠️ يرجى إدخال مفتاح Gemini API أولاً';
-            return;
-        }
-        if (!_ocrImageBase64) {
-            if (typeof showToast === 'function') showToast('يرجى اختيار صورة التحليل أولاً', 'error');
-            return;
-        }
-
-        // حالة التحميل
-        var analyzeBtn = document.getElementById('ocr-analyze-btn');
-        if (analyzeBtn) { analyzeBtn.disabled = true; analyzeBtn.style.opacity = '0.6'; analyzeBtn.textContent = '⏳ جاري القراءة...'; }
-        var statusText = document.getElementById('ocr-status-text');
-        if (statusText) statusText.textContent = 'جاري إرسال الصورة إلى Gemini AI...';
-        var errArea = document.getElementById('ocr-error-area');
-        if (errArea) errArea.style.display = 'none';
-        var results = document.getElementById('ocr-results-area');
-        if (results) results.style.display = 'none';
-
-        var ocrPrompt = `أنت متخصص في قراءة نتائج التحاليل المخبرية الطبية. 
-انظر إلى هذه الصورة وقم باستخراج جميع نتائج التحاليل المخبرية منها.
-
-أعد النتائج بصيغة JSON فقط (بدون أي نص إضافي أو ماركداون)، بالشكل التالي:
-{
-  "found_values": {
-    "اسم_التحليل": "القيمة_الرقمية",
-    ...
-  },
-  "confidence": "high|medium|low",
-  "notes": "أي ملاحظات"
-}
-
-قواعد مهمة:
-- استخدم الأسماء الإنجليزية القياسية للتحاليل: wbc, rbc, hb, ht, mcv, mch, mchc, rdw, platelets, glucose, hba1c, urea, creatinine, uric_acid, alt, ast, alp, ggt, total_bilirubin, direct_bilirubin, albumin, total_protein, cholesterol, triglycerides, hdl, ldl, vitamin_d, vitamin_b12, folate, ferritin, iron, tibc, sodium, potassium, calcium, phosphorus, magnesium, tsh, t3, t4, ft3, ft4, troponin, ck_mb, bnp, ldh, insulin, c_peptide
-- القيم يجب أن تكون أرقاماً فقط (بدون وحدات)
-- إذا كانت القيمة نصية (مثل Positive/Negative) تجاهلها
-- لا تضيف أي قيم غير موجودة في الصورة
-- أعد JSON صحيح فقط`;
-
-        var lastError = null;
-        var succeeded = false;
-
-        try {
-            // جلب قائمة النماذج التي تدعم الصور
-            var listResp = await fetch('https://generativelanguage.googleapis.com/v1beta/models?key=' + apiKey);
-            var listData = await listResp.json();
-
-            if (!listResp.ok) throw new Error('فشل التحقق من المفتاح: ' + ((listData.error && listData.error.message) || 'HTTP ' + listResp.status));
-
-            var allModels = (listData.models || [])
-                .filter(function(m) {
-                    return m.supportedGenerationMethods &&
-                           m.supportedGenerationMethods.includes('generateContent') &&
-                           m.name && m.name.includes('gemini') &&
-                           !m.name.includes('embedding') && !m.name.includes('aqa');
-                })
-                .map(function(m) { return m.name.replace('models/', ''); });
-
-            // تفضيل نماذج flash للسرعة
-            allModels.sort(function(a, b) {
-                var aF = a.includes('flash') ? 0 : 1;
-                var bF = b.includes('flash') ? 0 : 1;
-                if (aF !== bF) return aF - bF;
-                return b.localeCompare(a);
-            });
-
-            if (allModels.length === 0) throw new Error('لا توجد نماذج Gemini متاحة لهذا المفتاح');
-
-            for (var mi = 0; mi < allModels.length; mi++) {
-                var modelName = allModels[mi];
-                try {
-                    var resp = await fetch(
-                        'https://generativelanguage.googleapis.com/v1beta/models/' + modelName + ':generateContent?key=' + apiKey,
-                        {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({
-                                contents: [{
-                                    parts: [
-                                        { text: ocrPrompt },
-                                        { inline_data: { mime_type: _ocrImageMime, data: _ocrImageBase64 } }
-                                    ]
-                                }],
-                                generationConfig: { temperature: 0.1, maxOutputTokens: 2048 }
-                            })
-                        }
-                    );
-
-                    var data = await resp.json();
-
-                    if (!resp.ok) {
-                        lastError = '[' + modelName + '] ' + ((data.error && data.error.message) ? data.error.message : 'HTTP ' + resp.status);
-                        continue;
-                    }
-
-                    var text = '';
-                    if (data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts) {
-                        text = data.candidates[0].content.parts.map(function(p) { return p.text || ''; }).join('');
-                    }
-
-                    if (!text) { lastError = '[' + modelName + '] استجابة فارغة'; continue; }
-
-                    // تنظيف JSON
-                    var jsonStr = text.replace(/```json
-?/gi, '').replace(/```
-?/gi, '').trim();
-                    // استخراج أول كتلة JSON من النص
-                    var jsonMatch = jsonStr.match(/\{[\s\S]*\}/);
-                    if (!jsonMatch) { lastError = '[' + modelName + '] لم يتم إيجاد JSON في الاستجابة'; continue; }
-
-                    var parsed = JSON.parse(jsonMatch[0]);
-                    var foundValues = parsed.found_values || {};
-
-                    if (Object.keys(foundValues).length === 0) {
-                        lastError = '[' + modelName + '] لم يتم استخراج أي قيم من الصورة';
-                        continue;
-                    }
-
-                    // تخزين النتائج وعرضها
-                    _ocrExtractedValues = {};
-                    var mappedCount = 0;
-                    var unmappedFields = [];
-
-                    Object.keys(foundValues).forEach(function(key) {
-                        var fieldId = OCR_FIELD_MAP[key.toLowerCase()] || OCR_FIELD_MAP[key.toLowerCase().replace(/[\s-]/g, '_')];
-                        var val = foundValues[key];
-                        if (!val && val !== 0) return;
-                        if (fieldId) {
-                            _ocrExtractedValues[fieldId] = val;
-                            mappedCount++;
-                        } else {
-                            unmappedFields.push(key.toUpperCase() + ': ' + val);
-                        }
-                    });
-
-                    _renderOCRResults(modelName, mappedCount, unmappedFields, parsed.notes);
-                    succeeded = true;
-                    break;
-
-                } catch (fetchErr) {
-                    lastError = '[' + modelName + '] ' + (fetchErr.message || String(fetchErr));
-                }
-            }
-
-        } catch (outerErr) {
-            lastError = outerErr.message || String(outerErr);
-        }
-
-        // إعادة زر التحليل
-        if (analyzeBtn) { analyzeBtn.disabled = false; analyzeBtn.style.opacity = '1'; analyzeBtn.innerHTML = '&#10024; تحليل بـ Gemini AI'; }
-
-        if (!succeeded) {
-            var errArea2 = document.getElementById('ocr-error-area');
-            if (errArea2) errArea2.style.display = 'block';
-            var errMsg = document.getElementById('ocr-error-msg');
-            if (errMsg) {
-                var hint = '';
-                if (lastError && (lastError.includes('API_KEY_INVALID') || lastError.includes('API key not valid'))) {
-                    hint = '<br>الحل: المفتاح غير صالح. تأكد منه في <a href="https://aistudio.google.com/app/apikey" target="_blank">Google AI Studio</a>.';
-                } else if (lastError && lastError.includes('RESOURCE_EXHAUSTED')) {
-                    hint = '<br>الحل: استُنزفت الحصة. جرّب مفتاحاً آخر.';
-                }
-                errMsg.innerHTML = (lastError || 'خطأ غير معروف') + hint;
-            }
-            if (statusText) statusText.textContent = '❌ فشل التحليل';
-        }
-    };
-
-    // ----- عرض نتائج OCR -----
-    function _renderOCRResults(modelName, mappedCount, unmappedFields, notes) {
-        var resultsArea = document.getElementById('ocr-results-area');
-        var grid = document.getElementById('ocr-results-grid');
-        var noteEl = document.getElementById('ocr-not-found-note');
-        var applyBtn = document.getElementById('ocr-apply-btn');
-        var statusText = document.getElementById('ocr-status-text');
-
-        if (!resultsArea || !grid) return;
-
-        grid.innerHTML = '';
-
-        // أسماء عربية للعرض
-        var fieldLabels = {
-            'lab_wbc': 'WBC', 'lab_rbc': 'RBC', 'lab_hb': 'HB (الهيموجلوبين)',
-            'lab_ht': 'HT', 'lab_mcv': 'MCV', 'lab_mch': 'MCH', 'lab_mchc': 'MCHC',
-            'lab_rdw': 'RDW', 'lab_platelets': 'Platelets',
-            'lab_glucose': 'السكر (Glucose)', 'lab_hba1c': 'HbA1c', 'lab_insulin': 'الإنسولين',
-            'lab_c_peptide': 'C-Peptide',
-            'lab_urea': 'اليوريا (Urea)', 'lab_creatinine': 'الكرياتينين', 'lab_uric_acid': 'حمض اليوريك',
-            'lab_alt': 'ALT (SGPT)', 'lab_ast': 'AST (SGOT)', 'lab_alp': 'ALP', 'lab_ggt': 'GGT',
-            'lab_total_bilirubin': 'البيليروبين الكلي', 'lab_direct_bilirubin': 'البيليروبين المباشر',
-            'lab_albumin': 'الألبومين', 'lab_total_protein': 'البروتين الكلي',
-            'lab_cholesterol': 'الكوليسترول', 'lab_triglycerides': 'الدهون الثلاثية',
-            'lab_hdl': 'HDL', 'lab_ldl': 'LDL',
-            'lab_vitamin_d': 'فيتامين D', 'lab_vitamin_b12': 'فيتامين B12',
-            'lab_folate': 'الفوليك أسيد', 'lab_ferritin': 'الفيريتين',
-            'lab_iron': 'الحديد', 'lab_tibc': 'TIBC',
-            'lab_sodium': 'الصوديوم (Na)', 'lab_potassium': 'البوتاسيوم (K)',
-            'lab_calcium': 'الكالسيوم (Ca)', 'lab_phosphorus': 'الفوسفور',
-            'lab_magnesium': 'المغنيسيوم',
-            'lab_tsh': 'TSH', 'lab_t3': 'T3', 'lab_t4': 'T4', 'lab_ft3': 'FT3', 'lab_ft4': 'FT4',
-            'lab_troponin': 'Troponin', 'lab_ck_mb': 'CK-MB', 'lab_bnp': 'BNP', 'lab_ldh': 'LDH',
-        };
-
-        Object.keys(_ocrExtractedValues).forEach(function(fieldId) {
-            var val = _ocrExtractedValues[fieldId];
-            var label = fieldLabels[fieldId] || fieldId.replace('lab_', '').toUpperCase();
-            var card = document.createElement('div');
-            card.style.cssText = 'background:#f5f3ff;border:1.5px solid #c4b5fd;border-radius:10px;padding:10px 12px;display:flex;align-items:center;justify-content:space-between;gap:8px;';
-            card.innerHTML = '<span style="font-size:0.82rem;font-weight:600;color:#374151;flex:1;">' + label + '</span>' +
-                '<input type="number" value="' + val + '" data-field-id="' + fieldId + '" step="any" ' +
-                'style="width:80px;padding:5px 8px;border:1.5px solid #a78bfa;border-radius:7px;font-family:Cairo,sans-serif;font-size:0.88rem;text-align:center;direction:ltr;" ' +
-                'onchange="window._updateOCRValue(this)" />';
-            grid.appendChild(card);
-        });
-
-        resultsArea.style.display = 'block';
-
-        var noteText = '';
-        if (unmappedFields.length > 0) {
-            noteText = '⚠️ قيم لم يتم التعرف على حقولها: ' + unmappedFields.join(' | ');
-        }
-        if (notes) noteText += (noteText ? ' — ' : '') + 'ملاحظة Gemini: ' + notes;
-        if (noteEl) noteEl.textContent = noteText;
-
-        if (applyBtn) applyBtn.style.display = mappedCount > 0 ? 'block' : 'none';
-        if (statusText) statusText.textContent = '✅ تم استخراج ' + mappedCount + ' قيمة بنجاح عبر ' + modelName;
-    }
-
-    // ----- تحديث قيمة معدّلة يدوياً -----
-    window._updateOCRValue = function(input) {
-        var fieldId = input.getAttribute('data-field-id');
-        if (fieldId) _ocrExtractedValues[fieldId] = input.value;
-    };
-
-    // ----- تطبيق القيم في حقول الصفحة -----
-    window._applyOCRResults = function() {
-        var count = 0;
-        Object.keys(_ocrExtractedValues).forEach(function(fieldId) {
-            var el = document.getElementById(fieldId);
-            if (el) {
-                el.value = _ocrExtractedValues[fieldId];
-                el.dispatchEvent(new Event('input', { bubbles: true }));
-                el.dispatchEvent(new Event('change', { bubbles: true }));
-                // تأثير بصري
-                el.style.transition = 'background 0.4s';
-                el.style.background = '#d1fae5';
-                setTimeout(function(e) { e.style.background = ''; }.bind(null, el), 1500);
-                count++;
-            }
-        });
-
-        window._closeOCRModal();
-
-        if (typeof showToast === 'function') {
-            showToast('✅ تم تعبئة ' + count + ' حقل تحليل تلقائياً', 'success');
-        }
-
-        // تشغيل حساب الحالة (مرتفع/منخفض/طبيعي) إن وجدت الدالة
-        if (typeof updateAllLabStatuses === 'function') updateAllLabStatuses();
-        if (typeof window._updateLabStatus === 'function') window._updateLabStatus();
-
-        // تحديث حقول المراجعة إذا كان المريض في وضع التحرير
-        if (typeof isDataDirty !== 'undefined') {
-            window.isDataDirty = true;
-        }
-    };
-
-})();
-// ====================== نهاية منطق OCR ======================
 </script>
 
 </html>
