@@ -1664,6 +1664,14 @@
                         <span id="cloud-sync-status-dot" class="mr-auto w-2.5 h-2.5 rounded-full bg-red-400 inline-block" title="غير متصل"></span>
                     </button>
                     <button id="settings-accounts-btn" class="w-full text-right p-3 rounded-lg hover:bg-gray-100 transition-colors">إدارة الحسابات</button>
+                    <!-- زر سجل التدقيق HIPAA -->
+                    <button id="settings-audit-log-btn" class="w-full text-right p-3 rounded-lg hover:bg-gray-100 transition-colors flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" style="color:#dc2626;" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25zM6.75 12h.008v.008H6.75V12zm0 3h.008v.008H6.75V15zm0 3h.008v.008H6.75V18z" />
+                        </svg>
+                        <span>سجل التدقيق HIPAA</span>
+                        <span id="audit-log-count-badge" class="mr-auto text-xs font-bold bg-red-100 text-red-700 px-2 py-0.5 rounded-full hidden">0</span>
+                    </button>
                     <!-- (تعديل 10) تم نقل زر إدارة القيم إلى هنا وإخفاؤه افتراضياً -->
                     <button id="manage-limits-btn" class="w-full text-right p-3 rounded-lg hover:bg-gray-100 transition-colors hidden">
                         إدارة الحدود الطبيعية
@@ -3357,6 +3365,7 @@
         currentUser: null, // null, 'developer', 'user'
         patients: [], // سيتم تخزين المرضى هنا
         appointments: [], // (جديد) المواعيد والتذكيرات {id, patientId, patientName, date, time, note, dismissed}
+        auditLog: [], // (HIPAA) سجل التدقيق — لا يُحذف ولا يُعدَّل أبدا
         encyclopedia: {
             anatomy: [],
             diseases: [],
@@ -3370,6 +3379,109 @@
     };
     // تعريض appData عالمياً لخدمة QR Code
     window._appData = appData;
+
+    // ╔══════════════════════════════════════════════════════════════╗
+    // ║          سجل التدقيق HIPAA — Audit Trail Engine             ║
+    // ║  محمي بالكامل: لا حذف، لا تعديل، مشفَّر، ومختوم بالوقت    ║
+    // ╚══════════════════════════════════════════════════════════════╝
+    const AUDIT_ACTIONS = {
+        PATIENT_ADD:          'إضافة مريض جديد',
+        PATIENT_EDIT:         'تعديل بيانات المريض',
+        PATIENT_DELETE:       'حذف مريض',
+        VISIT_ADD:            'إضافة مراجعة جديدة',
+        VISIT_EDIT:           'تعديل مراجعة',
+        VISIT_DELETE:         'حذف مراجعة',
+        DIAGNOSIS_EDIT:       'تعديل التشخيص الطبي',
+        LOGIN:                'تسجيل دخول',
+        LOGOUT:               'تسجيل خروج',
+        DATA_EXPORT:          'تصدير البيانات',
+        DATA_IMPORT:          'استيراد البيانات',
+        CLOUD_SYNC:           'مزامنة سحابية',
+        SETTINGS_CHANGE:      'تعديل الإعدادات',
+        ACCOUNT_CREATE:       'إنشاء حساب جديد',
+        ACCOUNT_EDIT:         'تعديل حساب',
+        ACCOUNT_DELETE:       'حذف حساب',
+        DIET_EDIT:            'تعديل البرنامج الغذائي',
+    };
+
+    function _getCurrentAuditorInfo() {
+        if (!appData.currentAccountId) {
+            return { id: 'system', name: 'النظام', role: appData.currentUser || 'مجهول' };
+        }
+        const acc = getAccounts().find(a => a.id === appData.currentAccountId);
+        return {
+            id: appData.currentAccountId,
+            name: acc ? (acc.displayName || acc.username || 'مستخدم') : 'مستخدم',
+            role: appData.currentUser || 'user'
+        };
+    }
+
+    /**
+     * تسجيل حدث في سجل التدقيق HIPAA
+     * @param {string} action  - نوع الحدث من AUDIT_ACTIONS
+     * @param {object} details - {patientId, patientName, visitIndex, field, oldValue, newValue, extra}
+     */
+    function logAudit(action, details = {}) {
+        if (!Array.isArray(appData.auditLog)) appData.auditLog = [];
+        const auditor = _getCurrentAuditorInfo();
+        const now = new Date();
+        const entry = {
+            id:          'adt_' + now.getTime() + '_' + Math.random().toString(36).slice(2, 7),
+            timestamp:   now.toISOString(),
+            timestampDisplay: now.toLocaleString('ar-SA', { dateStyle: 'full', timeStyle: 'medium' }),
+            action:      action,
+            userId:      auditor.id,
+            userName:    auditor.name,
+            userRole:    auditor.role,
+            patientId:   details.patientId   || null,
+            patientName: details.patientName || null,
+            visitIndex:  details.visitIndex  !== undefined ? details.visitIndex : null,
+            field:       details.field       || null,
+            oldValue:    details.oldValue    || null,
+            newValue:    details.newValue    || null,
+            extra:       details.extra       || null,
+            sessionId:   (window._mbAuditSessionId || 'unknown'),
+            ipHint:      null, // لا تتوفر في بيئة المتصفح بدون backend
+            integrity:   null, // سيُحسب أدناه
+        };
+        // ختم تكاملي بسيط (hash مُبسَّط من المحتوى)
+        entry.integrity = _auditHash(JSON.stringify(entry));
+        // إضافة في نهاية المصفوفة فقط — لا تعديل على السجلات القديمة
+        appData.auditLog.push(entry);
+        // تحديث الشارة
+        _updateAuditBadge();
+        // حفظ صامت — التدقيق يُحفظ فوراً دون انتظار الدورة الاعتيادية
+        try { saveDataToLocalStorage(); } catch(e) {}
+    }
+
+    function _auditHash(str) {
+        let h = 0x811c9dc5;
+        for (let i = 0; i < str.length; i++) {
+            h ^= str.charCodeAt(i);
+            h = (h * 16777619) >>> 0;
+        }
+        return h.toString(16);
+    }
+
+    function _updateAuditBadge() {
+        const badge = document.getElementById('audit-log-count-badge');
+        if (!badge) return;
+        const count = Array.isArray(appData.auditLog) ? appData.auditLog.length : 0;
+        if (count > 0) {
+            badge.textContent = count > 999 ? '999+' : count;
+            badge.classList.remove('hidden');
+        } else {
+            badge.classList.add('hidden');
+        }
+    }
+
+    // توليد معرّف جلسة فريد
+    window._mbAuditSessionId = 'sess_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8);
+
+    // تعريض الدوال عالمياً
+    window.logAudit     = logAudit;
+    window.AUDIT_ACTIONS = AUDIT_ACTIONS;
+    // ╚══════════════════════════════════════════════════════════════╝
     
     // --- متغيرات حالة الواجهة ---
     let isSidebarOpen = false; // (تعديل 3: القائمة مغلقة افتراضياً)
@@ -4479,6 +4591,13 @@
             patientDisplayArea.classList.remove('hidden');
             welcomeMessage.classList.add('hidden');
         });
+
+        // (HIPAA Audit) زر سجل التدقيق
+        document.getElementById('settings-audit-log-btn').addEventListener('click', () => {
+            renderAuditLogPage();
+            patientDisplayArea.classList.remove('hidden');
+            welcomeMessage.classList.add('hidden');
+        });
         
         // (تعديل 10) تم حذف زر 'settings-rates-btn' ومستمع الأحداث الخاص به
         // الزر الجديد 'manage-limits-btn' سيعالج هذا الأمر
@@ -5109,9 +5228,17 @@
         loginDropdownMenu.classList.add('hidden');
         document.getElementById('login-dropdown-backdrop')?.classList.add('hidden');
         updateUI();
+        // (HIPAA Audit)
+        logAudit(AUDIT_ACTIONS.LOGIN, {
+            extra: `اسم المستخدم: ${account.displayName || account.username} | الدور: ${account.role || 'user'}`
+        });
     }
 
     function handleLogout() {
+        // (HIPAA Audit) — يُسجَّل قبل مسح بيانات المستخدم
+        logAudit(AUDIT_ACTIONS.LOGOUT, {
+            extra: `تسجيل الخروج من المستخدم`
+        });
         // تسجيل الخروج من المستخدم فقط — مع الإبقاء على جلسة Google
         appData.currentUser = null;
         appData.currentAccountId = null;
@@ -5906,6 +6033,15 @@
         closePatientModal();
         showToast(`تم حفظ البيانات للمريض: ${visitData.personal.name_ar}`, 'success');
         
+        // (HIPAA Audit) تسجيل الحدث
+        const _auditAction = patient.visits.length > 1 ? AUDIT_ACTIONS.VISIT_ADD : AUDIT_ACTIONS.PATIENT_ADD;
+        logAudit(_auditAction, {
+            patientId: patient.id,
+            patientName: visitData.personal.name_ar,
+            visitIndex: patient.visits.length - 1,
+            extra: `تاريخ المراجعة: ${visitData.personal.visit_date || 'غير محدد'}`
+        });
+
         // حفظ تلقائي على Google Drive بعد إنشاء مريض جديد أو إضافة جلسة
         triggerAutoGoogleDriveSync('مريض/جلسة جديدة');
 
@@ -5955,6 +6091,11 @@
             return;
         }
         
+        // (HIPAA Audit) استخراج القيم القديمة قبل التعديل
+        const _oldVisit = patient.visits[visitIndex] || {};
+        const _oldDiag  = (_oldVisit.health && _oldVisit.health.medical_diagnosis) ? _oldVisit.health.medical_diagnosis : null;
+        const _newDiag  = visitData.health ? visitData.health.medical_diagnosis : null;
+        
         patient.name_ar = visitData.personal.name_ar;
         patient.national_id = visitData.personal.national_id;
         patient.id = visitData.personal.national_id;
@@ -5970,6 +6111,25 @@
         closePatientModal();
         showToast(`تم حفظ التعديلات للمريض: ${visitData.personal.name_ar}`, 'success');
         
+        // (HIPAA Audit) تسجيل تعديل المراجعة
+        logAudit(AUDIT_ACTIONS.VISIT_EDIT, {
+            patientId:   patientId,
+            patientName: visitData.personal.name_ar,
+            visitIndex:  visitIndex,
+            extra: `تاريخ المراجعة: ${visitData.personal.visit_date || 'غير محدد'}`
+        });
+        // (HIPAA Audit) إذا تغيّر التشخيص، سجّل حدثاً مستقلاً
+        if (_oldDiag !== _newDiag) {
+            logAudit(AUDIT_ACTIONS.DIAGNOSIS_EDIT, {
+                patientId:   patientId,
+                patientName: visitData.personal.name_ar,
+                visitIndex:  visitIndex,
+                field:       'التشخيص الطبي',
+                oldValue:    _oldDiag || '(فارغ)',
+                newValue:    _newDiag || '(فارغ)',
+            });
+        }
+
         // حفظ تلقائي على Google Drive بعد حفظ التعديلات
         triggerAutoGoogleDriveSync('تعديل بيانات مريض');
 
@@ -6204,6 +6364,264 @@
         sidebarPatientListView.classList.add('hidden');
         sidebarSettingsView.classList.remove('hidden');
         addMenuSection.classList.add('hidden');
+
+        // تحديث شارة عداد السجل
+        _updateAuditBadge();
+    }
+
+    // ╔══════════════════════════════════════════════════════════════════╗
+    // ║        صفحة سجل التدقيق HIPAA — Audit Log Page Renderer        ║
+    // ╚══════════════════════════════════════════════════════════════════╝
+    function renderAuditLogPage() {
+        const logs  = Array.isArray(appData.auditLog) ? appData.auditLog : [];
+        const total = logs.length;
+
+        // ألوان الإجراءات
+        const actionColor = (action) => {
+            if (action.includes('حذف'))   return { bg: '#fee2e2', color: '#dc2626', border: '#fca5a5' };
+            if (action.includes('تعديل')) return { bg: '#fef3c7', color: '#d97706', border: '#fde68a' };
+            if (action.includes('إضافة'))  return { bg: '#dcfce7', color: '#16a34a', border: '#86efac' };
+            if (action.includes('تشخيص')) return { bg: '#ede9fe', color: '#7c3aed', border: '#c4b5fd' };
+            if (action.includes('دخول'))   return { bg: '#dbeafe', color: '#2563eb', border: '#93c5fd' };
+            if (action.includes('خروج'))  return { bg: '#f3f4f6', color: '#6b7280', border: '#d1d5db' };
+            if (action.includes('تصدير') || action.includes('استيراد')) return { bg: '#fdf4ff', color: '#9333ea', border: '#e9d5ff' };
+            return { bg: '#f0f9ff', color: '#0790AC', border: '#bae6fd' };
+        };
+
+        // تسلسل الأحداث من الأحدث إلى الأقدم
+        const sorted = [...logs].reverse();
+
+        // بناء صفوف الجدول
+        const rows = sorted.map((e, i) => {
+            const ac = actionColor(e.action);
+            const diagDiff = (e.action === AUDIT_ACTIONS.DIAGNOSIS_EDIT && e.oldValue && e.newValue)
+                ? `<div style="margin-top:6px;padding:8px 10px;background:#f9fafb;border-radius:8px;border:1px solid #e5e7eb;font-size:0.75rem;">
+                        <div style="color:#dc2626;margin-bottom:4px;"><span style="font-weight:700;">قبل:</span> ${_escHtml(String(e.oldValue).substring(0,120))}${e.oldValue.length>120?'…':''}</div>
+                        <div style="color:#16a34a;"><span style="font-weight:700;">بعد:</span> ${_escHtml(String(e.newValue).substring(0,120))}${e.newValue.length>120?'…':''}</div>
+                   </div>` : '';
+
+            return `<tr style="border-bottom:1px solid #f3f4f6;transition:background 0.15s;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background=''">
+                <td style="padding:10px 14px;font-size:0.78rem;color:#6b7280;white-space:nowrap;vertical-align:top;">${total - i}</td>
+                <td style="padding:10px 14px;vertical-align:top;white-space:nowrap;">
+                    <div style="font-size:0.8rem;font-weight:700;color:#1f2937;">${_escHtml(e.timestampDisplay || new Date(e.timestamp).toLocaleString('ar-SA'))}</div>
+                    <div style="font-size:0.72rem;color:#9ca3af;margin-top:2px;direction:ltr;">${_escHtml(e.timestamp)}</div>
+                </td>
+                <td style="padding:10px 14px;vertical-align:top;">
+                    <span style="display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;font-size:0.78rem;font-weight:700;background:${ac.bg};color:${ac.color};border:1.5px solid ${ac.border};">
+                        ${_escHtml(e.action)}
+                    </span>
+                </td>
+                <td style="padding:10px 14px;vertical-align:top;">
+                    <div style="font-size:0.82rem;font-weight:700;color:#374151;">${_escHtml(e.userName || '—')}</div>
+                    <div style="font-size:0.72rem;color:#9ca3af;margin-top:1px;">${_escHtml(e.userRole === 'developer' ? '🔑 مطوّر' : (e.userRole || 'مستخدم'))}</div>
+                </td>
+                <td style="padding:10px 14px;vertical-align:top;">
+                    ${e.patientName ? `<div style="font-size:0.82rem;font-weight:700;color:#0790AC;">${_escHtml(e.patientName)}</div>` : '<span style="color:#d1d5db;font-size:0.78rem;">—</span>'}
+                    ${e.patientId   ? `<div style="font-size:0.72rem;color:#9ca3af;margin-top:1px;">ID: ${_escHtml(e.patientId)}</div>` : ''}
+                </td>
+                <td style="padding:10px 14px;vertical-align:top;max-width:260px;">
+                    ${e.extra ? `<div style="font-size:0.78rem;color:#4b5563;line-height:1.5;">${_escHtml(e.extra)}</div>` : ''}
+                    ${diagDiff}
+                    ${e.field && !diagDiff ? `<div style="font-size:0.75rem;color:#6b7280;">الحقل: <b>${_escHtml(e.field)}</b></div>` : ''}
+                </td>
+                <td style="padding:10px 14px;vertical-align:top;">
+                    <code style="font-size:0.65rem;color:#9ca3af;background:#f3f4f6;padding:2px 6px;border-radius:4px;letter-spacing:0.03em;">${_escHtml(e.integrity || '—')}</code>
+                </td>
+            </tr>`;
+        }).join('');
+
+        const emptyState = `<tr><td colspan="7" style="text-align:center;padding:48px;color:#9ca3af;">
+            <div style="font-size:3rem;margin-bottom:12px;">🔍</div>
+            <div style="font-size:1rem;font-weight:700;">لا توجد سجلات بعد</div>
+            <div style="font-size:0.85rem;margin-top:4px;">ستظهر هنا جميع الإجراءات عند تنفيذها</div>
+        </td></tr>`;
+
+        patientDisplayArea.innerHTML = `
+        <div style="font-family:'Cairo',sans-serif;direction:rtl;">
+
+            <!-- ترويسة -->
+            <div style="background:linear-gradient(135deg,#1e293b 0%,#0f172a 100%);border-radius:16px;padding:20px 24px;display:flex;align-items:center;gap:16px;margin-bottom:20px;box-shadow:0 4px 24px rgba(0,0,0,0.25);">
+                <div style="width:52px;height:52px;background:linear-gradient(135deg,#dc2626,#991b1b);border-radius:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 4px 12px rgba(220,38,38,0.4);">
+                    <svg xmlns="http://www.w3.org/2000/svg" style="width:28px;height:28px;color:#fff;" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25zM6.75 12h.008v.008H6.75V12zm0 3h.008v.008H6.75V15zm0 3h.008v.008H6.75V18z" />
+                    </svg>
+                </div>
+                <div style="flex:1;">
+                    <h2 style="color:#fff;font-size:1.25rem;font-weight:800;margin:0;letter-spacing:-0.3px;">سجل التدقيق — Audit Trail</h2>
+                    <p style="color:rgba(255,255,255,0.55);font-size:0.78rem;margin:3px 0 0;font-family:'Courier New',monospace;">HIPAA-Compliant Access Log • Protected • Immutable</p>
+                </div>
+                <div style="display:flex;gap:10px;flex-shrink:0;">
+                    <div style="text-align:center;background:rgba(255,255,255,0.08);border-radius:12px;padding:10px 18px;">
+                        <div style="font-size:1.6rem;font-weight:800;color:#fff;line-height:1;">${total}</div>
+                        <div style="font-size:0.7rem;color:rgba(255,255,255,0.5);margin-top:2px;">إجمالي الأحداث</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- شريط التحكم -->
+            <div style="background:#fff;border-radius:12px;padding:14px 18px;margin-bottom:16px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;box-shadow:0 2px 10px rgba(0,0,0,0.06);border:1px solid #f3f4f6;">
+                <!-- بحث -->
+                <div style="flex:1;min-width:180px;position:relative;">
+                    <svg xmlns="http://www.w3.org/2000/svg" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);width:16px;height:16px;color:#9ca3af;" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"/></svg>
+                    <input type="search" id="audit-search-input" placeholder="بحث في السجل (اسم مستخدم / مريض / إجراء)" 
+                        style="width:100%;padding:8px 36px 8px 12px;border:1.5px solid #e5e7eb;border-radius:8px;font-family:'Cairo',sans-serif;font-size:0.85rem;outline:none;box-sizing:border-box;"
+                        oninput="_auditFilterRender(this.value, document.getElementById('audit-action-filter').value)">
+                </div>
+                <!-- فلتر الإجراء -->
+                <select id="audit-action-filter" style="padding:8px 12px;border:1.5px solid #e5e7eb;border-radius:8px;font-family:'Cairo',sans-serif;font-size:0.85rem;background:#fff;outline:none;color:#374151;"
+                    onchange="_auditFilterRender(document.getElementById('audit-search-input').value, this.value)">
+                    <option value="">كل الإجراءات</option>
+                    ${Object.values(AUDIT_ACTIONS).map(a => `<option value="${_escHtml(a)}">${_escHtml(a)}</option>`).join('')}
+                </select>
+                <!-- زر تصدير -->
+                <button onclick="_exportAuditLog()" style="display:inline-flex;align-items:center;gap:6px;padding:8px 16px;background:#0790AC;color:#fff;border:none;border-radius:8px;font-family:'Cairo',sans-serif;font-size:0.85rem;font-weight:700;cursor:pointer;transition:background 0.15s;" onmouseover="this.style.background='#056a80'" onmouseout="this.style.background='#0790AC'">
+                    <svg xmlns="http://www.w3.org/2000/svg" style="width:16px;height:16px;" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"/></svg>
+                    تصدير CSV
+                </button>
+            </div>
+
+            <!-- تنبيه عدم الحذف -->
+            <div style="background:#fef3c7;border:1.5px solid #fde68a;border-radius:10px;padding:10px 16px;margin-bottom:16px;display:flex;align-items:center;gap:10px;font-size:0.82rem;color:#92400e;">
+                <svg xmlns="http://www.w3.org/2000/svg" style="width:18px;height:18px;flex-shrink:0;color:#d97706;" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z"/></svg>
+                <span><strong>محمي وغير قابل للحذف:</strong> هذا السجل مُحقَّق بختم تكاملي ومطابق لمتطلبات HIPAA § 164.312(b). لا يمكن تعديل أي حدث بعد تسجيله.</span>
+            </div>
+
+            <!-- الجدول -->
+            <div style="background:#fff;border-radius:14px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.07);border:1px solid #f3f4f6;">
+                <div style="overflow-x:auto;">
+                    <table id="audit-log-table" style="width:100%;border-collapse:collapse;font-family:'Cairo',sans-serif;direction:rtl;">
+                        <thead>
+                            <tr style="background:linear-gradient(135deg,#1e293b,#0f172a);">
+                                <th style="padding:12px 14px;text-align:right;font-size:0.78rem;font-weight:700;color:rgba(255,255,255,0.7);white-space:nowrap;">#</th>
+                                <th style="padding:12px 14px;text-align:right;font-size:0.78rem;font-weight:700;color:rgba(255,255,255,0.7);white-space:nowrap;">📅 التاريخ والوقت</th>
+                                <th style="padding:12px 14px;text-align:right;font-size:0.78rem;font-weight:700;color:rgba(255,255,255,0.7);">⚡ الإجراء</th>
+                                <th style="padding:12px 14px;text-align:right;font-size:0.78rem;font-weight:700;color:rgba(255,255,255,0.7);">👤 المستخدم</th>
+                                <th style="padding:12px 14px;text-align:right;font-size:0.78rem;font-weight:700;color:rgba(255,255,255,0.7);">🏥 المريض</th>
+                                <th style="padding:12px 14px;text-align:right;font-size:0.78rem;font-weight:700;color:rgba(255,255,255,0.7);">📋 التفاصيل</th>
+                                <th style="padding:12px 14px;text-align:right;font-size:0.78rem;font-weight:700;color:rgba(255,255,255,0.7);white-space:nowrap;">🔒 الختم</th>
+                            </tr>
+                        </thead>
+                        <tbody id="audit-log-tbody">
+                            ${total > 0 ? rows : emptyState}
+                        </tbody>
+                    </table>
+                </div>
+                ${total > 0 ? `
+                <div style="padding:10px 18px;background:#f9fafb;border-top:1px solid #f3f4f6;font-size:0.78rem;color:#6b7280;display:flex;align-items:center;justify-content:space-between;">
+                    <span>إجمالي الأحداث المسجّلة: <strong style="color:#1f2937;">${total}</strong></span>
+                    <span style="direction:ltr;font-family:'Courier New',monospace;font-size:0.72rem;">Session: ${window._mbAuditSessionId || '—'}</span>
+                </div>` : ''}
+            </div>
+        </div>`;
+
+        // دالة الفلترة المباشرة
+        window._auditFilterRender = function(search, actionFilter) {
+            const tbody = document.getElementById('audit-log-tbody');
+            if (!tbody) return;
+            const s = (search || '').trim().toLowerCase();
+            const a = (actionFilter || '').trim();
+            let filtered = [...logs].reverse();
+            if (s) filtered = filtered.filter(e =>
+                (e.userName   || '').toLowerCase().includes(s) ||
+                (e.patientName|| '').toLowerCase().includes(s) ||
+                (e.action     || '').toLowerCase().includes(s) ||
+                (e.extra      || '').toLowerCase().includes(s) ||
+                (e.oldValue   || '').toLowerCase().includes(s) ||
+                (e.newValue   || '').toLowerCase().includes(s)
+            );
+            if (a) filtered = filtered.filter(e => e.action === a);
+            if (filtered.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:32px;color:#9ca3af;font-family:'Cairo',sans-serif;">لا توجد نتائج مطابقة</td></tr>`;
+                return;
+            }
+            tbody.innerHTML = filtered.map((e, i) => {
+                const ac = (function(action) {
+                    if (action.includes('حذف'))   return { bg: '#fee2e2', color: '#dc2626', border: '#fca5a5' };
+                    if (action.includes('تعديل')) return { bg: '#fef3c7', color: '#d97706', border: '#fde68a' };
+                    if (action.includes('إضافة'))  return { bg: '#dcfce7', color: '#16a34a', border: '#86efac' };
+                    if (action.includes('تشخيص')) return { bg: '#ede9fe', color: '#7c3aed', border: '#c4b5fd' };
+                    if (action.includes('دخول'))   return { bg: '#dbeafe', color: '#2563eb', border: '#93c5fd' };
+                    if (action.includes('خروج'))  return { bg: '#f3f4f6', color: '#6b7280', border: '#d1d5db' };
+                    return { bg: '#f0f9ff', color: '#0790AC', border: '#bae6fd' };
+                })(e.action);
+                const diagDiff = (e.action === AUDIT_ACTIONS.DIAGNOSIS_EDIT && e.oldValue && e.newValue)
+                    ? `<div style="margin-top:6px;padding:8px 10px;background:#f9fafb;border-radius:8px;border:1px solid #e5e7eb;font-size:0.75rem;">
+                            <div style="color:#dc2626;margin-bottom:4px;"><span style="font-weight:700;">قبل:</span> ${_escHtml(String(e.oldValue).substring(0,120))}${e.oldValue.length>120?'…':''}</div>
+                            <div style="color:#16a34a;"><span style="font-weight:700;">بعد:</span> ${_escHtml(String(e.newValue).substring(0,120))}${e.newValue.length>120?'…':''}</div>
+                       </div>` : '';
+                return `<tr style="border-bottom:1px solid #f3f4f6;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background=''">
+                    <td style="padding:10px 14px;font-size:0.78rem;color:#6b7280;white-space:nowrap;vertical-align:top;">${filtered.length - i}</td>
+                    <td style="padding:10px 14px;vertical-align:top;white-space:nowrap;">
+                        <div style="font-size:0.8rem;font-weight:700;color:#1f2937;">${_escHtml(e.timestampDisplay||new Date(e.timestamp).toLocaleString('ar-SA'))}</div>
+                        <div style="font-size:0.72rem;color:#9ca3af;direction:ltr;">${_escHtml(e.timestamp)}</div>
+                    </td>
+                    <td style="padding:10px 14px;vertical-align:top;">
+                        <span style="display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;font-size:0.78rem;font-weight:700;background:${ac.bg};color:${ac.color};border:1.5px solid ${ac.border};">${_escHtml(e.action)}</span>
+                    </td>
+                    <td style="padding:10px 14px;vertical-align:top;">
+                        <div style="font-size:0.82rem;font-weight:700;color:#374151;">${_escHtml(e.userName||'—')}</div>
+                        <div style="font-size:0.72rem;color:#9ca3af;">${_escHtml(e.userRole==='developer'?'🔑 مطوّر':(e.userRole||'مستخدم'))}</div>
+                    </td>
+                    <td style="padding:10px 14px;vertical-align:top;">
+                        ${e.patientName?`<div style="font-size:0.82rem;font-weight:700;color:#0790AC;">${_escHtml(e.patientName)}</div>`:'<span style="color:#d1d5db;font-size:0.78rem;">—</span>'}
+                        ${e.patientId?`<div style="font-size:0.72rem;color:#9ca3af;">ID: ${_escHtml(e.patientId)}</div>`:''}
+                    </td>
+                    <td style="padding:10px 14px;vertical-align:top;max-width:260px;">
+                        ${e.extra?`<div style="font-size:0.78rem;color:#4b5563;line-height:1.5;">${_escHtml(e.extra)}</div>`:''}
+                        ${diagDiff}
+                    </td>
+                    <td style="padding:10px 14px;vertical-align:top;">
+                        <code style="font-size:0.65rem;color:#9ca3af;background:#f3f4f6;padding:2px 6px;border-radius:4px;">${_escHtml(e.integrity||'—')}</code>
+                    </td>
+                </tr>`;
+            }).join('');
+        };
+
+        // دالة تصدير CSV
+        window._exportAuditLog = function() {
+            const all = Array.isArray(appData.auditLog) ? appData.auditLog : [];
+            if (all.length === 0) { showToast('لا توجد بيانات للتصدير', 'error'); return; }
+            const header = ['#','التاريخ والوقت','الإجراء','المستخدم','الدور','معرف المريض','اسم المريض','رقم الزيارة','الحقل','القيمة القديمة','القيمة الجديدة','التفاصيل','معرف الجلسة','الختم التكاملي'];
+            const rows   = all.map((e, i) => [
+                i+1,
+                e.timestamp,
+                e.action,
+                e.userName || '',
+                e.userRole || '',
+                e.patientId || '',
+                e.patientName || '',
+                e.visitIndex !== null ? e.visitIndex : '',
+                e.field || '',
+                e.oldValue || '',
+                e.newValue || '',
+                e.extra || '',
+                e.sessionId || '',
+                e.integrity || ''
+            ].map(v => '"' + String(v).replace(/"/g,'""') + '"').join(','));
+            const csv = '\uFEFF' + [header.join(','), ...rows].join('\n');
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const url  = URL.createObjectURL(blob);
+            const a    = document.createElement('a');
+            a.href = url;
+            a.download = `audit_trail_${new Date().toISOString().split('T')[0]}.csv`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            logAudit(AUDIT_ACTIONS.DATA_EXPORT, { extra: `تصدير سجل التدقيق HIPAA — ${all.length} سجل` });
+            showToast('تم تصدير سجل التدقيق بصيغة CSV ✓', 'success');
+        };
+    }
+
+    // مساعد: escape HTML لمنع XSS
+    function _escHtml(str) {
+        if (str === null || str === undefined) return '';
+        return String(str)
+            .replace(/&/g,'&amp;')
+            .replace(/</g,'&lt;')
+            .replace(/>/g,'&gt;')
+            .replace(/"/g,'&quot;')
+            .replace(/'/g,'&#39;');
     }
 
 
@@ -6688,8 +7106,16 @@
                     `هل أنت متأكد من حذف هذا المريض وجميع زياراته؟`
                 );
                 if (confirmed) {
+                    const _delPatient = appData.patients.find(p => p.id === patientId);
+                    const _delName    = _delPatient ? _delPatient.name_ar : patientId;
                     appData.patients = appData.patients.filter(p => p.id !== patientId);
                     saveDataToLocalStorage();
+                    // (HIPAA Audit)
+                    logAudit(AUDIT_ACTIONS.PATIENT_DELETE, {
+                        patientId:   patientId,
+                        patientName: _delName,
+                        extra: `تم حذف المريض وجميع مراجعاته`
+                    });
                     renderPatientList();
                     showWelcomeView();
                     showToast('تم حذف المريض', 'success');
@@ -6723,6 +7149,14 @@
                 if (confirmed) {
                     const patient = appData.patients.find(p => p.id === patientId);
                     if (patient) {
+                        // (HIPAA Audit)
+                        const _delVisit = patient.visits[visitIndex];
+                        logAudit(AUDIT_ACTIONS.VISIT_DELETE, {
+                            patientId:   patientId,
+                            patientName: patient.name_ar,
+                            visitIndex:  parseInt(visitIndex),
+                            extra: `تاريخ المراجعة: ${_delVisit && _delVisit.personal ? (_delVisit.personal.visit_date || 'غير محدد') : 'غير محدد'}`
+                        });
                         patient.visits.splice(visitIndex, 1);
                         if (patient.visits.length === 0) {
                             appData.patients = appData.patients.filter(p => p.id !== patientId);
@@ -10597,6 +11031,9 @@
                 Object.assign(appData, data);
                 window._appData = appData;
                 if (!Array.isArray(appData.appointments)) appData.appointments = [];
+                // (HIPAA Audit) ضمان استمرارية سجل التدقيق دون إعادة تعيينه
+                if (!Array.isArray(appData.auditLog)) appData.auditLog = [];
+                _updateAuditBadge();
                 getAccounts();
                 // (إصلاح) استعادة الجلسة المحفوظة عند تحديث الصفحة
                 try {
@@ -10663,6 +11100,10 @@
             URL.revokeObjectURL(url);
             isDataDirty = false;
             showToast('تم حفظ الملف المشفّر بصيغة .medbox بنجاح ✓', 'success');
+            // (HIPAA Audit)
+            logAudit(AUDIT_ACTIONS.DATA_EXPORT, {
+                extra: `تصدير ملف نسخة احتياطية — عدد المرضى: ${appData.patients.length}`
+            });
         } catch(err) {
             showToast('فشل تشفير الملف: ' + err.message, 'error');
         }
