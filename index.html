@@ -941,144 +941,6 @@
             border-radius: 0.5rem; /* rounded-lg */
             padding: 0.5rem; /* p-2 */
         }
-
-        /* ===== نظام الصور المتعددة (Multi-Image System) ===== */
-        .diag-images-list {
-            display: flex;
-            flex-direction: column;
-            gap: 0.75rem;
-        }
-        .diag-image-slot {
-            border: 1.5px solid #e5e7eb;
-            border-radius: 10px;
-            background: #f9fafb;
-            padding: 0.75rem;
-            position: relative;
-        }
-        .diag-image-slot-header {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            margin-bottom: 0.5rem;
-            flex-wrap: wrap;
-        }
-        .diag-organ-select {
-            flex: 1;
-            min-width: 120px;
-            border: 1.5px solid #0790AC;
-            border-radius: 8px;
-            padding: 5px 10px;
-            font-family: 'Cairo', sans-serif;
-            font-size: 0.82rem;
-            font-weight: 600;
-            color: #056a80;
-            background: #e6f4f7;
-            cursor: pointer;
-            outline: none;
-        }
-        .diag-organ-select:focus {
-            border-color: #056a80;
-            box-shadow: 0 0 0 2px rgba(7,144,172,0.15);
-        }
-        .diag-slot-remove-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            padding: 4px 10px;
-            border-radius: 8px;
-            border: 1.5px solid #ef4444;
-            background: #fff;
-            color: #ef4444;
-            font-family: 'Cairo', sans-serif;
-            font-size: 0.78rem;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.15s;
-            flex-shrink: 0;
-        }
-        .diag-slot-remove-btn:hover {
-            background: #ef4444;
-            color: #fff;
-        }
-        .diag-slot-img-preview {
-            width: 100%;
-            max-height: 300px;
-            object-fit: contain;
-            border-radius: 6px;
-            border: 1.5px solid #e5e7eb;
-            background: #fff;
-            display: none;
-            margin-top: 0.5rem;
-        }
-        .diag-slot-img-preview.visible {
-            display: block;
-        }
-        .diag-slot-upload-label {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 6px 14px;
-            border-radius: 8px;
-            border: 1.5px dashed #0790AC;
-            background: #fff;
-            color: #0790AC;
-            font-family: 'Cairo', sans-serif;
-            font-size: 0.82rem;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.15s;
-        }
-        .diag-slot-upload-label:hover {
-            background: #e6f4f7;
-        }
-        .diag-slot-upload-input {
-            display: none;
-        }
-        .diag-add-image-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 7px 16px;
-            border-radius: 10px;
-            border: 2px solid #0790AC;
-            background: #fff;
-            color: #0790AC;
-            font-family: 'Cairo', sans-serif;
-            font-size: 0.85rem;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.18s;
-            margin-top: 0.5rem;
-        }
-        .diag-add-image-btn:hover {
-            background: #0790AC;
-            color: #fff;
-        }
-        .diag-slot-badge {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 22px;
-            height: 22px;
-            border-radius: 50%;
-            background: #0790AC;
-            color: #fff;
-            font-size: 0.72rem;
-            font-weight: 700;
-            flex-shrink: 0;
-        }
-        .diag-organ-tag {
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            padding: 2px 10px;
-            border-radius: 20px;
-            background: #e6f4f7;
-            color: #056a80;
-            font-size: 0.78rem;
-            font-weight: 700;
-            border: 1px solid #b3dde6;
-        }
         
         /* (جديد C.o) تصميم قسم Inbody */
         .inbody-section {
@@ -3239,13 +3101,12 @@
                             
                             <!-- X.Ray -->
                             <div class="diagnostic-item-container border-b pb-4">
-                                <h4 class="text-md font-semibold text-gray-700 mb-3">🩻 X.Ray</h4>
+                                <h4 class="text-md font-semibold text-gray-700 mb-2">X.Ray</h4>
                                 <div class="diagnostic-item">
-                                    <div>
-                                        <div id="diag-xray-images-list" class="diag-images-list"></div>
-                                        <button type="button" class="diag-add-image-btn" onclick="addDiagImageSlot('xray')">
-                                            ➕ إضافة صورة أشعة
-                                        </button>
+                                    <div class="image-upload-container">
+                                        <label for="diag-xray-input" class="lab-field-label">تحميل صورة الأشعة</label>
+                                        <input type="file" id="diag-xray-input" name="diag_xray_input" accept="image/*" class="image-upload-input" data-preview="diag-xray-preview" data-storage="diag_xray_img" data-orientation="horizontal">
+                                        <img id="diag-xray-preview" class="image-preview" alt="X.Ray Image">
                                     </div>
                                     <div>
                                         <label for="diag_xray_report" class="block text-sm font-medium text-gray-700 mb-1">تقرير X.Ray</label>
@@ -3254,15 +3115,14 @@
                                 </div>
                             </div>
                             
-                            <!-- Ultra Sound "Eco" -->
+                            <!-- Ultra Sound “Eco” -->
                             <div class="diagnostic-item-container border-b pb-4">
-                                <h4 class="text-md font-semibold text-gray-700 mb-3">🫀 Ultra Sound "Eco"</h4>
+                                <h4 class="text-md font-semibold text-gray-700 mb-2">Ultra Sound “Eco”</h4>
                                 <div class="diagnostic-item">
-                                    <div>
-                                        <div id="diag-us-images-list" class="diag-images-list"></div>
-                                        <button type="button" class="diag-add-image-btn" onclick="addDiagImageSlot('us')">
-                                            ➕ إضافة صورة إيكو
-                                        </button>
+                                    <div class="image-upload-container">
+                                        <label for="diag-us-input" class="lab-field-label">تحميل صورة الإيكو</label>
+                                        <input type="file" id="diag-us-input" name="diag_us_input" accept="image/*" class="image-upload-input" data-preview="diag-us-preview" data-storage="diag_us_img" data-orientation="horizontal">
+                                        <img id="diag-us-preview" class="image-preview" alt="Ultra Sound Image">
                                     </div>
                                     <div>
                                         <label for="diag_us_report" class="block text-sm font-medium text-gray-700 mb-1">تقرير Ultra Sound</label>
@@ -3273,13 +3133,12 @@
                             
                             <!-- CT -->
                             <div class="diagnostic-item-container border-b pb-4">
-                                <h4 class="text-md font-semibold text-gray-700 mb-3">🔬 CT</h4>
+                                <h4 class="text-md font-semibold text-gray-700 mb-2">CT</h4>
                                 <div class="diagnostic-item">
-                                    <div>
-                                        <div id="diag-ct-images-list" class="diag-images-list"></div>
-                                        <button type="button" class="diag-add-image-btn" onclick="addDiagImageSlot('ct')">
-                                            ➕ إضافة صورة CT
-                                        </button>
+                                    <div class="image-upload-container">
+                                        <label for="diag-ct-input" class="lab-field-label">تحميل صورة CT</label>
+                                        <input type="file" id="diag-ct-input" name="diag_ct_input" accept="image/*" class="image-upload-input" data-preview="diag-ct-preview" data-storage="diag_ct_img" data-orientation="horizontal">
+                                        <img id="diag-ct-preview" class="image-preview" alt="CT Image">
                                     </div>
                                     <div>
                                         <label for="diag_ct_report" class="block text-sm font-medium text-gray-700 mb-1">تقرير CT</label>
@@ -3290,13 +3149,12 @@
                             
                             <!-- MRI -->
                             <div class="diagnostic-item-container border-b pb-4">
-                                <h4 class="text-md font-semibold text-gray-700 mb-3">🧲 MRI</h4>
+                                <h4 class="text-md font-semibold text-gray-700 mb-2">MRI</h4>
                                 <div class="diagnostic-item">
-                                    <div>
-                                        <div id="diag-mri-images-list" class="diag-images-list"></div>
-                                        <button type="button" class="diag-add-image-btn" onclick="addDiagImageSlot('mri')">
-                                            ➕ إضافة صورة MRI
-                                        </button>
+                                    <div class="image-upload-container">
+                                        <label for="diag-mri-input" class="lab-field-label">تحميل صورة MRI</label>
+                                        <input type="file" id="diag-mri-input" name="diag_mri_input" accept="image/*" class="image-upload-input" data-preview="diag-mri-preview" data-storage="diag_mri_img" data-orientation="horizontal">
+                                        <img id="diag-mri-preview" class="image-preview" alt="MRI Image">
                                     </div>
                                     <div>
                                         <label for="diag_mri_report" class="block text-sm font-medium text-gray-700 mb-1">تقرير MRI</label>
@@ -3307,16 +3165,15 @@
 
                             <!-- ECG - تخطيط القلب الكهربائي -->
                             <div class="diagnostic-item-container">
-                                <h4 class="text-md font-semibold text-gray-700 mb-3" style="display:flex;align-items:center;gap:8px;">
+                                <h4 class="text-md font-semibold text-gray-700 mb-2" style="display:flex;align-items:center;gap:8px;">
                                     <span style="display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#0790AC,#056a80);color:#fff;font-size:0.78rem;font-weight:700;flex-shrink:0;">ECG</span>
                                     تخطيط القلب الكهربائي
                                 </h4>
                                 <div class="diagnostic-item">
-                                    <div>
-                                        <div id="diag-ecg-images-list" class="diag-images-list"></div>
-                                        <button type="button" class="diag-add-image-btn" onclick="addDiagImageSlot('ecg')">
-                                            ➕ إضافة صورة تخطيط القلب
-                                        </button>
+                                    <div class="image-upload-container">
+                                        <label for="diag-ecg-input" class="lab-field-label">تحميل صورة تخطيط القلب</label>
+                                        <input type="file" id="diag-ecg-input" name="diag_ecg_input" accept="image/*" class="image-upload-input" data-preview="diag-ecg-preview" data-storage="diag_ecg_img" data-orientation="horizontal">
+                                        <img id="diag-ecg-preview" class="image-preview" alt="ECG Image">
                                     </div>
                                     <div>
                                         <label for="diag_ecg_report" class="block text-sm font-medium text-gray-700 mb-1">تقرير تخطيط القلب (ECG)</label>
@@ -6219,18 +6076,14 @@
             }
         });
         
-        // (جديد B.d) تحميل الإجراءات التشخيصية - نظام الصور المتعددة
+        // (جديد B.d) تحميل الإجراءات التشخيصية
         const diags = visit.diagnostics || {};
         ['xray', 'us', 'ct', 'mri', 'ecg'].forEach(type => {
-            // تحميل الصور المتعددة (النظام الجديد: مصفوفة images)
-            const imagesArr = diags[`diag_${type}_images`];
-            if (imagesArr && Array.isArray(imagesArr) && imagesArr.length > 0) {
-                tempDiagImages[type] = imagesArr.map(item => ({ ...item }));
-                renderDiagImageSlots(type);
-            } else if (diags[`diag_${type}_img`]) {
-                // توافق مع البيانات القديمة (صورة واحدة)
-                tempDiagImages[type] = [{ img: diags[`diag_${type}_img`], organ: '' }];
-                renderDiagImageSlots(type);
+            if (diags[`diag_${type}_img`]) {
+                const preview = document.getElementById(`diag-${type}-preview`);
+                preview.src = diags[`diag_${type}_img`];
+                preview.classList.add('visible', 'image-preview-horizontal');
+                tempPatientData[`diag_${type}_img`] = diags[`diag_${type}_img`];
             }
             if (diags[`diag_${type}_report`]) {
                 document.getElementById(`diag_${type}_report`).value = diags[`diag_${type}_report`];
@@ -6438,19 +6291,16 @@
         var urineNotes = document.getElementById('lab_urine_notes');
         if (urineNotes && urineNotes.value) labs['urine_notes'] = urineNotes.value;
         
-        // (جديد B.d) تجميع بيانات الإجراءات التشخيصية - نظام الصور المتعددة
+        // (جديد B.d) تجميع بيانات الإجراءات التشخيصية
         const diagnostics = {};
         ['xray', 'us', 'ct', 'mri', 'ecg'].forEach(type => {
+            const imgKey = `diag_${type}_img`;
             const reportKey = `diag_${type}_report`;
-            // حفظ مصفوفة الصور مع العضو
-            if (tempDiagImages[type] && tempDiagImages[type].length > 0) {
-                diagnostics[`diag_${type}_images`] = tempDiagImages[type].map(item => ({ ...item }));
-                // للتوافق مع العرض القديم: حفظ أول صورة في المفتاح القديم
-                diagnostics[`diag_${type}_img`] = tempDiagImages[type][0].img || null;
+            if (data[imgKey]) { // (data) هي tempPatientData
+                diagnostics[imgKey] = data[imgKey];
             }
-            const reportEl = document.getElementById(`diag_${type}_report`);
-            if (reportEl && reportEl.value) {
-                diagnostics[reportKey] = reportEl.value;
+            if (data[reportKey]) {
+                diagnostics[reportKey] = data[reportKey];
             }
         });
         
@@ -6889,8 +6739,6 @@
         document.querySelectorAll('.image-upload-input').forEach(input => {
             input.value = null;
         });
-        // مسح نظام الصور المتعددة للتشخيص
-        if (typeof resetDiagImages === 'function') resetDiagImages();
     }
 
     // --- دوال إدارة المرضى ---
@@ -9393,66 +9241,50 @@
             return html;
         };
         
-        // (جديد B.d) دالة لعرض الإجراءات التشخيصية - نظام الصور المتعددة
+        // (جديد B.d) دالة لعرض الإجراءات التشخيصية
         const renderDiagnostics = () => {
             let html = '';
             const diagItems = [
-                { key: 'xray', label: '🩻 X.Ray' },
-                { key: 'us', label: '🫀 Ultra Sound "Eco"' },
-                { key: 'ct', label: '🔬 CT' },
-                { key: 'mri', label: '🧲 MRI' },
-                { key: 'ecg', label: '💓 تخطيط القلب الكهربائي (ECG)' }
+                { key: 'xray', label: 'X.Ray' },
+                { key: 'us', label: 'Ultra Sound “Eco”' },
+                { key: 'ct', label: 'CT' },
+                { key: 'mri', label: 'MRI' },
+                { key: 'ecg', label: 'تخطيط القلب الكهربائي (ECG)' }
             ];
             
             diagItems.forEach(item => {
-                const imagesArr = d['diag_' + item.key + '_images'];
-                const legacyImg = d['diag_' + item.key + '_img'];
-                const report = d['diag_' + item.key + '_report'];
-                
-                let images = [];
-                if (imagesArr && Array.isArray(imagesArr) && imagesArr.length > 0) {
-                    images = imagesArr;
-                } else if (legacyImg) {
-                    images = [{ img: legacyImg, organ: '' }];
-                }
-                
-                if (images.length > 0 || report) {
-                    let imagesHtml = '';
-                    if (images.length > 0) {
-                        imagesHtml = '<div style="display:flex;flex-direction:column;gap:0.75rem;">';
-                        images.forEach(function(imgItem, idx) {
-                            if (imgItem.img) {
-                                imagesHtml += '<div style="border:1.5px solid #e5e7eb;border-radius:10px;background:#f9fafb;padding:0.75rem;">';
-                                if (imgItem.organ) {
-                                    imagesHtml += '<div style="margin-bottom:0.5rem;"><span class="diag-organ-tag">🏥 ' + imgItem.organ + '</span></div>';
-                                }
-                                imagesHtml += '<img src="' + imgItem.img + '" style="width:100%;max-height:350px;object-fit:contain;border-radius:6px;border:1.5px solid #e5e7eb;background:#fff;" alt="' + item.label + ' Image ' + (idx+1) + '">';
-                                imagesHtml += '</div>';
-                            }
-                        });
-                        imagesHtml += '</div>';
-                    } else {
-                        imagesHtml = '<div></div>';
-                    }
-                    
-                    html += '<div class="diagnostic-item-container border-b pb-4 mb-4">';
-                    html += '<h4 class="text-md font-semibold text-gray-700 mb-2">' + item.label + '</h4>';
-                    html += '<div class="diagnostic-item">';
-                    html += imagesHtml;
-                    if (report) {
-                        html += '<div><label class="block text-sm font-medium text-gray-700 mb-1">التقرير</label>';
-                        html += '<p class="diagnostic-report-textarea bg-gray-50 p-2 border rounded">' + report.replace(/\n/g, '<br>') + '</p></div>';
-                    } else {
-                        html += '<div></div>';
-                    }
-                    html += '</div></div>';
+                const img = d[`diag_${item.key}_img`];
+                const report = d[`diag_${item.key}_report`];
+                if (img || report) {
+                    html += `
+                        <div class="diagnostic-item-container border-b pb-4 mb-4">
+                            <h4 class="text-md font-semibold text-gray-700 mb-2">${item.label}</h4>
+                            <div class="diagnostic-item">
+                                ${img ? `
+                                <div class="image-upload-container">
+                                    <img src="${img}" class="image-preview visible image-preview-horizontal" alt="${item.label} Image">
+                                </div>
+                                ` : '<div></div>'}
+                                ${report ? `
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">التقرير</label>
+                                    <p class="diagnostic-report-textarea bg-gray-50 p-2 border rounded">${report.replace(/\n/g, '<br>')}</p>
+                                </div>
+                                ` : '<div></div>'}
+                            </div>
+                        </div>
+                    `;
                 }
             });
             
             if(html === '') return '';
-            return '<div class="lab-section"><h3 class="lab-section-title">📷 D. الإجراءات التشخيصية</h3>' + html + '</div>';
+            return `<div class="lab-section">
+                        <h3 class="lab-section-title">📷 D. الإجراءات التشخيصية</h3>
+                        ${html}
+                    </div>`;
         };
         
+      
         // (جديد C.o) دالة لعرض بيانات Inbody
         const renderInbody = () => {
             if (Object.keys(i).length === 0) return '';
@@ -11794,191 +11626,6 @@
         reader.readAsArrayBuffer(file);
         event.target.value = null;
     }
-
-    // ================================================================
-    // ====== نظام الصور المتعددة للإجراءات التشخيصية (Multi-Image System) ======
-    // ================================================================
-
-    // مصفوفة مؤقتة لتخزين صور كل نوع تصوير
-    // { xray: [{img: 'base64...', organ: 'قلب'}, ...], us: [...], ... }
-    var tempDiagImages = { xray: [], us: [], ct: [], mri: [], ecg: [] };
-
-    // خيارات الأعضاء لكل نوع تصوير
-    var diagOrganOptions = {
-        xray: [
-            { value: '', label: '— حدد العضو —' },
-            { value: 'صدر', label: '🫁 صدر (Chest)' },
-            { value: 'بطن', label: '🫃 بطن (Abdomen)' },
-            { value: 'حوض', label: '🦴 حوض (Pelvis)' },
-            { value: 'عمود فقري', label: '🦴 عمود فقري (Spine)' },
-            { value: 'يد', label: '✋ يد (Hand)' },
-            { value: 'قدم', label: '🦶 قدم (Foot)' },
-            { value: 'ركبة', label: '🦵 ركبة (Knee)' },
-            { value: 'جمجمة', label: '💀 جمجمة (Skull)' },
-            { value: 'أخرى', label: '📌 أخرى' },
-        ],
-        us: [
-            { value: '', label: '— حدد العضو —' },
-            { value: 'قلب', label: '🫀 قلب (Heart Echo)' },
-            { value: 'بطن كامل', label: '🫃 بطن كامل (Abdomen)' },
-            { value: 'كبد', label: '🔵 كبد (Liver)' },
-            { value: 'كلى', label: '🟤 كلى (Kidneys)' },
-            { value: 'مثانة', label: '💧 مثانة (Bladder)' },
-            { value: 'بروستاتا', label: '🔵 بروستاتا (Prostate)' },
-            { value: 'حوض', label: '🩺 حوض (Pelvis)' },
-            { value: 'غدة درقية', label: '🔴 غدة درقية (Thyroid)' },
-            { value: 'أوعية دموية', label: '🩸 دوبلر أوعية (Doppler)' },
-            { value: 'ثدي', label: '🔵 ثدي (Breast)' },
-            { value: 'عين', label: '👁 عين (Eye)' },
-            { value: 'أخرى', label: '📌 أخرى' },
-        ],
-        ct: [
-            { value: '', label: '— حدد العضو —' },
-            { value: 'دماغ', label: '🧠 دماغ (Brain)' },
-            { value: 'صدر', label: '🫁 صدر (Chest)' },
-            { value: 'بطن وحوض', label: '🫃 بطن وحوض (Abdomen & Pelvis)' },
-            { value: 'عمود فقري', label: '🦴 عمود فقري (Spine)' },
-            { value: 'وجه وجيوب', label: '😷 وجه وجيوب أنفية (Sinuses)' },
-            { value: 'أخرى', label: '📌 أخرى' },
-        ],
-        mri: [
-            { value: '', label: '— حدد العضو —' },
-            { value: 'دماغ', label: '🧠 دماغ (Brain)' },
-            { value: 'عمود فقري عنقي', label: '🦴 عمود فقري عنقي (Cervical Spine)' },
-            { value: 'عمود فقري صدري', label: '🦴 عمود فقري صدري (Thoracic Spine)' },
-            { value: 'عمود فقري قطني', label: '🦴 عمود فقري قطني (Lumbar Spine)' },
-            { value: 'ركبة', label: '🦵 ركبة (Knee)' },
-            { value: 'كتف', label: '💪 كتف (Shoulder)' },
-            { value: 'كبد', label: '🔵 كبد (Liver)' },
-            { value: 'حوض', label: '🩺 حوض (Pelvis)' },
-            { value: 'قلب', label: '🫀 قلب (Cardiac MRI)' },
-            { value: 'أخرى', label: '📌 أخرى' },
-        ],
-        ecg: [
-            { value: '', label: '— حدد العضو —' },
-            { value: 'راحة', label: '💓 في الراحة (Resting ECG)' },
-            { value: 'جهد', label: '🏃 تحت الجهد (Stress ECG)' },
-            { value: 'هولتر 24h', label: '⏱ هولتر 24 ساعة (Holter)' },
-            { value: 'أخرى', label: '📌 أخرى' },
-        ],
-    };
-
-    // بناء خيارات العضو كـ HTML
-    function buildOrganOptions(type, selectedValue) {
-        var opts = diagOrganOptions[type] || [{ value: '', label: '— حدد العضو —' }];
-        return opts.map(function(o) {
-            var sel = (o.value === selectedValue) ? ' selected' : '';
-            return '<option value="' + o.value + '"' + sel + '>' + o.label + '</option>';
-        }).join('');
-    }
-
-    // إنشاء slot صورة جديدة لنوع تصوير محدد
-    function addDiagImageSlot(type, existingData) {
-        var list = document.getElementById('diag-' + type + '-images-list');
-        if (!list) return;
-
-        var slotIndex = tempDiagImages[type].length;
-        var slotId = 'diag-slot-' + type + '-' + Date.now();
-
-        // إضافة مدخل جديد لمصفوفة التخزين المؤقت
-        var initData = existingData || { img: null, organ: '' };
-        tempDiagImages[type].push(initData);
-        var dataIndex = tempDiagImages[type].length - 1;
-
-        var slot = document.createElement('div');
-        slot.className = 'diag-image-slot';
-        slot.dataset.slotId = slotId;
-        slot.dataset.type = type;
-        slot.dataset.index = dataIndex;
-
-        slot.innerHTML =
-            '<div class="diag-image-slot-header">' +
-                '<span class="diag-slot-badge">' + (dataIndex + 1) + '</span>' +
-                '<select class="diag-organ-select" onchange="updateDiagOrgan('' + type + '',' + dataIndex + ',this.value)" title="نوع العضو">' +
-                    buildOrganOptions(type, initData.organ || '') +
-                '</select>' +
-                '<label class="diag-slot-upload-label" title="تحميل صورة">' +
-                    '📎 تحميل صورة' +
-                    '<input type="file" class="diag-slot-upload-input" accept="image/*" onchange="handleDiagSlotUpload(event,'' + type + '',' + dataIndex + ','' + slotId + '')">' +
-                '</label>' +
-                '<button type="button" class="diag-slot-remove-btn" onclick="removeDiagImageSlot('' + type + '',' + dataIndex + ','' + slotId + '')">✕ حذف</button>' +
-            '</div>' +
-            '<img id="diag-img-' + slotId + '" class="diag-slot-img-preview' + (initData.img ? ' visible' : '') + '" ' +
-                'src="' + (initData.img || '') + '" alt="صورة تشخيصية">';
-
-        list.appendChild(slot);
-        isDataDirty = true;
-    }
-
-    // تحديث بيانات العضو عند تغيير الـ select
-    function updateDiagOrgan(type, index, value) {
-        if (tempDiagImages[type] && tempDiagImages[type][index] !== undefined) {
-            tempDiagImages[type][index].organ = value;
-            isDataDirty = true;
-        }
-    }
-
-    // معالجة رفع الصورة لـ slot محدد
-    function handleDiagSlotUpload(event, type, index, slotId) {
-        var file = event.target.files[0];
-        if (!file) return;
-        var reader = new FileReader();
-        reader.onload = function(e) {
-            var base64 = e.target.result;
-            if (tempDiagImages[type] && tempDiagImages[type][index] !== undefined) {
-                tempDiagImages[type][index].img = base64;
-            }
-            var imgEl = document.getElementById('diag-img-' + slotId);
-            if (imgEl) {
-                imgEl.src = base64;
-                imgEl.classList.add('visible');
-            }
-            isDataDirty = true;
-        };
-        reader.readAsDataURL(file);
-    }
-
-    // حذف slot صورة
-    function removeDiagImageSlot(type, index, slotId) {
-        if (tempDiagImages[type]) {
-            tempDiagImages[type].splice(index, 1);
-        }
-        var slot = document.querySelector('[data-slot-id="' + slotId + '"]');
-        if (slot) slot.remove();
-        // إعادة رسم القائمة لتحديث الأرقام
-        renderDiagImageSlots(type);
-        isDataDirty = true;
-    }
-
-    // إعادة رسم كل slots لنوع تصوير
-    function renderDiagImageSlots(type) {
-        var list = document.getElementById('diag-' + type + '-images-list');
-        if (!list) return;
-        list.innerHTML = '';
-        var images = tempDiagImages[type] || [];
-        images.forEach(function(item, i) {
-            addDiagImageSlot(type, item);
-        });
-        // إصلاح: إعادة بناء المصفوفة من الصور الموجودة
-        tempDiagImages[type] = images;
-    }
-
-    // مسح كل الصور التشخيصية (عند إعادة تعيين الفورم)
-    function resetDiagImages() {
-        ['xray', 'us', 'ct', 'mri', 'ecg'].forEach(function(type) {
-            tempDiagImages[type] = [];
-            var list = document.getElementById('diag-' + type + '-images-list');
-            if (list) list.innerHTML = '';
-        });
-    }
-
-    // تعريض الدوال للاستخدام العالمي
-    window.addDiagImageSlot = addDiagImageSlot;
-    window.updateDiagOrgan = updateDiagOrgan;
-    window.handleDiagSlotUpload = handleDiagSlotUpload;
-    window.removeDiagImageSlot = removeDiagImageSlot;
-    window.renderDiagImageSlots = renderDiagImageSlots;
-    window.resetDiagImages = resetDiagImages;
 
     // --- (جديد A.a) دالة معالجة تحميل الصور ---
     function handleImageUpload(event, previewId, storageKey, orientation) {
