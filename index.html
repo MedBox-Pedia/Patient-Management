@@ -708,50 +708,67 @@
 
         /* بطاقة WBC الموسعة */
         .lab-wbc-card {
-            background: #fff;
-            border: 1px solid #e0f2fe;
-            border-radius: 8px;
-            padding: 8px 10px;
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            border: 2px solid #bae6fd;
+            border-radius: 12px;
+            padding: 14px 16px;
             grid-column: 1 / -1;
+            box-shadow: 0 2px 8px rgba(3,105,161,0.10);
         }
         .lab-wbc-main {
             display: flex;
             align-items: center;
-            gap: 8px;
-            margin-bottom: 6px;
+            gap: 12px;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
         }
         .lab-wbc-label {
-            font-size: 0.8rem;
-            font-weight: 700;
-            color: #0790AC;
+            font-size: 0.92rem;
+            font-weight: 800;
+            color: #0369a1;
             white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
         .lab-wbc-sub {
             display: flex;
             flex-wrap: wrap;
-            gap: 6px;
-            margin-top: 4px;
+            gap: 8px;
+            margin-top: 6px;
         }
         .lab-wbc-sub-item {
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 2px;
-            background: #f0f9ff;
-            border: 1px solid #bae6fd;
-            border-radius: 6px;
-            padding: 4px 6px;
-            min-width: 64px;
+            gap: 4px;
+            background: #fff;
+            border: 1.5px solid #7dd3fc;
+            border-radius: 10px;
+            padding: 8px 10px;
+            min-width: 80px;
+            flex: 1;
+            box-shadow: 0 1px 4px rgba(3,105,161,0.08);
+            transition: border-color 0.15s, box-shadow 0.15s;
+        }
+        .lab-wbc-sub-item:hover {
+            border-color: #0790AC;
+            box-shadow: 0 2px 8px rgba(7,144,172,0.15);
         }
         .lab-wbc-sub-item label {
-            font-size: 0.65rem;
-            font-weight: 700;
+            font-size: 0.72rem;
+            font-weight: 800;
             color: #0369a1;
             white-space: nowrap;
+            text-align: center;
         }
         .lab-wbc-sub-item input {
-            width: 56px !important;
+            width: 72px !important;
             flex: none !important;
+            font-size: 0.85rem !important;
+            height: 32px !important;
+            text-align: center;
+            border-color: #bae6fd;
         }
 
         /* بطاقة RBC الموسعة */
@@ -2488,7 +2505,7 @@
                                 <p class="text-xs text-gray-500">تحاليل مخبرية · أشعة · إيكو · طبقي محوري · رنين مغناطيسي · تخطيط القلب</p>
                             </div>
                         </div>
-                        <button type="button" onclick="window._openOcrModal()" title="رفع صورة تحليل أو تقرير طبي" class="bg-[#0790AC] text-white p-2.5 rounded-lg hover:bg-[#056a80] transition duration-200 flex items-center justify-center shadow">
+                        <button type="button" onclick="if(typeof window._openOcrModal==='function'){window._openOcrModal();}else{setTimeout(function(){if(typeof window._openOcrModal==='function')window._openOcrModal();},400);}" title="رفع صورة تحليل أو تقرير طبي" class="bg-[#0790AC] text-white p-2.5 rounded-lg hover:bg-[#056a80] transition duration-200 flex items-center justify-center shadow">
                             <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
                             </svg>
@@ -2968,6 +2985,75 @@
                         <input type="hidden" id="lab_urine_analysis" name="lab_urine_analysis">
                     </div>
                     
+                    <!-- E. التحاليل الفيروسية -->
+                    <div class="lab-section" style="border-color:#fca5a5;background:linear-gradient(135deg,#fff5f5 0%,#fef2f2 100%);">
+                        <h3 class="lab-section-title" style="color:#991b1b;border-bottom-color:#fca5a5;">
+                            <span style="display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#dc2626,#991b1b);color:#fff;font-size:0.8rem;font-weight:700;flex-shrink:0;">🦠</span>
+                            E. التحاليل الفيروسية (Viral Serology)
+                        </h3>
+                        <div class="lab-grid">
+                            <div class="lab-field-card" style="border-color:#fca5a5;background:#fff5f5;">
+                                <label class="lab-field-label" style="color:#dc2626;">HBsAg — التهاب الكبد B (سطحي)</label>
+                                <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-top:4px;">
+                                    <select id="lab_hbsag" name="lab_hbsag" class="lab-input" style="flex:1;min-width:110px;">
+                                        <option value="">—</option>
+                                        <option value="سالب">سالب (Negative)</option>
+                                        <option value="موجب">موجب (Positive)</option>
+                                    </select>
+                                    <input type="text" id="lab_hbsag_value" name="lab_hbsag_value" class="lab-input" placeholder="القيمة (IU/mL)" style="max-width:130px;">
+                                </div>
+                            </div>
+                            <div class="lab-field-card" style="border-color:#fca5a5;background:#fff5f5;">
+                                <label class="lab-field-label" style="color:#dc2626;">Anti-HBs — مناعة الكبد B</label>
+                                <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-top:4px;">
+                                    <select id="lab_antihbs" name="lab_antihbs" class="lab-input" style="flex:1;min-width:110px;">
+                                        <option value="">—</option>
+                                        <option value="سالب">سالب (Negative)</option>
+                                        <option value="موجب">موجب (Positive)</option>
+                                    </select>
+                                    <input type="text" id="lab_antihbs_value" name="lab_antihbs_value" class="lab-input" placeholder="القيمة (mIU/mL)" style="max-width:130px;">
+                                </div>
+                            </div>
+                            <div class="lab-field-card" style="border-color:#fca5a5;background:#fff5f5;">
+                                <label class="lab-field-label" style="color:#dc2626;">Anti-HCV — التهاب الكبد C</label>
+                                <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-top:4px;">
+                                    <select id="lab_hcv" name="lab_hcv" class="lab-input" style="flex:1;min-width:110px;">
+                                        <option value="">—</option>
+                                        <option value="سالب">سالب (Negative)</option>
+                                        <option value="موجب">موجب (Positive)</option>
+                                    </select>
+                                    <input type="text" id="lab_hcv_value" name="lab_hcv_value" class="lab-input" placeholder="القيمة (S/CO)" style="max-width:130px;">
+                                </div>
+                            </div>
+                            <div class="lab-field-card" style="border-color:#fca5a5;background:#fff5f5;">
+                                <label class="lab-field-label" style="color:#dc2626;">HIV Ab — نقص المناعة المكتسب</label>
+                                <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-top:4px;">
+                                    <select id="lab_hiv" name="lab_hiv" class="lab-input" style="flex:1;min-width:110px;">
+                                        <option value="">—</option>
+                                        <option value="سالب">سالب (Negative)</option>
+                                        <option value="موجب">موجب (Positive)</option>
+                                    </select>
+                                    <input type="text" id="lab_hiv_value" name="lab_hiv_value" class="lab-input" placeholder="القيمة العددية" style="max-width:130px;">
+                                </div>
+                            </div>
+                            <div class="lab-field-card" style="border-color:#fca5a5;background:#fff5f5;">
+                                <label class="lab-field-label" style="color:#dc2626;">VDRL / RPR — الزهري (Syphilis)</label>
+                                <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-top:4px;">
+                                    <select id="lab_vdrl" name="lab_vdrl" class="lab-input" style="flex:1;min-width:110px;">
+                                        <option value="">—</option>
+                                        <option value="سالب">سالب (Negative)</option>
+                                        <option value="موجب">موجب (Positive)</option>
+                                    </select>
+                                    <input type="text" id="lab_vdrl_value" name="lab_vdrl_value" class="lab-input" placeholder="العيار (Titer)" style="max-width:130px;">
+                                </div>
+                            </div>
+                            <div class="lab-field-card" style="grid-column:1/-1;border-color:#fca5a5;background:#fff5f5;">
+                                <label class="lab-field-label" style="color:#dc2626;">ملاحظات إضافية على التحاليل الفيروسية</label>
+                                <textarea id="lab_viral_notes" name="lab_viral_notes" rows="2" class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-2" placeholder="أي ملاحظات إضافية..."></textarea>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- (جديد B.d) D. الإجراءات التشخيصية -->
                     <div class="lab-section">
                         <h3 class="lab-section-title">📷 D. الإجراءات التشخيصية</h3>
@@ -3116,83 +3202,9 @@
                                 </div>
                             </div>
 
-                            <!-- E. التحاليل الفيروسية -->
-                            <div class="diagnostic-item-container">
-                                <h4 class="text-md font-semibold mb-3" style="display:flex;align-items:center;gap:8px;color:#991b1b;">
-                                    <span style="display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#dc2626,#991b1b);color:#fff;font-size:0.8rem;font-weight:700;flex-shrink:0;">🦠</span>
-                                    E. التحاليل الفيروسية (Viral Serology)
-                                </h4>
-                                <div class="lab-grid">
-                                    <!-- التهاب الكبد B -->
-                                    <div class="lab-field-card" style="border-color:#fca5a5;background:#fff5f5;">
-                                        <label class="lab-field-label" style="color:#dc2626;">HBsAg — التهاب الكبد B (سطحي)</label>
-                                        <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-top:4px;">
-                                            <select id="lab_hbsag" name="lab_hbsag" class="lab-input" style="flex:1;min-width:110px;">
-                                                <option value="">—</option>
-                                                <option value="سالب">سالب (Negative)</option>
-                                                <option value="موجب">موجب (Positive)</option>
-                                            </select>
-                                            <input type="text" id="lab_hbsag_value" name="lab_hbsag_value" class="lab-input" placeholder="القيمة (IU/mL)" style="max-width:130px;">
-                                        </div>
-                                    </div>
-                                    <!-- Anti-HBs -->
-                                    <div class="lab-field-card" style="border-color:#fca5a5;background:#fff5f5;">
-                                        <label class="lab-field-label" style="color:#dc2626;">Anti-HBs — مناعة الكبد B</label>
-                                        <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-top:4px;">
-                                            <select id="lab_antihbs" name="lab_antihbs" class="lab-input" style="flex:1;min-width:110px;">
-                                                <option value="">—</option>
-                                                <option value="سالب">سالب (Negative)</option>
-                                                <option value="موجب">موجب (Positive)</option>
-                                            </select>
-                                            <input type="text" id="lab_antihbs_value" name="lab_antihbs_value" class="lab-input" placeholder="القيمة (mIU/mL)" style="max-width:130px;">
-                                        </div>
-                                    </div>
-                                    <!-- التهاب الكبد C -->
-                                    <div class="lab-field-card" style="border-color:#fca5a5;background:#fff5f5;">
-                                        <label class="lab-field-label" style="color:#dc2626;">Anti-HCV — التهاب الكبد C</label>
-                                        <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-top:4px;">
-                                            <select id="lab_hcv" name="lab_hcv" class="lab-input" style="flex:1;min-width:110px;">
-                                                <option value="">—</option>
-                                                <option value="سالب">سالب (Negative)</option>
-                                                <option value="موجب">موجب (Positive)</option>
-                                            </select>
-                                            <input type="text" id="lab_hcv_value" name="lab_hcv_value" class="lab-input" placeholder="القيمة (S/CO)" style="max-width:130px;">
-                                        </div>
-                                    </div>
-                                    <!-- HIV -->
-                                    <div class="lab-field-card" style="border-color:#fca5a5;background:#fff5f5;">
-                                        <label class="lab-field-label" style="color:#dc2626;">HIV Ab — نقص المناعة المكتسب</label>
-                                        <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-top:4px;">
-                                            <select id="lab_hiv" name="lab_hiv" class="lab-input" style="flex:1;min-width:110px;">
-                                                <option value="">—</option>
-                                                <option value="سالب">سالب (Negative)</option>
-                                                <option value="موجب">موجب (Positive)</option>
-                                            </select>
-                                            <input type="text" id="lab_hiv_value" name="lab_hiv_value" class="lab-input" placeholder="القيمة العددية" style="max-width:130px;">
-                                        </div>
-                                    </div>
-                                    <!-- VDRL -->
-                                    <div class="lab-field-card" style="border-color:#fca5a5;background:#fff5f5;">
-                                        <label class="lab-field-label" style="color:#dc2626;">VDRL / RPR — الزهري (Syphilis)</label>
-                                        <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-top:4px;">
-                                            <select id="lab_vdrl" name="lab_vdrl" class="lab-input" style="flex:1;min-width:110px;">
-                                                <option value="">—</option>
-                                                <option value="سالب">سالب (Negative)</option>
-                                                <option value="موجب">موجب (Positive)</option>
-                                            </select>
-                                            <input type="text" id="lab_vdrl_value" name="lab_vdrl_value" class="lab-input" placeholder="العيار (Titer)" style="max-width:130px;">
-                                        </div>
-                                    </div>
-                                    <!-- ملاحظات -->
-                                    <div class="lab-field-card" style="grid-column:1/-1;border-color:#fca5a5;background:#fff5f5;">
-                                        <label class="lab-field-label" style="color:#dc2626;">ملاحظات إضافية على التحاليل الفيروسية</label>
-                                        <textarea id="lab_viral_notes" name="lab_viral_notes" rows="2" class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-2" placeholder="أي ملاحظات إضافية..."></textarea>
-                                    </div>
-                                </div>
-                            </div>
-
                         </div>
                     </div>
+
                 </div>
 
                 <!-- القائمة 5: الحالة التغذوية -->
