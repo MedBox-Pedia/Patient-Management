@@ -1216,6 +1216,213 @@
             border-color: #0790AC;
         }
 
+        /* ===== معرض الصور المتعددة للإجراءات التشخيصية ===== */
+        .diag-multi-gallery {
+            margin-top: 8px;
+        }
+        .diag-multi-gallery-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+        .diag-multi-gallery-label {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: #374151;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .diag-add-img-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 5px 12px;
+            border-radius: 8px;
+            border: 1.5px dashed #0790AC;
+            background: #f0fafc;
+            color: #0790AC;
+            font-family: 'Cairo', sans-serif;
+            font-size: 0.72rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.18s;
+            position: relative;
+            overflow: hidden;
+        }
+        .diag-add-img-btn:hover {
+            background: #0790AC;
+            color: #fff;
+            border-style: solid;
+        }
+        .diag-add-img-btn input[type="file"] {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            cursor: pointer;
+            width: 100%;
+            height: 100%;
+        }
+        .diag-gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+            gap: 8px;
+        }
+        .diag-gallery-item {
+            position: relative;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 2px solid #c8e8f0;
+            background: #f0fafc;
+            aspect-ratio: 1;
+            cursor: pointer;
+            transition: border-color 0.18s, box-shadow 0.18s;
+        }
+        .diag-gallery-item:hover {
+            border-color: #0790AC;
+            box-shadow: 0 2px 10px rgba(7,144,172,0.22);
+        }
+        .diag-gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+        .diag-gallery-item-label {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(7,60,80,0.72));
+            color: #fff;
+            font-size: 0.58rem;
+            font-weight: 600;
+            padding: 3px 4px 4px;
+            text-align: center;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .diag-gallery-item-remove {
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: rgba(239,68,68,0.88);
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.65rem;
+            opacity: 0;
+            transition: opacity 0.15s;
+            z-index: 5;
+        }
+        .diag-gallery-item:hover .diag-gallery-item-remove {
+            opacity: 1;
+        }
+        .diag-gallery-item-num {
+            position: absolute;
+            top: 3px;
+            right: 3px;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: rgba(7,144,172,0.82);
+            color: #fff;
+            font-size: 0.6rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        /* نافذة تكبير صورة من المعرض */
+        #diag-img-lightbox {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 99999;
+            background: rgba(0,0,0,0.88);
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 12px;
+            animation: fadeInModal 0.2s ease;
+        }
+        #diag-img-lightbox.active { display: flex; }
+        #diag-img-lightbox img {
+            max-width: 94vw;
+            max-height: 82vh;
+            object-fit: contain;
+            border-radius: 10px;
+            border: 2px solid rgba(255,255,255,0.15);
+        }
+        #diag-lightbox-info {
+            color: rgba(255,255,255,0.8);
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-align: center;
+        }
+        #diag-lightbox-nav {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+        .diag-lb-nav-btn {
+            padding: 7px 18px;
+            border-radius: 8px;
+            border: 1.5px solid rgba(255,255,255,0.3);
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+            font-family: 'Cairo', sans-serif;
+            font-size: 0.82rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .diag-lb-nav-btn:hover { background: rgba(255,255,255,0.22); }
+        .diag-lb-nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+        #diag-lightbox-close {
+            position: absolute;
+            top: 16px;
+            left: 16px;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: rgba(239,68,68,0.8);
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.15s;
+        }
+        #diag-lightbox-close:hover { background: #dc2626; }
+        .diag-gallery-empty {
+            text-align: center;
+            color: #9ca3af;
+            font-size: 0.72rem;
+            padding: 8px;
+        }
+        .diag-img-count-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+            padding: 2px 7px;
+            border-radius: 20px;
+            background: #e0f2fe;
+            color: #0369a1;
+            font-size: 0.68rem;
+            font-weight: 700;
+        }
+
         /* إجراء القديم - متوافق */
         .diagnostic-item {
             display: grid;
@@ -3462,13 +3669,29 @@
                                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
                                         </div>
                                         <div class="upload-label-text">تحميل صورة الأشعة</div>
-                                        <div class="upload-hint">PNG · JPG · DICOM — حتى 10MB</div>
-                                        <input type="file" id="diag-xray-input" name="diag_xray_input" accept="image/*" class="image-upload-input" data-preview="diag-xray-preview" data-storage="diag_xray_img" data-orientation="horizontal" onchange="updateDiagStatus('xray')">
+                                        <div class="upload-hint">PNG · JPG · DICOM — حتى 10MB لكل صورة</div>
+                                        <input type="file" id="diag-xray-input" name="diag_xray_input" accept="image/*" multiple class="image-upload-input" data-preview="diag-xray-preview" data-storage="diag_xray_img" data-orientation="horizontal" onchange="diagAddImages('xray', this.files); updateDiagStatus('xray')">
                                     </div>
-                                    <div class="diag-img-preview-wrap" style="margin-top:8px;">
-                                        <img id="diag-xray-preview" class="image-preview" alt="X.Ray Image">
-                                        <button class="diag-img-remove-btn" onclick="removeDiagImage('xray')" title="حذف الصورة" type="button">✕</button>
+                                    <!-- معرض الصور المتعددة - X.Ray -->
+                                    <div class="diag-multi-gallery" id="diag-gallery-xray">
+                                        <div class="diag-multi-gallery-header">
+                                            <span class="diag-multi-gallery-label">
+                                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                                                الصور المرفقة
+                                                <span class="diag-img-count-badge" id="diag-count-xray">0 صورة</span>
+                                            </span>
+                                            <label class="diag-add-img-btn" title="إضافة صور إضافية لأعضاء مختلفة">
+                                                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                                                إضافة صور
+                                                <input type="file" accept="image/*" multiple onchange="diagAddImages('xray', this.files)">
+                                            </label>
+                                        </div>
+                                        <div class="diag-gallery-grid" id="diag-gallery-grid-xray">
+                                            <div class="diag-gallery-empty" id="diag-gallery-empty-xray">لم يتم رفع أي صورة بعد</div>
+                                        </div>
                                     </div>
+                                    <!-- حفظ صورة أولى للتوافق مع الكود القديم -->
+                                    <img id="diag-xray-preview" class="image-preview" alt="X.Ray Image" style="display:none;">
                                 </div>
                                 <!-- منطقة التقرير -->
                                 <div class="diag-report-section">
@@ -3536,13 +3759,28 @@
                                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
                                         </div>
                                         <div class="upload-label-text">تحميل صورة الإيكو</div>
-                                        <div class="upload-hint">PNG · JPG — حتى 10MB</div>
-                                        <input type="file" id="diag-us-input" name="diag_us_input" accept="image/*" class="image-upload-input" data-preview="diag-us-preview" data-storage="diag_us_img" data-orientation="horizontal" onchange="updateDiagStatus('echo')">
+                                        <div class="upload-hint">PNG · JPG — حتى 10MB لكل صورة</div>
+                                        <input type="file" id="diag-us-input" name="diag_us_input" accept="image/*" multiple class="image-upload-input" data-preview="diag-us-preview" data-storage="diag_us_img" data-orientation="horizontal" onchange="diagAddImages('echo', this.files); updateDiagStatus('echo')">
                                     </div>
-                                    <div class="diag-img-preview-wrap" style="margin-top:8px;">
-                                        <img id="diag-us-preview" class="image-preview" alt="Ultra Sound Image">
-                                        <button class="diag-img-remove-btn" onclick="removeDiagImage('echo')" title="حذف الصورة" type="button">✕</button>
+                                    <!-- معرض الصور المتعددة - Echo -->
+                                    <div class="diag-multi-gallery" id="diag-gallery-echo">
+                                        <div class="diag-multi-gallery-header">
+                                            <span class="diag-multi-gallery-label">
+                                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                                                الصور المرفقة
+                                                <span class="diag-img-count-badge" id="diag-count-echo">0 صورة</span>
+                                            </span>
+                                            <label class="diag-add-img-btn" title="إضافة صور إضافية لأعضاء مختلفة">
+                                                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                                                إضافة صور
+                                                <input type="file" accept="image/*" multiple onchange="diagAddImages('echo', this.files)">
+                                            </label>
+                                        </div>
+                                        <div class="diag-gallery-grid" id="diag-gallery-grid-echo">
+                                            <div class="diag-gallery-empty" id="diag-gallery-empty-echo">لم يتم رفع أي صورة بعد</div>
+                                        </div>
                                     </div>
+                                    <img id="diag-us-preview" class="image-preview" alt="Ultra Sound Image" style="display:none;">
                                 </div>
                                 <div class="diag-report-section">
                                     <div class="diag-report-label">
@@ -3609,13 +3847,28 @@
                                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
                                         </div>
                                         <div class="upload-label-text">تحميل صورة CT</div>
-                                        <div class="upload-hint">PNG · JPG — حتى 10MB</div>
-                                        <input type="file" id="diag-ct-input" name="diag_ct_input" accept="image/*" class="image-upload-input" data-preview="diag-ct-preview" data-storage="diag_ct_img" data-orientation="horizontal" onchange="updateDiagStatus('ct')">
+                                        <div class="upload-hint">PNG · JPG — حتى 10MB لكل صورة</div>
+                                        <input type="file" id="diag-ct-input" name="diag_ct_input" accept="image/*" multiple class="image-upload-input" data-preview="diag-ct-preview" data-storage="diag_ct_img" data-orientation="horizontal" onchange="diagAddImages('ct', this.files); updateDiagStatus('ct')">
                                     </div>
-                                    <div class="diag-img-preview-wrap" style="margin-top:8px;">
-                                        <img id="diag-ct-preview" class="image-preview" alt="CT Image">
-                                        <button class="diag-img-remove-btn" onclick="removeDiagImage('ct')" title="حذف الصورة" type="button">✕</button>
+                                    <!-- معرض الصور المتعددة - CT -->
+                                    <div class="diag-multi-gallery" id="diag-gallery-ct">
+                                        <div class="diag-multi-gallery-header">
+                                            <span class="diag-multi-gallery-label">
+                                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                                                الصور المرفقة
+                                                <span class="diag-img-count-badge" id="diag-count-ct">0 صورة</span>
+                                            </span>
+                                            <label class="diag-add-img-btn" title="إضافة صور إضافية لأعضاء مختلفة">
+                                                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                                                إضافة صور
+                                                <input type="file" accept="image/*" multiple onchange="diagAddImages('ct', this.files)">
+                                            </label>
+                                        </div>
+                                        <div class="diag-gallery-grid" id="diag-gallery-grid-ct">
+                                            <div class="diag-gallery-empty" id="diag-gallery-empty-ct">لم يتم رفع أي صورة بعد</div>
+                                        </div>
                                     </div>
+                                    <img id="diag-ct-preview" class="image-preview" alt="CT Image" style="display:none;">
                                 </div>
                                 <div class="diag-report-section">
                                     <div class="diag-report-label">
@@ -3682,13 +3935,28 @@
                                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
                                         </div>
                                         <div class="upload-label-text">تحميل صورة MRI</div>
-                                        <div class="upload-hint">PNG · JPG — حتى 10MB</div>
-                                        <input type="file" id="diag-mri-input" name="diag_mri_input" accept="image/*" class="image-upload-input" data-preview="diag-mri-preview" data-storage="diag_mri_img" data-orientation="horizontal" onchange="updateDiagStatus('mri')">
+                                        <div class="upload-hint">PNG · JPG — حتى 10MB لكل صورة</div>
+                                        <input type="file" id="diag-mri-input" name="diag_mri_input" accept="image/*" multiple class="image-upload-input" data-preview="diag-mri-preview" data-storage="diag_mri_img" data-orientation="horizontal" onchange="diagAddImages('mri', this.files); updateDiagStatus('mri')">
                                     </div>
-                                    <div class="diag-img-preview-wrap" style="margin-top:8px;">
-                                        <img id="diag-mri-preview" class="image-preview" alt="MRI Image">
-                                        <button class="diag-img-remove-btn" onclick="removeDiagImage('mri')" title="حذف الصورة" type="button">✕</button>
+                                    <!-- معرض الصور المتعددة - MRI -->
+                                    <div class="diag-multi-gallery" id="diag-gallery-mri">
+                                        <div class="diag-multi-gallery-header">
+                                            <span class="diag-multi-gallery-label">
+                                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                                                الصور المرفقة
+                                                <span class="diag-img-count-badge" id="diag-count-mri">0 صورة</span>
+                                            </span>
+                                            <label class="diag-add-img-btn" title="إضافة صور إضافية لأعضاء مختلفة">
+                                                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                                                إضافة صور
+                                                <input type="file" accept="image/*" multiple onchange="diagAddImages('mri', this.files)">
+                                            </label>
+                                        </div>
+                                        <div class="diag-gallery-grid" id="diag-gallery-grid-mri">
+                                            <div class="diag-gallery-empty" id="diag-gallery-empty-mri">لم يتم رفع أي صورة بعد</div>
+                                        </div>
                                     </div>
+                                    <img id="diag-mri-preview" class="image-preview" alt="MRI Image" style="display:none;">
                                 </div>
                                 <div class="diag-report-section">
                                     <div class="diag-report-label">
@@ -3755,13 +4023,28 @@
                                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
                                         </div>
                                         <div class="upload-label-text">تحميل صورة تخطيط القلب</div>
-                                        <div class="upload-hint">PNG · JPG — حتى 10MB</div>
-                                        <input type="file" id="diag-ecg-input" name="diag_ecg_input" accept="image/*" class="image-upload-input" data-preview="diag-ecg-preview" data-storage="diag_ecg_img" data-orientation="horizontal" onchange="updateDiagStatus('ecg')">
+                                        <div class="upload-hint">PNG · JPG — حتى 10MB لكل صورة</div>
+                                        <input type="file" id="diag-ecg-input" name="diag_ecg_input" accept="image/*" multiple class="image-upload-input" data-preview="diag-ecg-preview" data-storage="diag_ecg_img" data-orientation="horizontal" onchange="diagAddImages('ecg', this.files); updateDiagStatus('ecg')">
                                     </div>
-                                    <div class="diag-img-preview-wrap" style="margin-top:8px;">
-                                        <img id="diag-ecg-preview" class="image-preview" alt="ECG Image">
-                                        <button class="diag-img-remove-btn" onclick="removeDiagImage('ecg')" title="حذف الصورة" type="button">✕</button>
+                                    <!-- معرض الصور المتعددة - ECG -->
+                                    <div class="diag-multi-gallery" id="diag-gallery-ecg">
+                                        <div class="diag-multi-gallery-header">
+                                            <span class="diag-multi-gallery-label">
+                                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                                                الصور المرفقة
+                                                <span class="diag-img-count-badge" id="diag-count-ecg">0 صورة</span>
+                                            </span>
+                                            <label class="diag-add-img-btn" title="إضافة صور إضافية">
+                                                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                                                إضافة صور
+                                                <input type="file" accept="image/*" multiple onchange="diagAddImages('ecg', this.files)">
+                                            </label>
+                                        </div>
+                                        <div class="diag-gallery-grid" id="diag-gallery-grid-ecg">
+                                            <div class="diag-gallery-empty" id="diag-gallery-empty-ecg">لم يتم رفع أي صورة بعد</div>
+                                        </div>
                                     </div>
+                                    <img id="diag-ecg-preview" class="image-preview" alt="ECG Image" style="display:none;">
                                 </div>
                                 <div class="diag-report-section">
                                     <div class="diag-report-label">
@@ -3795,8 +4078,225 @@
                     </div>
 
                     <!-- ===== سكريبت إدارة بطاقات الإجراءات التشخيصية ===== -->
+                    <!-- ===== Lightbox لعرض الصور بالحجم الكامل ===== -->
+                    <div id="diag-img-lightbox">
+                        <button id="diag-lightbox-close" onclick="closeDiagLightbox()" title="إغلاق">✕</button>
+                        <img id="diag-lightbox-img" src="" alt="صورة تشخيصية">
+                        <div id="diag-lightbox-info"></div>
+                        <div id="diag-lightbox-nav">
+                            <button class="diag-lb-nav-btn" id="diag-lb-prev" onclick="diagLightboxNav(-1)">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+                                التالي
+                            </button>
+                            <button class="diag-lb-nav-btn" id="diag-lb-next" onclick="diagLightboxNav(1)">
+                                السابق
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+                            </button>
+                        </div>
+                    </div>
+
                     <script>
                     (function() {
+                        // ===== بيانات الصور المتعددة =====
+                        var diagImages = {
+                            xray: [],
+                            echo: [],
+                            ct:   [],
+                            mri:  [],
+                            ecg:  []
+                        };
+                        var _lbKey = '';
+                        var _lbIdx = 0;
+
+                        // قاموس الأسماء
+                        var diagLabels = {
+                            xray: 'أشعة سينية',
+                            echo: 'إيكو / موجات فوق صوتية',
+                            ct:   'طبقي محوري CT',
+                            mri:  'رنين مغناطيسي MRI',
+                            ecg:  'تخطيط القلب ECG'
+                        };
+
+                        // ===== إضافة صور جديدة =====
+                        window.diagAddImages = function(key, files) {
+                            if (!files || !files.length) return;
+                            var arr = diagImages[key];
+                            Array.from(files).forEach(function(file) {
+                                if (!file.type.startsWith('image/')) return;
+                                var reader = new FileReader();
+                                reader.onload = function(e) {
+                                    var obj = {
+                                        src:  e.target.result,
+                                        name: file.name,
+                                        organ: (document.getElementById('diag-organ-' + key) || {}).value || ''
+                                    };
+                                    arr.push(obj);
+                                    // مزامنة الصورة الأولى مع حقل المعاينة القديم للتوافق
+                                    if (arr.length === 1) {
+                                        var prevEl = document.getElementById(diagMap[key].imgId);
+                                        if (prevEl) {
+                                            prevEl.src = obj.src;
+                                            prevEl.classList.add('visible');
+                                        }
+                                    }
+                                    renderGallery(key);
+                                    updateDiagStatus(key);
+                                };
+                                reader.readAsDataURL(file);
+                            });
+                        };
+
+                        // ===== رسم شبكة المعرض =====
+                        function renderGallery(key) {
+                            var grid   = document.getElementById('diag-gallery-grid-' + key);
+                            var empty  = document.getElementById('diag-gallery-empty-' + key);
+                            var badge  = document.getElementById('diag-count-' + key);
+                            var arr    = diagImages[key];
+                            if (!grid) return;
+
+                            // تحديث العداد
+                            if (badge) {
+                                badge.textContent = arr.length + (arr.length === 1 ? ' صورة' : ' صور');
+                                badge.style.background = arr.length > 0 ? '#dcfce7' : '#e0f2fe';
+                                badge.style.color = arr.length > 0 ? '#16a34a' : '#0369a1';
+                            }
+
+                            // إزالة البطاقات القديمة (احتفظ بـ empty فقط)
+                            Array.from(grid.children).forEach(function(c) {
+                                if (c.id !== 'diag-gallery-empty-' + key) grid.removeChild(c);
+                            });
+
+                            if (arr.length === 0) {
+                                if (empty) empty.style.display = 'block';
+                                return;
+                            }
+                            if (empty) empty.style.display = 'none';
+
+                            arr.forEach(function(imgObj, idx) {
+                                var item = document.createElement('div');
+                                item.className = 'diag-gallery-item';
+                                item.title = imgObj.name;
+
+                                var imgEl = document.createElement('img');
+                                imgEl.src = imgObj.src;
+                                imgEl.alt = 'صورة ' + (idx + 1);
+
+                                var numBadge = document.createElement('span');
+                                numBadge.className = 'diag-gallery-item-num';
+                                numBadge.textContent = idx + 1;
+
+                                var lbl = document.createElement('span');
+                                lbl.className = 'diag-gallery-item-label';
+                                lbl.textContent = imgObj.organ ? getOrganLabel(imgObj.organ) : imgObj.name.replace(/\.[^/.]+$/, '');
+
+                                var rmBtn = document.createElement('button');
+                                rmBtn.className = 'diag-gallery-item-remove';
+                                rmBtn.innerHTML = '✕';
+                                rmBtn.title = 'حذف هذه الصورة';
+                                rmBtn.type = 'button';
+                                rmBtn.setAttribute('data-key', key);
+                                rmBtn.setAttribute('data-idx', idx);
+                                rmBtn.onclick = function(e) {
+                                    e.stopPropagation();
+                                    var k = this.getAttribute('data-key');
+                                    var i = parseInt(this.getAttribute('data-idx'));
+                                    removeDiagImageAt(k, i);
+                                };
+
+                                item.appendChild(imgEl);
+                                item.appendChild(numBadge);
+                                item.appendChild(lbl);
+                                item.appendChild(rmBtn);
+
+                                // فتح الـ Lightbox عند الضغط على الصورة
+                                item.addEventListener('click', function() {
+                                    openDiagLightbox(key, idx);
+                                });
+
+                                grid.appendChild(item);
+                            });
+                        }
+
+                        // ===== حذف صورة محددة =====
+                        window.removeDiagImageAt = function(key, idx) {
+                            diagImages[key].splice(idx, 1);
+                            // تحديث الصورة الأولى في الحقل القديم
+                            var prevEl = document.getElementById(diagMap[key].imgId);
+                            if (prevEl) {
+                                if (diagImages[key].length > 0) {
+                                    prevEl.src = diagImages[key][0].src;
+                                    prevEl.classList.add('visible');
+                                } else {
+                                    prevEl.src = '';
+                                    prevEl.classList.remove('visible', 'image-preview-horizontal', 'image-preview-vertical');
+                                }
+                            }
+                            renderGallery(key);
+                            updateDiagStatus(key);
+                        };
+
+                        // ===== Lightbox: فتح =====
+                        window.openDiagLightbox = function(key, idx) {
+                            var arr = diagImages[key];
+                            if (!arr || !arr[idx]) return;
+                            _lbKey = key;
+                            _lbIdx = idx;
+                            var lb = document.getElementById('diag-img-lightbox');
+                            var img = document.getElementById('diag-lightbox-img');
+                            var info = document.getElementById('diag-lightbox-info');
+                            if (!lb || !img) return;
+                            img.src = arr[idx].src;
+                            if (info) info.textContent = diagLabels[key] + ' — صورة ' + (idx+1) + ' من ' + arr.length + (arr[idx].organ ? ' · ' + getOrganLabel(arr[idx].organ) : '');
+                            lb.classList.add('active');
+                            updateLbNav(key, idx);
+                        };
+                        // ===== Lightbox: إغلاق =====
+                        window.closeDiagLightbox = function() {
+                            var lb = document.getElementById('diag-img-lightbox');
+                            if (lb) lb.classList.remove('active');
+                        };
+                        // ===== Lightbox: تنقل =====
+                        window.diagLightboxNav = function(dir) {
+                            var arr = diagImages[_lbKey];
+                            if (!arr) return;
+                            _lbIdx = Math.max(0, Math.min(arr.length - 1, _lbIdx + dir));
+                            openDiagLightbox(_lbKey, _lbIdx);
+                        };
+                        function updateLbNav(key, idx) {
+                            var arr = diagImages[key];
+                            var prev = document.getElementById('diag-lb-prev');
+                            var next = document.getElementById('diag-lb-next');
+                            if (prev) prev.disabled = (idx >= arr.length - 1);
+                            if (next) next.disabled = (idx <= 0);
+                        }
+                        // إغلاق بالنقر على الخلفية
+                        document.addEventListener('click', function(e) {
+                            var lb = document.getElementById('diag-img-lightbox');
+                            if (lb && lb.classList.contains('active') && e.target === lb) {
+                                closeDiagLightbox();
+                            }
+                        });
+                        // إغلاق بـ Escape
+                        document.addEventListener('keydown', function(e) {
+                            if (e.key === 'Escape') closeDiagLightbox();
+                            if (e.key === 'ArrowLeft')  diagLightboxNav(-1);
+                            if (e.key === 'ArrowRight') diagLightboxNav(1);
+                        });
+
+                        // ===== تحويل قيمة العضو إلى اسم قصير للعرض =====
+                        function getOrganLabel(val) {
+                            var map = {
+                                chest:'صدر', lungs:'رئتان', heart:'قلب', brain:'دماغ',
+                                abdomen:'بطن', pelvis:'حوض', spine_lumbar:'قطني',
+                                spine_cervical:'عنقي', knee:'ركبة', shoulder:'كتف',
+                                liver_ct:'كبد', kidneys_ct:'كليتان', brain_mri:'دماغ MRI',
+                                spine_lumbar_mri:'قطني MRI', knee_mri:'ركبة MRI',
+                                heart_echo:'قلب (إيكو)', ecg_12lead:'12-Lead',
+                                ecg_holter:'هولتر'
+                            };
+                            return map[val] || val;
+                        }
+
                         // طي / توسيع البطاقة
                         window.toggleDiagCard = function(cardId) {
                             var card = document.getElementById(cardId);
@@ -3810,7 +4310,7 @@
                                 var m = diagMap[k];
                                 var imgEl  = document.getElementById(m.imgId);
                                 var textEl = document.getElementById(m.textId);
-                                var hasImg  = imgEl  && imgEl.classList.contains('visible');
+                                var hasImg  = (diagImages[k] && diagImages[k].length > 0) || (imgEl && imgEl.classList.contains('visible'));
                                 var hasText = textEl && textEl.value && textEl.value.trim().length > 0;
                                 if (hasImg || hasText) {
                                     var cardId = 'diag-card-' + k;
@@ -3818,6 +4318,7 @@
                                     if (card) card.classList.remove('collapsed');
                                 }
                                 updateDiagStatus(k);
+                                renderGallery(k);
                             });
                         }
 
@@ -3837,12 +4338,16 @@
                             var textEl  = document.getElementById(m.textId);
                             var statEl  = document.getElementById(m.statusId);
                             var charEl  = document.getElementById(m.charId);
-                            var hasImg  = imgEl  && imgEl.classList.contains('visible');
+                            var hasImg  = (diagImages[key] && diagImages[key].length > 0) || (imgEl && imgEl.classList.contains('visible'));
                             var hasText = textEl && textEl.value && textEl.value.trim().length > 0;
                             if (statEl) {
                                 if (hasImg || hasText) {
+                                    var imgCount = diagImages[key] ? diagImages[key].length : 0;
                                     statEl.className = 'diag-card-status has-data';
-                                    statEl.innerHTML = '<svg width="8" height="8" viewBox="0 0 8 8"><circle cx="4" cy="4" r="4" fill="currentColor"/></svg> يحتوي بيانات';
+                                    statEl.innerHTML = '<svg width="8" height="8" viewBox="0 0 8 8"><circle cx="4" cy="4" r="4" fill="currentColor"/></svg> ' +
+                                        (imgCount > 0 ? imgCount + ' صور' : '') +
+                                        (imgCount > 0 && hasText ? ' · ' : '') +
+                                        (hasText ? 'تقرير' : '');
                                 } else {
                                     statEl.className = 'diag-card-status';
                                     statEl.innerHTML = '<svg width="8" height="8" viewBox="0 0 8 8"><circle cx="4" cy="4" r="4" fill="currentColor"/></svg> فارغ';
@@ -3853,8 +4358,9 @@
                             }
                         };
 
-                        // حذف صورة الإجراء
+                        // حذف كل صور الإجراء (للتوافق مع الكود القديم)
                         window.removeDiagImage = function(key) {
+                            diagImages[key] = [];
                             var m = diagMap[key];
                             if (!m) return;
                             var imgEl = document.getElementById(m.imgId);
@@ -3866,6 +4372,7 @@
                             if (storageMap[key]) {
                                 try { localStorage.removeItem(storageMap[key]); } catch(e) {}
                             }
+                            renderGallery(key);
                             updateDiagStatus(key);
                         };
 
