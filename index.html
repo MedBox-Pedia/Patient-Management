@@ -1030,6 +1030,22 @@
         }
 
         /* منطقة رفع الصورة - عصرية */
+        /* ===== حقل تحديد العضو المصور ===== */
+        .diag-organ-selector select {
+            appearance: none;
+            -webkit-appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%230790AC' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: left 10px center;
+            padding-left: 30px !important;
+        }
+        .diag-organ-selector select:focus {
+            border-color: #0790AC !important;
+            box-shadow: 0 0 0 3px rgba(7,144,172,0.12);
+        }
+        .diag-organ-selector select:hover {
+            border-color: #0790AC !important;
+        }
         .diag-upload-zone {
             border: 2px dashed #c8e8f0;
             border-radius: 10px;
@@ -3392,6 +3408,55 @@
                             <div class="diag-card-body">
                                 <!-- منطقة الصورة -->
                                 <div>
+                                    <!-- حقل تحديد العضو المصور - أشعة سينية -->
+                                    <div class="diag-organ-selector" style="margin-bottom:10px;">
+                                        <label for="diag-organ-xray" style="display:block;font-size:0.78rem;font-weight:700;color:#0790AC;margin-bottom:4px;">
+                                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-left:4px;"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                                            العضو / المنطقة المصورة
+                                        </label>
+                                        <select id="diag-organ-xray" name="diag_organ_xray" style="width:100%;padding:7px 10px;border:1.5px solid #c7e8f0;border-radius:8px;font-family:'Cairo',sans-serif;font-size:0.83rem;color:#1f2937;background:#f0fafc;outline:none;cursor:pointer;transition:border 0.2s;" onchange="updateDiagStatus('xray')">
+                                            <option value="">-- اختر العضو --</option>
+                                            <optgroup label="الصدر والقلب">
+                                                <option value="chest">الصدر (Chest)</option>
+                                                <option value="lungs">الرئتان (Lungs)</option>
+                                                <option value="heart">القلب (Heart)</option>
+                                                <option value="ribs">القفص الصدري / الأضلاع</option>
+                                            </optgroup>
+                                            <optgroup label="العمود الفقري">
+                                                <option value="spine_cervical">العمود الفقري - عنقي (Cervical)</option>
+                                                <option value="spine_thoracic">العمود الفقري - صدري (Thoracic)</option>
+                                                <option value="spine_lumbar">العمود الفقري - قطني (Lumbar)</option>
+                                                <option value="spine_sacral">العجز والعصعص (Sacral)</option>
+                                            </optgroup>
+                                            <optgroup label="البطن والحوض">
+                                                <option value="abdomen">البطن (Abdomen)</option>
+                                                <option value="pelvis">الحوض (Pelvis)</option>
+                                            </optgroup>
+                                            <optgroup label="الأطراف العلوية">
+                                                <option value="shoulder">الكتف (Shoulder)</option>
+                                                <option value="arm">الذراع (Arm)</option>
+                                                <option value="elbow">المرفق (Elbow)</option>
+                                                <option value="forearm">الساعد (Forearm)</option>
+                                                <option value="wrist">الرسغ (Wrist)</option>
+                                                <option value="hand">اليد (Hand)</option>
+                                            </optgroup>
+                                            <optgroup label="الأطراف السفلية">
+                                                <option value="hip">الورك (Hip)</option>
+                                                <option value="thigh">الفخذ (Thigh)</option>
+                                                <option value="knee">الركبة (Knee)</option>
+                                                <option value="leg">الساق (Leg)</option>
+                                                <option value="ankle">الكاحل (Ankle)</option>
+                                                <option value="foot">القدم (Foot)</option>
+                                            </optgroup>
+                                            <optgroup label="الرأس والرقبة">
+                                                <option value="skull">الجمجمة (Skull)</option>
+                                                <option value="neck">الرقبة (Neck)</option>
+                                                <option value="sinuses">الجيوب الأنفية (Sinuses)</option>
+                                                <option value="jaw">الفك (Jaw)</option>
+                                            </optgroup>
+                                            <option value="other">أخرى</option>
+                                        </select>
+                                    </div>
                                     <div class="diag-upload-zone" id="diag-upload-zone-xray">
                                         <div class="upload-icon">
                                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
@@ -3450,6 +3515,22 @@
                             </div>
                             <div class="diag-card-body">
                                 <div>
+                                    <!-- حقل تحديد العضو المصور - إيكو -->
+                                    <div class="diag-organ-selector" style="margin-bottom:10px;">
+                                        <label for="diag-organ-echo" style="display:block;font-size:0.78rem;font-weight:700;color:#0790AC;margin-bottom:4px;">
+                                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-left:4px;"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                                            العضو / المنطقة المصورة
+                                        </label>
+                                        <select id="diag-organ-echo" name="diag_organ_echo" style="width:100%;padding:7px 10px;border:1.5px solid #c7e8f0;border-radius:8px;font-family:'Cairo',sans-serif;font-size:0.83rem;color:#1f2937;background:#f0fafc;outline:none;cursor:pointer;" onchange="updateDiagStatus('echo')">
+                                            <option value="">-- اختر العضو --</option>
+                                            <optgroup label="القلب والأوعية"><option value="heart_echo">القلب - إيكو (Echocardiography)</option><option value="heart_doppler">دوبلر القلب</option><option value="aorta">الشريان الأورطي</option><option value="carotid">الشرايين السباتية</option><option value="veins_legs">أوردة الأطراف السفلية</option></optgroup>
+                                            <optgroup label="البطن والحوض"><option value="abdomen_full">البطن الكامل</option><option value="liver">الكبد</option><option value="gallbladder">المرارة</option><option value="pancreas">البنكرياس</option><option value="spleen">الطحال</option><option value="kidneys">الكليتان</option><option value="bladder">المثانة</option><option value="prostate">البروستاتا</option><option value="uterus_ovaries">الرحم والمبيضان</option></optgroup>
+                                            <optgroup label="الغدد والرقبة"><option value="thyroid">الغدة الدرقية</option><option value="lymph_nodes">الغدد الليمفاوية</option><option value="salivary_glands">الغدد اللعابية</option></optgroup>
+                                            <optgroup label="الأطراف والأنسجة"><option value="soft_tissue">الأنسجة الرخوة</option><option value="joints">المفاصل</option><option value="breast">الثدي</option></optgroup>
+                                            <optgroup label="الحمل والجنين"><option value="obstetric_1st">الحمل - الثلث الأول</option><option value="obstetric_2nd">الحمل - الثلث الثاني</option><option value="obstetric_3rd">الحمل - الثلث الثالث</option><option value="fetal_echo">إيكو الجنين</option></optgroup>
+                                            <option value="other">أخرى</option>
+                                        </select>
+                                    </div>
                                     <div class="diag-upload-zone" id="diag-upload-zone-echo">
                                         <div class="upload-icon">
                                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
@@ -3508,6 +3589,21 @@
                             </div>
                             <div class="diag-card-body">
                                 <div>
+                                    <!-- حقل تحديد العضو المصور - CT -->
+                                    <div class="diag-organ-selector" style="margin-bottom:10px;">
+                                        <label for="diag-organ-ct" style="display:block;font-size:0.78rem;font-weight:700;color:#0790AC;margin-bottom:4px;">
+                                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-left:4px;"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                                            العضو / المنطقة المصورة
+                                        </label>
+                                        <select id="diag-organ-ct" name="diag_organ_ct" style="width:100%;padding:7px 10px;border:1.5px solid #c7e8f0;border-radius:8px;font-family:'Cairo',sans-serif;font-size:0.83rem;color:#1f2937;background:#f0fafc;outline:none;cursor:pointer;" onchange="updateDiagStatus('ct')">
+                                            <option value="">-- اختر العضو --</option>
+                                            <optgroup label="الرأس والرقبة"><option value="brain">الدماغ (Brain)</option><option value="skull_base">قاعدة الجمجمة</option><option value="sinuses_ct">الجيوب الأنفية</option><option value="neck_ct">الرقبة</option><option value="temporal_bone">العظم الصدغي</option></optgroup>
+                                            <optgroup label="الصدر"><option value="chest_ct">الصدر (Chest CT)</option><option value="lungs_ct">الرئتان (HRCT)</option><option value="pulmonary_angio">CT أوعية رئوية (Pulmonary Angio)</option><option value="coronary_ct">CT التاجية (Coronary CTA)</option></optgroup>
+                                            <optgroup label="البطن والحوض"><option value="abdomen_ct">البطن (Abdomen)</option><option value="pelvis_ct">الحوض (Pelvis)</option><option value="abdomen_pelvis">البطن والحوض معاً</option><option value="liver_ct">الكبد</option><option value="pancreas_ct">البنكرياس</option><option value="kidneys_ct">الكليتان (Urography)</option><option value="colon_ct">القولون (CT Colonoscopy)</option></optgroup>
+                                            <optgroup label="العمود الفقري والأطراف"><option value="spine_cervical_ct">العمود الفقري - عنقي</option><option value="spine_lumbar_ct">العمود الفقري - قطني</option><option value="joints_ct">المفاصل</option><option value="extremities_ct">الأطراف</option></optgroup>
+                                            <option value="other">أخرى</option>
+                                        </select>
+                                    </div>
                                     <div class="diag-upload-zone" id="diag-upload-zone-ct">
                                         <div class="upload-icon">
                                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
@@ -3565,6 +3661,22 @@
                             </div>
                             <div class="diag-card-body">
                                 <div>
+                                    <!-- حقل تحديد العضو المصور - MRI -->
+                                    <div class="diag-organ-selector" style="margin-bottom:10px;">
+                                        <label for="diag-organ-mri" style="display:block;font-size:0.78rem;font-weight:700;color:#0790AC;margin-bottom:4px;">
+                                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-left:4px;"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                                            العضو / المنطقة المصورة
+                                        </label>
+                                        <select id="diag-organ-mri" name="diag_organ_mri" style="width:100%;padding:7px 10px;border:1.5px solid #c7e8f0;border-radius:8px;font-family:'Cairo',sans-serif;font-size:0.83rem;color:#1f2937;background:#f0fafc;outline:none;cursor:pointer;" onchange="updateDiagStatus('mri')">
+                                            <option value="">-- اختر العضو --</option>
+                                            <optgroup label="الرأس والأعصاب"><option value="brain_mri">الدماغ (Brain MRI)</option><option value="brain_mra">أوعية الدماغ (MRA)</option><option value="pituitary">الغدة النخامية</option><option value="inner_ear">الأذن الداخلية</option><option value="orbits">المحجران (Orbits)</option></optgroup>
+                                            <optgroup label="العمود الفقري"><option value="spine_cervical_mri">عنقي (Cervical Spine)</option><option value="spine_thoracic_mri">صدري (Thoracic Spine)</option><option value="spine_lumbar_mri">قطني (Lumbar Spine)</option><option value="spine_full">العمود الفقري كامل</option></optgroup>
+                                            <optgroup label="المفاصل والعضلات"><option value="shoulder_mri">الكتف</option><option value="knee_mri">الركبة</option><option value="hip_mri">الورك</option><option value="ankle_mri">الكاحل</option><option value="wrist_mri">الرسغ</option><option value="elbow_mri">المرفق</option></optgroup>
+                                            <optgroup label="البطن والحوض"><option value="liver_mri">الكبد (MR Liver)</option><option value="mrcp">القنوات الصفراوية (MRCP)</option><option value="kidneys_mri">الكليتان</option><option value="prostate_mri">البروستاتا</option><option value="uterus_mri">الرحم والمبيضان</option><option value="pelvis_mri">الحوض</option></optgroup>
+                                            <optgroup label="الصدر والقلب"><option value="cardiac_mri">القلب (Cardiac MRI)</option><option value="breast_mri">الثدي</option><option value="chest_mri">الصدر</option></optgroup>
+                                            <option value="other">أخرى</option>
+                                        </select>
+                                    </div>
                                     <div class="diag-upload-zone" id="diag-upload-zone-mri">
                                         <div class="upload-icon">
                                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
@@ -3621,6 +3733,23 @@
                             </div>
                             <div class="diag-card-body">
                                 <div>
+                                    <!-- حقل تحديد نوع دراسة تخطيط القلب -->
+                                    <div class="diag-organ-selector" style="margin-bottom:10px;">
+                                        <label for="diag-organ-ecg" style="display:block;font-size:0.78rem;font-weight:700;color:#0790AC;margin-bottom:4px;">
+                                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-left:4px;"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                                            نوع التخطيط / الدراسة
+                                        </label>
+                                        <select id="diag-organ-ecg" name="diag_organ_ecg" style="width:100%;padding:7px 10px;border:1.5px solid #c7e8f0;border-radius:8px;font-family:'Cairo',sans-serif;font-size:0.83rem;color:#1f2937;background:#f0fafc;outline:none;cursor:pointer;" onchange="updateDiagStatus('ecg')">
+                                            <option value="">-- اختر نوع التخطيط --</option>
+                                            <option value="ecg_12lead">تخطيط 12 اشتقاق (12-Lead ECG)</option>
+                                            <option value="ecg_rhythm">شريط الإيقاع (Rhythm Strip)</option>
+                                            <option value="ecg_holter">هولتر 24 ساعة (Holter Monitor)</option>
+                                            <option value="ecg_exercise">تخطيط الجهد (Exercise ECG / Treadmill)</option>
+                                            <option value="ecg_event">مراقبة الأحداث (Event Monitor)</option>
+                                            <option value="ecg_ambulatory">تخطيط متنقل (Ambulatory ECG)</option>
+                                            <option value="other">أخرى</option>
+                                        </select>
+                                    </div>
                                     <div class="diag-upload-zone" id="diag-upload-zone-ecg">
                                         <div class="upload-icon">
                                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
@@ -6656,6 +6785,8 @@
         
         // (جديد B.d) تحميل الإجراءات التشخيصية
         const diags = visit.diagnostics || {};
+        // خريطة ربط نوع التصوير باسم العضو في الـ select
+        const organSelectMap = { xray:'xray', us:'echo', ct:'ct', mri:'mri', ecg:'ecg' };
         ['xray', 'us', 'ct', 'mri', 'ecg'].forEach(type => {
             if (diags[`diag_${type}_img`]) {
                 const preview = document.getElementById(`diag-${type}-preview`);
@@ -6665,6 +6796,12 @@
             }
             if (diags[`diag_${type}_report`]) {
                 document.getElementById(`diag_${type}_report`).value = diags[`diag_${type}_report`];
+            }
+            // تحميل قيمة العضو المصور
+            const organKey = organSelectMap[type];
+            if (organKey && diags[`diag_organ_${organKey}`]) {
+                const organEl = document.getElementById(`diag-organ-${organKey}`);
+                if (organEl) organEl.value = diags[`diag_organ_${organKey}`];
             }
         });
 
@@ -6871,6 +7008,8 @@
         
         // (جديد B.d) تجميع بيانات الإجراءات التشخيصية
         const diagnostics = {};
+        // خريطة ربط نوع التصوير بمعرّف الـ select الخاص بالعضو
+        const organSelectSaveMap = { xray:'xray', us:'echo', ct:'ct', mri:'mri', ecg:'ecg' };
         ['xray', 'us', 'ct', 'mri', 'ecg'].forEach(type => {
             const imgKey = `diag_${type}_img`;
             const reportKey = `diag_${type}_report`;
@@ -6879,6 +7018,14 @@
             }
             if (data[reportKey]) {
                 diagnostics[reportKey] = data[reportKey];
+            }
+            // حفظ العضو المصور
+            const organKey = organSelectSaveMap[type];
+            if (organKey) {
+                const organEl = document.getElementById(`diag-organ-${organKey}`);
+                if (organEl && organEl.value) {
+                    diagnostics[`diag_organ_${organKey}`] = organEl.value;
+                }
             }
         });
         
@@ -9822,21 +9969,49 @@
         // (جديد B.d) دالة لعرض الإجراءات التشخيصية
         const renderDiagnostics = () => {
             let html = '';
+            const organLabels = {
+                chest:'الصدر',lungs:'الرئتان',heart:'القلب',ribs:'القفص الصدري',
+                spine_cervical:'عمود فقري - عنقي',spine_thoracic:'عمود فقري - صدري',spine_lumbar:'عمود فقري - قطني',spine_sacral:'العجز والعصعص',
+                abdomen:'البطن',pelvis:'الحوض',shoulder:'الكتف',arm:'الذراع',elbow:'المرفق',forearm:'الساعد',wrist:'الرسغ',hand:'اليد',
+                hip:'الورك',thigh:'الفخذ',knee:'الركبة',leg:'الساق',ankle:'الكاحل',foot:'القدم',
+                skull:'الجمجمة',neck:'الرقبة',sinuses:'الجيوب الأنفية',jaw:'الفك',
+                heart_echo:'القلب - إيكو',heart_doppler:'دوبلر القلب',aorta:'الشريان الأورطي',carotid:'الشرايين السباتية',veins_legs:'أوردة الأطراف',
+                abdomen_full:'البطن الكامل',liver:'الكبد',gallbladder:'المرارة',pancreas:'البنكرياس',spleen:'الطحال',kidneys:'الكليتان',bladder:'المثانة',prostate:'البروستاتا',uterus_ovaries:'الرحم والمبيضان',
+                thyroid:'الغدة الدرقية',lymph_nodes:'الغدد الليمفاوية',salivary_glands:'الغدد اللعابية',
+                soft_tissue:'الأنسجة الرخوة',joints:'المفاصل',tendons:'الأوتار',breast:'الثدي',
+                obstetric_1st:'الحمل - الثلث الأول',obstetric_2nd:'الحمل - الثلث الثاني',obstetric_3rd:'الحمل - الثلث الثالث',fetal_echo:'إيكو الجنين',
+                brain:'الدماغ',skull_base:'قاعدة الجمجمة',sinuses_ct:'الجيوب الأنفية',neck_ct:'الرقبة',temporal_bone:'العظم الصدغي',
+                chest_ct:'الصدر',lungs_ct:'الرئتان (HRCT)',pulmonary_angio:'CT أوعية رئوية',coronary_ct:'CT التاجية',
+                abdomen_ct:'البطن',pelvis_ct:'الحوض',abdomen_pelvis:'البطن والحوض',liver_ct:'الكبد',pancreas_ct:'البنكرياس',kidneys_ct:'الكليتان',colon_ct:'القولون',
+                spine_cervical_ct:'عمود فقري - عنقي',spine_lumbar_ct:'عمود فقري - قطني',joints_ct:'المفاصل',extremities_ct:'الأطراف',
+                brain_mri:'الدماغ',brain_mra:'أوعية الدماغ',pituitary:'الغدة النخامية',inner_ear:'الأذن الداخلية',orbits:'المحجران',
+                spine_cervical_mri:'عمود فقري - عنقي',spine_thoracic_mri:'عمود فقري - صدري',spine_lumbar_mri:'عمود فقري - قطني',spine_full:'العمود الفقري كامل',
+                shoulder_mri:'الكتف',knee_mri:'الركبة',hip_mri:'الورك',ankle_mri:'الكاحل',wrist_mri:'الرسغ',elbow_mri:'المرفق',
+                liver_mri:'الكبد',mrcp:'القنوات الصفراوية',kidneys_mri:'الكليتان',prostate_mri:'البروستاتا',uterus_mri:'الرحم والمبيضان',pelvis_mri:'الحوض',
+                cardiac_mri:'القلب',breast_mri:'الثدي',chest_mri:'الصدر',
+                ecg_12lead:'تخطيط 12 اشتقاق',ecg_rhythm:'شريط الإيقاع',ecg_holter:'هولتر 24 ساعة',ecg_exercise:'تخطيط الجهد',ecg_event:'مراقبة الأحداث',ecg_ambulatory:'تخطيط متنقل',
+                other:'أخرى'
+            };
             const diagItems = [
-                { key: 'xray', label: 'X.Ray' },
-                { key: 'us', label: 'Ultra Sound “Eco”' },
-                { key: 'ct', label: 'CT' },
-                { key: 'mri', label: 'MRI' },
-                { key: 'ecg', label: 'تخطيط القلب الكهربائي (ECG)' }
+                { key: 'xray', organKey: 'xray', label: 'X.Ray' },
+                { key: 'us', organKey: 'echo', label: 'Ultra Sound "Eco"' },
+                { key: 'ct', organKey: 'ct', label: 'CT' },
+                { key: 'mri', organKey: 'mri', label: 'MRI' },
+                { key: 'ecg', organKey: 'ecg', label: 'تخطيط القلب الكهربائي (ECG)' }
             ];
             
             diagItems.forEach(item => {
                 const img = d[`diag_${item.key}_img`];
                 const report = d[`diag_${item.key}_report`];
+                const organVal = d[`diag_organ_${item.organKey}`];
+                const organDisplay = organVal ? (organLabels[organVal] || organVal) : null;
                 if (img || report) {
                     html += `
                         <div class="diagnostic-item-container border-b pb-4 mb-4">
-                            <h4 class="text-md font-semibold text-gray-700 mb-2">${item.label}</h4>
+                            <h4 class="text-md font-semibold text-gray-700 mb-2">
+                                ${item.label}
+                                ${organDisplay ? `<span style="display:inline-block;margin-right:8px;background:#e6f4f7;color:#0790AC;font-size:0.75rem;font-weight:700;padding:2px 10px;border-radius:20px;border:1px solid #c7e8f0;">📍 ${organDisplay}</span>` : ''}
+                            </h4>
                             <div class="diagnostic-item">
                                 ${img ? `
                                 <div class="image-upload-container">
