@@ -15517,6 +15517,7 @@ window._loadGeminiKeyFromDrive = async function() {
             <div style="font-size:0.75rem;color:#9ca3af;">⚠️ يرجى مراجعة القيم قبل الحفظ — الذكاء الاصطناعي قد لا يقرأ كل قيمة بدقة</div>
             <div style="display:flex;gap:8px;">
                 <button id="ocr-apply-btn" onclick="window._applyOcrResults()" style="display:none;padding:9px 22px;background:linear-gradient(135deg,#0790AC 0%,#056a80 100%);color:#fff;border:none;border-radius:8px;font-family:'Cairo',sans-serif;font-size:0.88rem;font-weight:700;cursor:pointer;box-shadow:0 2px 10px rgba(7,144,172,0.3);transition:all 0.15s;" onmouseover="this.style.transform='translateY(-1px)'" onmouseout="this.style.transform='translateY(0)'">✍️ تعبئة الحقول تلقائياً</button>
+                <button id="ocr-insert-report-btn" onclick="window._insertOcrReportToField()" style="display:none;padding:9px 22px;background:linear-gradient(135deg,#10b981 0%,#059669 100%);color:#fff;border:none;border-radius:8px;font-family:'Cairo',sans-serif;font-size:0.88rem;font-weight:700;cursor:pointer;box-shadow:0 2px 10px rgba(16,185,129,0.3);transition:all 0.15s;" onmouseover="this.style.transform='translateY(-1px)'" onmouseout="this.style.transform='translateY(0)'">📋 إدراج التقرير في الحقل</button>
                 <button id="ocr-scan-btn" onclick="window._startOcrScan()" style="padding:9px 22px;background:#0790AC;color:#fff;border:none;border-radius:8px;font-family:'Cairo',sans-serif;font-size:0.88rem;font-weight:700;cursor:pointer;transition:all 0.15s;" onmouseover="this.style.background='#056a80'" onmouseout="this.style.background='#0790AC'">🔍 بدء القراءة</button>
                 <button onclick="window._closeOcrModal()" style="padding:9px 16px;background:#fff;color:#6b7280;border:1.5px solid #e5e7eb;border-radius:8px;font-family:'Cairo',sans-serif;font-size:0.82rem;font-weight:700;cursor:pointer;">إغلاق</button>
             </div>
@@ -15561,7 +15562,7 @@ window._loadGeminiKeyFromDrive = async function() {
         if (tableWrap) tableWrap.style.display = 'none';
         var reportResultEl = document.getElementById('ocr-report-result');
         if (reportResultEl) reportResultEl.style.display = 'none';
-        document.getElementById('ocr-apply-btn').style.display = 'none';
+        document.getElementById('ocr-apply-btn').style.display = 'none'; var _irbtn = document.getElementById('ocr-insert-report-btn'); if(_irbtn) _irbtn.style.display = 'none';
     };
 
     // خريطة الحقول: اسم Gemini → ID الحقل في النموذج + التسمية العربية
@@ -15650,7 +15651,7 @@ window._loadGeminiKeyFromDrive = async function() {
         document.getElementById('ocr-loading').style.display = 'none';
         document.getElementById('ocr-result-section').style.display = 'none';
         document.getElementById('ocr-error').style.display = 'none';
-        document.getElementById('ocr-apply-btn').style.display = 'none';
+        document.getElementById('ocr-apply-btn').style.display = 'none'; var _irbtn = document.getElementById('ocr-insert-report-btn'); if(_irbtn) _irbtn.style.display = 'none';
         document.getElementById('ocr-scan-btn').style.display = 'inline-block';
         document.getElementById('ocr-file-input').value = '';
         var reportResultEl = document.getElementById('ocr-report-result');
@@ -15689,7 +15690,7 @@ window._loadGeminiKeyFromDrive = async function() {
             document.getElementById('ocr-preview-wrap').style.display = 'block';
             document.getElementById('ocr-result-section').style.display = 'none';
             document.getElementById('ocr-error').style.display = 'none';
-            document.getElementById('ocr-apply-btn').style.display = 'none';
+            document.getElementById('ocr-apply-btn').style.display = 'none'; var _irbtn = document.getElementById('ocr-insert-report-btn'); if(_irbtn) _irbtn.style.display = 'none';
         };
         reader.readAsDataURL(file);
     }
@@ -15700,7 +15701,7 @@ window._loadGeminiKeyFromDrive = async function() {
         document.getElementById('ocr-preview-img').src = '';
         document.getElementById('ocr-file-input').value = '';
         document.getElementById('ocr-result-section').style.display = 'none';
-        document.getElementById('ocr-apply-btn').style.display = 'none';
+        document.getElementById('ocr-apply-btn').style.display = 'none'; var _irbtn = document.getElementById('ocr-insert-report-btn'); if(_irbtn) _irbtn.style.display = 'none';
     };
 
     // ===== Camera functions =====
@@ -15744,7 +15745,7 @@ window._loadGeminiKeyFromDrive = async function() {
         document.getElementById('ocr-preview-wrap').style.display = 'block';
         document.getElementById('ocr-result-section').style.display = 'none';
         document.getElementById('ocr-error').style.display = 'none';
-        document.getElementById('ocr-apply-btn').style.display = 'none';
+        document.getElementById('ocr-apply-btn').style.display = 'none'; var _irbtn = document.getElementById('ocr-insert-report-btn'); if(_irbtn) _irbtn.style.display = 'none';
 
         window._closeOcrCamera();
         if (typeof showToast === 'function') showToast('✅ تم التقاط الصورة — اضغط "بدء القراءة"', 'success');
@@ -15813,7 +15814,7 @@ window._loadGeminiKeyFromDrive = async function() {
         document.getElementById('ocr-loading').style.display = 'block';
         document.getElementById('ocr-result-section').style.display = 'none';
         document.getElementById('ocr-error').style.display = 'none';
-        document.getElementById('ocr-apply-btn').style.display = 'none';
+        document.getElementById('ocr-apply-btn').style.display = 'none'; var _irbtn = document.getElementById('ocr-insert-report-btn'); if(_irbtn) _irbtn.style.display = 'none';
         document.getElementById('ocr-scan-btn').disabled = true;
         // التمرير التلقائي إلى منطقة التحميل
         setTimeout(function() {
@@ -15974,7 +15975,10 @@ window._loadGeminiKeyFromDrive = async function() {
                 if (tableEl) tableEl.closest('div[style*="overflow"]') && (tableEl.closest('div[style*="overflow"]').style.display = 'none');
                 if (titleEl2) titleEl2.textContent = '✅ نتيجة التقرير';
                 document.getElementById('ocr-result-section').style.display = 'block';
-                document.getElementById('ocr-apply-btn').style.display = 'none';
+                document.getElementById('ocr-apply-btn').style.display = 'none'; var _irbtn = document.getElementById('ocr-insert-report-btn'); if(_irbtn) _irbtn.style.display = 'none';
+                // إظهار زر إدراج التقرير في الحقل المخصص
+                var insertBtn = document.getElementById('ocr-insert-report-btn');
+                if (insertBtn) insertBtn.style.display = 'inline-block';
                 // نسخ الصورة للجانب
                 var previewSrc2 = document.getElementById('ocr-preview-img').src;
                 var sideImg2 = document.getElementById('ocr-side-img');
@@ -16259,6 +16263,36 @@ window._loadGeminiKeyFromDrive = async function() {
     };
 
     // حفظ نص التقرير الطبي في حقل الملاحظات
+    // إدراج التقرير المولد مباشرة في مربع التقرير المخصص
+    window._insertOcrReportToField = function() {
+        var bodyEl = document.getElementById('ocr-report-result-body');
+        if (!bodyEl || !bodyEl.textContent.trim()) return;
+        var directFieldMap = { xray:'diag_xray_report', echo:'diag_us_report', ct:'diag_ct_report', mri:'diag_mri_report', ecg:'diag_ecg_report' };
+        var reportLabels = { xray:'تقرير الأشعة', echo:'تقرير الإيكو', ct:'تقرير الطبقي المحوري', mri:'تقرير الرنين المغناطيسي', ecg:'تقرير تخطيط القلب' };
+        var directFieldId = directFieldMap[_ocrReportType];
+        var label = reportLabels[_ocrReportType] || 'تقرير طبي';
+        if (directFieldId) {
+            var directEl = document.getElementById(directFieldId);
+            if (directEl) {
+                directEl.value = bodyEl.textContent.trim();
+                directEl.dispatchEvent(new Event('input', { bubbles: true }));
+                directEl.dispatchEvent(new Event('change', { bubbles: true }));
+                // تأثير بصري
+                directEl.style.transition = 'background 0.4s';
+                directEl.style.background = '#d1fae5';
+                setTimeout(function() { directEl.style.background = ''; }, 1400);
+                if (typeof showToast === 'function') showToast('✅ تم إدراج ' + label + ' في الحقل المخصص', 'success');
+                window._closeOcrModal();
+                // التمرير إلى الحقل
+                setTimeout(function() {
+                    directEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }, 350);
+                return;
+            }
+        }
+        if (typeof showToast === 'function') showToast('⚠️ لم يتم العثور على الحقل المخصص لهذا النوع', 'info');
+    };
+
     window._saveOcrReportToNotes = function() {
         var bodyEl = document.getElementById('ocr-report-result-body');
         if (!bodyEl || !bodyEl.textContent.trim()) return;
