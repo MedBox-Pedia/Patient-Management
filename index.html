@@ -2313,15 +2313,14 @@
                                 <p class="text-xs text-gray-500">اختر التحاليل المطلوبة واطبع طلباً رسمياً للمختبر</p>
                             </div>
                         </div>
-                        <button type="button" id="open-lab-request-btn" class="bg-[#0790AC] text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-[#056a80] transition duration-200 flex items-center gap-2 shadow">
-                            <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                        <button type="button" id="open-lab-request-btn" title="فتح طلب التحاليل" class="bg-[#0790AC] text-white p-2.5 rounded-lg hover:bg-[#056a80] transition duration-200 flex items-center justify-center shadow">
+                            <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                             </svg>
-                            فتح طلب التحاليل
                         </button>
                     </div>
 
-                    <!-- زر OCR لرفع صورة التحليل -->
+                    <!-- زر OCR لرفع صورة التحليل والتقارير الطبية -->
                     <div class="flex items-center justify-between bg-gradient-to-r from-[#e6f4f7] to-white border border-[#b3dde7] rounded-xl px-5 py-3 shadow-sm">
                         <div class="flex items-center gap-3">
                             <span class="bg-[#0790AC] text-white rounded-full p-2">
@@ -2330,15 +2329,14 @@
                                 </svg>
                             </span>
                             <div>
-                                <p class="font-bold text-[#0790AC] text-sm">📷 قراءة نتائج التحليل بالذكاء الاصطناعي (OCR)</p>
-                                <p class="text-xs text-gray-500">ارفع صورة ورقة التحليل المخبري وسيقوم Gemini بتفريغ الأرقام تلقائياً</p>
+                                <p class="font-bold text-[#0790AC] text-sm">قراءة التحاليل والتقارير الطبية بالذكاء الاصطناعي</p>
+                                <p class="text-xs text-gray-500">تحاليل مخبرية · أشعة · إيكو · طبقي محوري · رنين مغناطيسي</p>
                             </div>
                         </div>
-                        <button type="button" onclick="window._openOcrModal()" class="bg-[#0790AC] text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-[#056a80] transition duration-200 flex items-center gap-2 shadow">
-                            <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                        <button type="button" onclick="window._openOcrModal()" title="رفع صورة تحليل أو تقرير طبي" class="bg-[#0790AC] text-white p-2.5 rounded-lg hover:bg-[#056a80] transition duration-200 flex items-center justify-center shadow">
+                            <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
                             </svg>
-                            رفع صورة التحليل
                         </button>
                     </div>
 
@@ -4886,6 +4884,11 @@
                     updateGoogleUserDisplay();
                     loginDropdownMenu.classList.add('hidden');
                     document.getElementById('login-dropdown-backdrop')?.classList.add('hidden');
+
+                    // استرجاع مفتاح Gemini من Drive إن لم يكن محفوظاً محلياً
+                    if (typeof window._loadGeminiKeyFromDrive === 'function') {
+                        setTimeout(function() { window._loadGeminiKeyFromDrive(); }, 1500);
+                    }
 
                     // ══════════════════════════════════════════════════
                     // الخطوة 1: محاولة تحميل آخر نسخة من Drive تلقائياً
@@ -9027,11 +9030,11 @@
                         </div>
                     </div>
                     <button type="button" onclick="window._openLabRequestFromView()"
-                        class="bg-[#0790AC] text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-[#056a80] transition duration-200 flex items-center gap-2 shadow">
-                        <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                        title="فتح طلب التحاليل"
+                        class="bg-[#0790AC] text-white p-2.5 rounded-lg hover:bg-[#056a80] transition duration-200 flex items-center justify-center shadow">
+                        <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                         </svg>
-                        فتح طلب التحاليل
                     </button>
                 </div>
                 <!-- A. قسم التحاليل الدموية -->
@@ -14750,7 +14753,10 @@ if ('serviceWorker' in navigator) {
         // تحميل مفتاح API المحفوظ
         var savedKey = localStorage.getItem('_gemini_api_key') || '';
         document.getElementById('gemini-api-key-input').value = savedKey;
-        document.getElementById('gemini-key-status').textContent = savedKey ? '✅ المفتاح محفوظ' : '';
+        var isCloudConnected = window._cloudAccessToken && Date.now() < (window._cloudTokenExpiry || 0);
+        document.getElementById('gemini-key-status').textContent = savedKey
+            ? (isCloudConnected ? '✅ المفتاح محفوظ محلياً وعلى Google Drive ☁️' : '✅ المفتاح محفوظ')
+            : '';
 
         // اسم المريض في رأس النافذة
         var patient = _getPatientById(patientId);
@@ -14780,7 +14786,9 @@ if ('serviceWorker' in navigator) {
         var key = document.getElementById('gemini-api-key-input').value.trim();
         if (!key) { document.getElementById('gemini-key-status').textContent = '⚠️ يرجى إدخال المفتاح أولاً'; return; }
         localStorage.setItem('_gemini_api_key', key);
-        document.getElementById('gemini-key-status').textContent = '✅ تم حفظ المفتاح بنجاح';
+        document.getElementById('gemini-key-status').textContent = '✅ تم حفظ المفتاح محلياً';
+        // حفظ مفتاح Gemini على Google Drive إن كان المستخدم متصلاً
+        _saveGeminiKeyToDrive(key, 'gemini-key-status');
     };
 
     // ---- تحديد نوع التقرير ----
@@ -15212,6 +15220,107 @@ ${context}
 })();
 </script>
 
+<script>
+// ===== حفظ مفتاح Gemini على Google Drive =====
+window._saveGeminiKeyToDrive = async function(key, statusElId) {
+    var statusEl = statusElId ? document.getElementById(statusElId) : null;
+
+    // تحقق من وجود اتصال Google
+    if (!window._cloudAccessToken || Date.now() >= (window._cloudTokenExpiry || 0)) {
+        // المستخدم غير متصل بـ Google — الحفظ المحلي كافٍ
+        if (statusEl) statusEl.textContent = '✅ تم حفظ المفتاح (غير متصل بـ Google)';
+        return;
+    }
+
+    if (statusEl) statusEl.innerHTML = '☁️ جاري الحفظ على Google Drive...';
+
+    try {
+        var GEMINI_KEY_FILE = 'medbox_gemini_key.json';
+        var content = JSON.stringify({ gemini_api_key: key, saved_at: new Date().toISOString() });
+
+        // البحث عن الملف أولاً
+        var searchUrl = 'https://www.googleapis.com/drive/v3/files?q='
+            + encodeURIComponent("name='" + GEMINI_KEY_FILE + "' and trashed=false")
+            + '&spaces=drive&fields=files(id)';
+
+        var searchRes = await fetch(searchUrl, {
+            headers: { 'Authorization': 'Bearer ' + window._cloudAccessToken }
+        });
+        var searchData = await searchRes.json();
+        var existingId = (searchData.files && searchData.files.length > 0) ? searchData.files[0].id : null;
+
+        var uploadUrl, uploadMethod;
+        if (existingId) {
+            // تحديث الملف الموجود
+            uploadUrl = 'https://www.googleapis.com/upload/drive/v3/files/' + existingId + '?uploadType=multipart&fields=id';
+            uploadMethod = 'PATCH';
+        } else {
+            // إنشاء ملف جديد
+            uploadUrl = 'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id';
+            uploadMethod = 'POST';
+        }
+
+        var boundary = '-------medbox_gemini_boundary';
+        var metaPart = '--' + boundary + '\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n'
+            + JSON.stringify({ name: GEMINI_KEY_FILE, mimeType: 'application/json' }) + '\r\n';
+        var dataPart = '--' + boundary + '\r\nContent-Type: application/json\r\n\r\n' + content + '\r\n';
+        var closePart = '--' + boundary + '--';
+        var body = metaPart + dataPart + closePart;
+
+        var uploadRes = await fetch(uploadUrl, {
+            method: uploadMethod,
+            headers: {
+                'Authorization': 'Bearer ' + window._cloudAccessToken,
+                'Content-Type': 'multipart/related; boundary=' + boundary
+            },
+            body: body
+        });
+
+        if (uploadRes.ok) {
+            if (statusEl) statusEl.innerHTML = '✅ تم حفظ المفتاح محلياً وعلى Google Drive ☁️';
+            if (typeof showToast === 'function') showToast('✅ تم حفظ مفتاح Gemini على Google Drive', 'success');
+        } else {
+            var errData = await uploadRes.json().catch(function(){return{};});
+            throw new Error(errData.error?.message || 'فشل الرفع');
+        }
+    } catch (e) {
+        console.error('خطأ في حفظ مفتاح Gemini على Drive:', e);
+        if (statusEl) statusEl.textContent = '✅ تم الحفظ محلياً (فشل الحفظ السحابي)';
+    }
+};
+
+// استرجاع مفتاح Gemini من Google Drive عند التحميل
+window._loadGeminiKeyFromDrive = async function() {
+    if (!window._cloudAccessToken || Date.now() >= (window._cloudTokenExpiry || 0)) return;
+    if (localStorage.getItem('_gemini_api_key')) return; // موجود محلياً، لا حاجة للجلب
+
+    try {
+        var GEMINI_KEY_FILE = 'medbox_gemini_key.json';
+        var searchUrl = 'https://www.googleapis.com/drive/v3/files?q='
+            + encodeURIComponent("name='" + GEMINI_KEY_FILE + "' and trashed=false")
+            + '&spaces=drive&fields=files(id)';
+
+        var searchRes = await fetch(searchUrl, {
+            headers: { 'Authorization': 'Bearer ' + window._cloudAccessToken }
+        });
+        var searchData = await searchRes.json();
+        if (!searchData.files || searchData.files.length === 0) return;
+
+        var fileId = searchData.files[0].id;
+        var fileRes = await fetch('https://www.googleapis.com/drive/v3/files/' + fileId + '?alt=media', {
+            headers: { 'Authorization': 'Bearer ' + window._cloudAccessToken }
+        });
+        var fileData = await fileRes.json();
+        if (fileData && fileData.gemini_api_key) {
+            localStorage.setItem('_gemini_api_key', fileData.gemini_api_key);
+            if (typeof showToast === 'function') showToast('🔑 تم استرجاع مفتاح Gemini من Google Drive', 'success');
+        }
+    } catch (e) {
+        console.warn('لم يتم استرجاع مفتاح Gemini من Drive:', e);
+    }
+};
+</script>
+
 <!-- ====== نافذة OCR التحاليل المخبرية ====== -->
 <div id="ocr-lab-modal" style="display:none;position:fixed;inset:0;z-index:99998;background:rgba(0,0,0,0.65);align-items:center;justify-content:center;animation:fadeInModal 0.2s ease;font-family:'Cairo',sans-serif;direction:rtl;">
     <div style="background:#fff;border-radius:20px;box-shadow:0 24px 80px rgba(0,0,0,0.35);width:96vw;max-width:680px;max-height:92vh;display:flex;flex-direction:column;overflow:hidden;animation:slideUpModal 0.25s ease;">
@@ -15223,11 +15332,23 @@ ${context}
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z"/></svg>
                 </div>
                 <div>
-                    <div style="font-size:1.05rem;font-weight:700;color:#0790AC;">📷 قراءة التحاليل بالذكاء الاصطناعي — OCR</div>
-                    <div style="font-size:0.82rem;color:#6b7280;">ارفع صورة أو التقط صورة ورقة التحليل وسيقوم Gemini بتفريغ الأرقام تلقائياً</div>
+                    <div style="font-size:1.05rem;font-weight:700;color:#0790AC;">قراءة التحاليل والتقارير الطبية — AI</div>
+                    <div style="font-size:0.82rem;color:#6b7280;">تحاليل مخبرية · أشعة · إيكو · طبقي محوري · رنين مغناطيسي</div>
                 </div>
             </div>
             <button onclick="window._closeOcrModal()" style="width:34px;height:34px;border-radius:8px;border:2px solid #e5e7eb;background:#fff;cursor:pointer;color:#6b7280;font-size:18px;display:flex;align-items:center;justify-content:center;transition:all 0.15s;" onmouseover="this.style.borderColor='#ef4444';this.style.color='#ef4444'" onmouseout="this.style.borderColor='#e5e7eb';this.style.color='#6b7280'">✕</button>
+        </div>
+
+        <!-- نوع التقرير -->
+        <div id="ocr-report-type-bar" style="padding:10px 24px;background:#f8fafc;border-bottom:1px solid #e6f4f7;flex-shrink:0;display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+            <span style="font-size:0.78rem;font-weight:700;color:#6b7280;white-space:nowrap;">نوع المستند:</span>
+            <div style="display:flex;gap:6px;flex-wrap:wrap;">
+                <button onclick="window._setOcrReportType('lab')" id="ocr-rtype-lab" style="padding:5px 14px;border-radius:20px;border:1.5px solid #0790AC;background:#0790AC;color:#fff;font-family:'Cairo',sans-serif;font-size:0.78rem;font-weight:700;cursor:pointer;transition:all 0.15s;">🧪 تحاليل مخبرية</button>
+                <button onclick="window._setOcrReportType('xray')" id="ocr-rtype-xray" style="padding:5px 14px;border-radius:20px;border:1.5px solid #d1d5db;background:#fff;color:#374151;font-family:'Cairo',sans-serif;font-size:0.78rem;font-weight:700;cursor:pointer;transition:all 0.15s;">🩻 أشعة</button>
+                <button onclick="window._setOcrReportType('echo')" id="ocr-rtype-echo" style="padding:5px 14px;border-radius:20px;border:1.5px solid #d1d5db;background:#fff;color:#374151;font-family:'Cairo',sans-serif;font-size:0.78rem;font-weight:700;cursor:pointer;transition:all 0.15s;">🫀 إيكو</button>
+                <button onclick="window._setOcrReportType('ct')" id="ocr-rtype-ct" style="padding:5px 14px;border-radius:20px;border:1.5px solid #d1d5db;background:#fff;color:#374151;font-family:'Cairo',sans-serif;font-size:0.78rem;font-weight:700;cursor:pointer;transition:all 0.15s;">🔬 طبقي محوري</button>
+                <button onclick="window._setOcrReportType('mri')" id="ocr-rtype-mri" style="padding:5px 14px;border-radius:20px;border:1.5px solid #d1d5db;background:#fff;color:#374151;font-family:'Cairo',sans-serif;font-size:0.78rem;font-weight:700;cursor:pointer;transition:all 0.15s;">🧲 رنين مغناطيسي</button>
+            </div>
         </div>
 
         <!-- API Key Row -->
@@ -15253,8 +15374,8 @@ ${context}
                     ondragover="event.preventDefault();this.style.borderColor='#0790AC';this.style.background='#e6f4f7';"
                     ondragleave="this.style.borderColor='#80c9d9';this.style.background='#f0fafc';"
                     ondrop="event.preventDefault();this.style.borderColor='#80c9d9';this.style.background='#f0fafc';window._handleOcrFileDrop(event);">
-                    <div style="font-size:2.2rem;margin-bottom:8px;">🖼️</div>
-                    <div style="font-size:0.9rem;font-weight:700;color:#0790AC;margin-bottom:4px;">انقر لرفع صورة</div>
+                    <div id="ocr-upload-icon" style="font-size:2.2rem;margin-bottom:8px;">🖼️</div>
+                    <div id="ocr-upload-title" style="font-size:0.9rem;font-weight:700;color:#0790AC;margin-bottom:4px;">انقر لرفع صورة / تقرير</div>
                     <div style="font-size:0.78rem;color:#9ca3af;">JPG، PNG، WEBP، PDF</div>
                     <input id="ocr-file-input" type="file" accept="image/*,application/pdf" style="display:none" onchange="window._handleOcrFileSelect(event)">
                 </div>
@@ -15292,8 +15413,8 @@ ${context}
             <!-- Loading state -->
             <div id="ocr-loading" style="display:none;text-align:center;padding:30px 0;">
                 <div style="width:48px;height:48px;border-radius:50%;border:4px solid #e6f4f7;border-top:4px solid #0790AC;animation:spin 1s linear infinite;margin:0 auto 14px;"></div>
-                <div style="font-size:0.95rem;font-weight:700;color:#374151;">يقوم Gemini بقراءة التحليل...</div>
-                <div style="font-size:0.82rem;color:#9ca3af;margin-top:4px;">جارٍ استخراج الأرقام من الصورة</div>
+                <div id="ocr-loading-title" style="font-size:0.95rem;font-weight:700;color:#374151;">يقوم Gemini بقراءة المستند...</div>
+                <div id="ocr-loading-sub" style="font-size:0.82rem;color:#9ca3af;margin-top:4px;">جارٍ تحليل المحتوى</div>
             </div>
 
             <!-- Result preview: image + table side by side -->
@@ -15318,7 +15439,7 @@ ${context}
                     <!-- جدول النتائج -->
                     <div style="flex:1;min-width:260px;">
                         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:8px;">
-                            <h3 style="font-size:0.95rem;font-weight:700;color:#374151;margin:0;">✅ النتائج المستخرجة</h3>
+                            <h3 id="ocr-result-title" style="font-size:0.95rem;font-weight:700;color:#374151;margin:0;">✅ النتائج المستخرجة</h3>
                             <div style="display:flex;align-items:center;gap:8px;">
                                 <span style="font-size:0.78rem;color:#6b7280;background:#f3f4f6;padding:3px 10px;border-radius:20px;" id="ocr-matched-count"></span>
                                 <button id="ocr-toggle-edit-btn" onclick="window._toggleOcrEditMode()" style="font-size:0.75rem;padding:4px 12px;background:#e6f4f7;color:#0790AC;border:1.5px solid #0790AC;border-radius:20px;font-family:'Cairo',sans-serif;font-weight:700;cursor:pointer;">✏️ تعديل القيم</button>
@@ -15339,6 +15460,18 @@ ${context}
                         </div>
                         <!-- Raw Gemini notes -->
                         <div id="ocr-raw-notes" style="display:none;margin-top:10px;background:#fffbeb;border:1px solid #fde68a;border-radius:10px;padding:12px 16px;font-size:0.82rem;color:#92400e;line-height:1.7;"></div>
+                        <!-- نتيجة التقارير الطبية (أشعة/إيكو/طبقي/رنين) -->
+                        <div id="ocr-report-result" style="display:none;margin-top:4px;background:#f0fafc;border:1.5px solid #b3dde7;border-radius:12px;overflow:hidden;">
+                            <div style="background:#0790AC;color:#fff;padding:9px 16px;font-size:0.85rem;font-weight:700;display:flex;align-items:center;gap:8px;">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-3-3v6M4.5 19.5l1.5-1.5M19.5 4.5l-1.5 1.5M12 3v2m0 14v2M3 12h2m14 0h2M6.34 6.34l1.42 1.42m8.48 8.48l1.42 1.42M6.34 17.66l1.42-1.42m8.48-8.48l1.42-1.42"/></svg>
+                                <span id="ocr-report-result-label">نتيجة التقرير</span>
+                            </div>
+                            <div id="ocr-report-result-body" style="padding:16px 18px;font-size:0.88rem;color:#1f2937;line-height:2;white-space:pre-wrap;direction:rtl;font-family:'Cairo',sans-serif;"></div>
+                            <div style="padding:8px 16px;background:#e6f4f7;border-top:1px solid #b3dde7;display:flex;gap:8px;justify-content:flex-end;">
+                                <button onclick="window._copyOcrReport()" style="padding:6px 14px;background:#fff;color:#0790AC;border:1.5px solid #0790AC;border-radius:8px;font-family:'Cairo',sans-serif;font-size:0.78rem;font-weight:700;cursor:pointer;transition:all 0.15s;" onmouseover="this.style.background='#e6f4f7'" onmouseout="this.style.background='#fff'">📋 نسخ التقرير</button>
+                                <button onclick="window._saveOcrReportToNotes()" style="padding:6px 14px;background:#0790AC;color:#fff;border:none;border-radius:8px;font-family:'Cairo',sans-serif;font-size:0.78rem;font-weight:700;cursor:pointer;transition:all 0.15s;" onmouseover="this.style.background='#056a80'" onmouseout="this.style.background='#0790AC'">💾 حفظ في الملاحظات</button>
+                            </div>
+                        </div>
                     </div>
 
                 </div>
@@ -15380,6 +15513,35 @@ ${context}
     var _ocrImageMime = 'image/jpeg';
     var _ocrExtractedData = {};
     var _ocrEditMode = false;
+    var _ocrReportType = 'lab'; // 'lab' | 'xray' | 'echo' | 'ct' | 'mri'
+
+    // إعداد نوع التقرير
+    window._setOcrReportType = function(type) {
+        _ocrReportType = type;
+        var types = ['lab','xray','echo','ct','mri'];
+        types.forEach(function(t) {
+            var btn = document.getElementById('ocr-rtype-' + t);
+            if (!btn) return;
+            if (t === type) {
+                btn.style.background = '#0790AC'; btn.style.color = '#fff'; btn.style.borderColor = '#0790AC';
+            } else {
+                btn.style.background = '#fff'; btn.style.color = '#374151'; btn.style.borderColor = '#d1d5db';
+            }
+        });
+        // تحديث نص منطقة الرفع
+        var icons   = { lab:'🧪', xray:'🩻', echo:'🫀', ct:'🔬', mri:'🧲' };
+        var titles  = { lab:'انقر لرفع صورة التحليل', xray:'انقر لرفع صورة الأشعة', echo:'انقر لرفع تقرير الإيكو', ct:'انقر لرفع صورة الطبقي المحوري', mri:'انقر لرفع صورة الرنين المغناطيسي' };
+        var iconEl  = document.getElementById('ocr-upload-icon');
+        var titleEl = document.getElementById('ocr-upload-title');
+        if (iconEl)  iconEl.textContent = icons[type]  || '🖼️';
+        if (titleEl) titleEl.textContent = titles[type] || 'انقر لرفع صورة / تقرير';
+        // إخفاء جدول التحاليل إذا كان نوع تقرير طبي
+        var tableWrap = document.getElementById('ocr-result-section');
+        if (tableWrap) tableWrap.style.display = 'none';
+        var reportResultEl = document.getElementById('ocr-report-result');
+        if (reportResultEl) reportResultEl.style.display = 'none';
+        document.getElementById('ocr-apply-btn').style.display = 'none';
+    };
 
     // خريطة الحقول: اسم Gemini → ID الحقل في النموذج + التسمية العربية
     var OCR_FIELD_MAP = [
@@ -15429,7 +15591,10 @@ ${context}
     window._openOcrModal = function() {
         var savedKey = localStorage.getItem('_gemini_api_key') || '';
         document.getElementById('ocr-api-key-input').value = savedKey;
-        document.getElementById('ocr-key-status').textContent = savedKey ? '✅ المفتاح محفوظ' : '';
+        var isCloudConnected = window._cloudAccessToken && Date.now() < (window._cloudTokenExpiry || 0);
+        document.getElementById('ocr-key-status').textContent = savedKey
+            ? (isCloudConnected ? '✅ المفتاح محفوظ محلياً وعلى Google Drive ☁️' : '✅ المفتاح محفوظ')
+            : '';
         _resetOcrModal();
         document.getElementById('ocr-lab-modal').style.display = 'flex';
     };
@@ -15448,7 +15613,9 @@ ${context}
         var key = document.getElementById('ocr-api-key-input').value.trim();
         if (!key) { document.getElementById('ocr-key-status').textContent = '⚠️ يرجى إدخال المفتاح أولاً'; return; }
         localStorage.setItem('_gemini_api_key', key);
-        document.getElementById('ocr-key-status').textContent = '✅ تم حفظ المفتاح بنجاح';
+        document.getElementById('ocr-key-status').textContent = '✅ تم حفظ المفتاح محلياً';
+        // حفظ مفتاح Gemini على Google Drive إن كان المستخدم متصلاً
+        _saveGeminiKeyToDrive(key, 'ocr-key-status');
     };
 
     // إعادة ضبط النافذة
@@ -15465,8 +15632,12 @@ ${context}
         document.getElementById('ocr-apply-btn').style.display = 'none';
         document.getElementById('ocr-scan-btn').style.display = 'inline-block';
         document.getElementById('ocr-file-input').value = '';
+        var reportResultEl = document.getElementById('ocr-report-result');
+        if (reportResultEl) reportResultEl.style.display = 'none';
         var editBtn = document.getElementById('ocr-toggle-edit-btn');
         if (editBtn) { editBtn.textContent = '✏️ تعديل القيم'; editBtn.style.background='#e6f4f7'; editBtn.style.color='#0790AC'; }
+        // إعادة ضبط نوع التقرير إلى تحاليل مخبرية
+        if (typeof window._setOcrReportType === 'function') window._setOcrReportType('lab');
     }
 
     // اختيار الملف
@@ -15630,8 +15801,25 @@ ${context}
         }, 80);
 
         try {
-            // الـ prompt بالإنجليزية لضمان JSON نظيف ومكتمل من Gemini
-            var prompt = "You are a medical lab report reader. Extract all numeric test results from this lab report image.\n\nCRITICAL RULES:\n1. Return ONLY a single valid complete JSON object. No text before or after. No markdown fences.\n2. The JSON MUST be complete and properly closed - never truncate it.\n3. Every value must be a plain number (float or int), never a string.\n4. For values like >200 or <5 use only the number 200 or 5.\n5. Only include tests with a clearly visible numeric result in the image.\n6. Keep notes very short under 50 chars or empty string.\n\nExact output format (no deviations):\n{\"results\":[{\"test\":\"WBC\",\"value\":6.5,\"unit\":\"10^3/uL\",\"flag\":\"normal\"},{\"test\":\"HB\",\"value\":11.2,\"unit\":\"g/dL\",\"flag\":\"L\"}],\"notes\":\"\"}\n\nNow extract from the image:";
+            // الـ prompt يتغير حسب نوع التقرير
+            var prompt;
+            var isLabType = (_ocrReportType === 'lab');
+
+            if (isLabType) {
+                prompt = "You are a medical lab report reader. Extract all numeric test results from this lab report image.\n\nCRITICAL RULES:\n1. Return ONLY a single valid complete JSON object. No text before or after. No markdown fences.\n2. The JSON MUST be complete and properly closed - never truncate it.\n3. Every value must be a plain number (float or int), never a string.\n4. For values like >200 or <5 use only the number 200 or 5.\n5. Only include tests with a clearly visible numeric result in the image.\n6. Keep notes very short under 50 chars or empty string.\n\nExact output format (no deviations):\n{\"results\":[{\"test\":\"WBC\",\"value\":6.5,\"unit\":\"10^3/uL\",\"flag\":\"normal\"},{\"test\":\"HB\",\"value\":11.2,\"unit\":\"g/dL\",\"flag\":\"L\"}],\"notes\":\"\"}\n\nNow extract from the image:";
+            } else {
+                var reportTypeNames = { xray: 'X-Ray (Radiology)', echo: 'Echocardiography (Echo)', ct: 'CT Scan (Computed Tomography)', mri: 'MRI (Magnetic Resonance Imaging)' };
+                var reportTypeName = reportTypeNames[_ocrReportType] || 'Medical Report';
+                prompt = "You are an expert medical report reader specialized in " + reportTypeName + " reports.\n\nExtract and summarize ALL findings from this medical report image.\n\nRULES:\n1. Write your response in Arabic.\n2. Organize findings with clear sections and headings.\n3. Include: main findings, measurements, impressions/conclusions, and recommendations if present.\n4. Be concise but complete — do not omit any finding.\n5. Format as readable Arabic text (not JSON).\n6. If the image is unclear or unreadable, say so.\n\nBegin extraction:";
+            }
+
+            // تحديث نص التحميل
+            var loadingTitles = { lab:'يقوم Gemini بقراءة التحليل...', xray:'يقوم Gemini بقراءة تقرير الأشعة...', echo:'يقوم Gemini بقراءة تقرير الإيكو...', ct:'يقوم Gemini بقراءة الطبقي المحوري...', mri:'يقوم Gemini بقراءة الرنين المغناطيسي...' };
+            var loadingSubs  = { lab:'جارٍ استخراج الأرقام من الصورة', xray:'جارٍ تحليل نتائج الأشعة', echo:'جارٍ استخراج قياسات القلب', ct:'جارٍ تحليل نتائج الطبقي', mri:'جارٍ تحليل نتائج الرنين' };
+            var ltEl = document.getElementById('ocr-loading-title');
+            var lsEl = document.getElementById('ocr-loading-sub');
+            if (ltEl) ltEl.textContent = loadingTitles[_ocrReportType] || 'يقوم Gemini بقراءة المستند...';
+            if (lsEl) lsEl.textContent = loadingSubs[_ocrReportType]  || 'جارٍ تحليل المحتوى';
 
             // ── اختيار النموذج تلقائياً: يحاول القائمة المفضّلة أولاً ──────────────
             var MODEL_PRIORITY = [
@@ -15728,11 +15916,12 @@ ${context}
                     ]
                 }],
                 generationConfig: {
-                    temperature: 0.1,
+                    temperature: isLabType ? 0.1 : 0.3,
                     maxOutputTokens: 8192,
-                    responseMimeType: 'application/json'
+                    responseMimeType: isLabType ? 'application/json' : undefined
                 }
             };
+            if (!isLabType) delete requestBody.generationConfig.responseMimeType;
 
             // responseMimeType قد لا يدعمه بعض النماذج القديمة — نتعامل مع ذلك في _callGeminiWithBestModel
             var { response, model: usedModel } = await _callGeminiWithBestModel(apiKey, requestBody);
@@ -15742,6 +15931,36 @@ ${context}
             var rawText = (data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts)
                 ? data.candidates[0].content.parts.map(function(p) { return p.text || ''; }).join('')
                 : '';
+
+            // ── إذا كان تقريراً طبياً (غير تحاليل) → عرض النص مباشرة ─────────────
+            if (!isLabType) {
+                document.getElementById('ocr-loading').style.display = 'none';
+                document.getElementById('ocr-scan-btn').disabled = false;
+                if (!rawText.trim()) {
+                    _showOcrError('لم يتمكن Gemini من قراءة التقرير. حاول برفع صورة أوضح.');
+                    return;
+                }
+                var reportLabels = { xray:'نتيجة تقرير الأشعة 🩻', echo:'نتيجة تقرير الإيكو 🫀', ct:'نتيجة الطبقي المحوري 🔬', mri:'نتيجة الرنين المغناطيسي 🧲' };
+                var labelEl = document.getElementById('ocr-report-result-label');
+                var bodyEl  = document.getElementById('ocr-report-result-body');
+                var resEl   = document.getElementById('ocr-report-result');
+                var titleEl2 = document.getElementById('ocr-result-title');
+                if (labelEl) labelEl.textContent = reportLabels[_ocrReportType] || 'نتيجة التقرير';
+                if (bodyEl)  bodyEl.textContent   = rawText.trim();
+                if (resEl)   resEl.style.display  = 'block';
+                // إخفاء جدول التحاليل وزر التعبئة
+                var tableEl = document.querySelector('#ocr-result-section table');
+                if (tableEl) tableEl.closest('div[style*="overflow"]') && (tableEl.closest('div[style*="overflow"]').style.display = 'none');
+                if (titleEl2) titleEl2.textContent = '✅ نتيجة التقرير';
+                document.getElementById('ocr-result-section').style.display = 'block';
+                document.getElementById('ocr-apply-btn').style.display = 'none';
+                // نسخ الصورة للجانب
+                var previewSrc2 = document.getElementById('ocr-preview-img').src;
+                var sideImg2 = document.getElementById('ocr-side-img');
+                if (previewSrc2 && sideImg2) { sideImg2.src = previewSrc2; var sideImgZoom2 = document.getElementById('ocr-img-zoom-big'); if (sideImgZoom2) sideImgZoom2.src = previewSrc2; }
+                setTimeout(function() { var r = document.getElementById('ocr-result-section'); if (r) r.scrollIntoView({ behavior:'smooth', block:'start' }); }, 120);
+                return;
+            }
 
             // ── تنظيف النص من الـ markdown وأي محتوى زائد ──────────────────────
             rawText = rawText
@@ -15988,6 +16207,49 @@ ${context}
         if (!overlay) return;
         bigImg.src = imgEl.src;
         overlay.style.display = 'flex';
+    };
+
+    // نسخ نص التقرير الطبي
+    window._copyOcrReport = function() {
+        var bodyEl = document.getElementById('ocr-report-result-body');
+        if (!bodyEl || !bodyEl.textContent.trim()) return;
+        try {
+            navigator.clipboard.writeText(bodyEl.textContent.trim()).then(function() {
+                if (typeof showToast === 'function') showToast('✅ تم نسخ التقرير', 'success');
+            });
+        } catch(e) {
+            var ta = document.createElement('textarea');
+            ta.value = bodyEl.textContent.trim();
+            document.body.appendChild(ta); ta.select();
+            document.execCommand('copy'); document.body.removeChild(ta);
+            if (typeof showToast === 'function') showToast('✅ تم نسخ التقرير', 'success');
+        }
+    };
+
+    // حفظ نص التقرير الطبي في حقل الملاحظات
+    window._saveOcrReportToNotes = function() {
+        var bodyEl = document.getElementById('ocr-report-result-body');
+        if (!bodyEl || !bodyEl.textContent.trim()) return;
+        var reportLabels = { xray:'تقرير الأشعة', echo:'تقرير الإيكو', ct:'تقرير الطبقي المحوري', mri:'تقرير الرنين المغناطيسي' };
+        var label = reportLabels[_ocrReportType] || 'تقرير طبي';
+        var content = '【' + label + '】\n' + bodyEl.textContent.trim();
+        // البحث عن حقل الملاحظات في النموذج
+        var notesFields = ['notes','visit_notes','clinical_notes','notes_text'];
+        var appended = false;
+        notesFields.forEach(function(id) {
+            var el = document.getElementById(id);
+            if (el && !appended) {
+                el.value = el.value ? (el.value + '\n\n' + content) : content;
+                el.dispatchEvent(new Event('input', { bubbles: true }));
+                appended = true;
+            }
+        });
+        if (appended) {
+            if (typeof showToast === 'function') showToast('✅ تم حفظ التقرير في الملاحظات', 'success');
+            window._closeOcrModal();
+        } else {
+            if (typeof showToast === 'function') showToast('⚠️ لم يتم العثور على حقل ملاحظات', 'info');
+        }
     };
 
 })();
