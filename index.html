@@ -754,6 +754,61 @@
             flex: none !important;
         }
 
+        /* حقول التحاليل الفيروسية - تدعم سلبي/إيجابي أو قيمة رقمية */
+        .viral-field-card {
+            background: #fff;
+            border: 1px solid #fce7f3;
+            border-radius: 7px;
+            padding: 8px 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            transition: border-color 0.15s, box-shadow 0.15s;
+        }
+        .viral-field-card:hover {
+            border-color: #be185d;
+            box-shadow: 0 2px 8px rgba(190,24,93,0.1);
+        }
+        .viral-toggle-btns {
+            display: flex;
+            gap: 3px;
+            margin-bottom: 2px;
+        }
+        .viral-toggle-btn {
+            flex: 1;
+            padding: 2px 4px;
+            font-size: 0.65rem;
+            font-weight: 700;
+            border-radius: 4px;
+            border: 1px solid #d1d5db;
+            background: #f9fafb;
+            color: #6b7280;
+            cursor: pointer;
+            font-family: 'Cairo', sans-serif;
+            transition: all 0.15s;
+        }
+        .viral-toggle-btn.active {
+            background: #be185d;
+            color: #fff;
+            border-color: #be185d;
+        }
+        .viral-status-neg {
+            background: #dcfce7;
+            color: #16a34a;
+            border-radius: 4px;
+            padding: 2px 6px;
+            font-size: 0.7rem;
+            font-weight: 700;
+        }
+        .viral-status-pos {
+            background: #fee2e2;
+            color: #dc2626;
+            border-radius: 4px;
+            padding: 2px 6px;
+            font-size: 0.7rem;
+            font-weight: 700;
+        }
+
         /* بطاقة RBC الموسعة */
         .lab-rbc-card {
             background: #fff;
@@ -2891,6 +2946,77 @@
                         </div>
                     </div>
 
+                    <!-- E. التحاليل الفيروسية -->
+                    <div class="lab-section" style="border-color:#fce7f3; background:linear-gradient(135deg,#fff5f9 0%,#fff0f6 100%);">
+                        <h3 class="lab-section-title" style="color:#be185d; border-bottom-color:#fce7f3;">🦠 E. التحاليل الفيروسية (Viral Serology)</h3>
+                        <div class="lab-grid">
+
+                            <!-- التهاب الكبد B -->
+                            <div class="viral-field-card">
+                                <label class="lab-field-label" style="color:#be185d;">التهاب الكبد B (HBsAg)</label>
+                                <div class="viral-toggle-btns">
+                                    <button type="button" class="viral-toggle-btn active" onclick="setViralMode('hbsag','qual',this)">نوعي</button>
+                                    <button type="button" class="viral-toggle-btn" onclick="setViralMode('hbsag','quant',this)">كمي</button>
+                                </div>
+                                <div id="hbsag_qual_wrap" class="lab-input-group">
+                                    <select id="lab_hbsag" name="lab_hbsag" class="lab-input viral-qual-select" style="flex:1;" onchange="updateViralStatus('hbsag')">
+                                        <option value="">—</option>
+                                        <option value="سلبي">سلبي (Negative)</option>
+                                        <option value="ايجابي">إيجابي (Positive)</option>
+                                    </select>
+                                    <span id="lab_hbsag_status" class="lab-status-indicator"></span>
+                                </div>
+                                <div id="hbsag_quant_wrap" class="lab-input-group" style="display:none;">
+                                    <input type="number" id="lab_hbsag_quant" name="lab_hbsag_quant" class="lab-input lab-field-input" data-lab="hbsag_quant" step="any" placeholder="IU/mL">
+                                    <span id="lab_hbsag_quant_status" class="lab-status-indicator"></span>
+                                </div>
+                            </div>
+
+                            <!-- التهاب الكبد C -->
+                            <div class="viral-field-card">
+                                <label class="lab-field-label" style="color:#be185d;">التهاب الكبد C (Anti-HCV)</label>
+                                <div class="viral-toggle-btns">
+                                    <button type="button" class="viral-toggle-btn active" onclick="setViralMode('hcv','qual',this)">نوعي</button>
+                                    <button type="button" class="viral-toggle-btn" onclick="setViralMode('hcv','quant',this)">كمي</button>
+                                </div>
+                                <div id="hcv_qual_wrap" class="lab-input-group">
+                                    <select id="lab_hcv" name="lab_hcv" class="lab-input viral-qual-select" style="flex:1;" onchange="updateViralStatus('hcv')">
+                                        <option value="">—</option>
+                                        <option value="سلبي">سلبي (Negative)</option>
+                                        <option value="ايجابي">إيجابي (Positive)</option>
+                                    </select>
+                                    <span id="lab_hcv_status" class="lab-status-indicator"></span>
+                                </div>
+                                <div id="hcv_quant_wrap" class="lab-input-group" style="display:none;">
+                                    <input type="number" id="lab_hcv_quant" name="lab_hcv_quant" class="lab-input lab-field-input" data-lab="hcv_quant" step="any" placeholder="IU/mL">
+                                    <span id="lab_hcv_quant_status" class="lab-status-indicator"></span>
+                                </div>
+                            </div>
+
+                            <!-- الإيدز HIV -->
+                            <div class="viral-field-card">
+                                <label class="lab-field-label" style="color:#be185d;">الإيدز (HIV Ag/Ab)</label>
+                                <div class="viral-toggle-btns">
+                                    <button type="button" class="viral-toggle-btn active" onclick="setViralMode('hiv','qual',this)">نوعي</button>
+                                    <button type="button" class="viral-toggle-btn" onclick="setViralMode('hiv','quant',this)">كمي</button>
+                                </div>
+                                <div id="hiv_qual_wrap" class="lab-input-group">
+                                    <select id="lab_hiv" name="lab_hiv" class="lab-input viral-qual-select" style="flex:1;" onchange="updateViralStatus('hiv')">
+                                        <option value="">—</option>
+                                        <option value="سلبي">سلبي (Negative)</option>
+                                        <option value="ايجابي">إيجابي (Positive)</option>
+                                    </select>
+                                    <span id="lab_hiv_status" class="lab-status-indicator"></span>
+                                </div>
+                                <div id="hiv_quant_wrap" class="lab-input-group" style="display:none;">
+                                    <input type="number" id="lab_hiv_quant" name="lab_hiv_quant" class="lab-input lab-field-input" data-lab="hiv_quant" step="any" placeholder="copies/mL">
+                                    <span id="lab_hiv_quant_status" class="lab-status-indicator"></span>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
                     <!-- C. تحليل البول والراسب -->
                     <div class="lab-section">
                         <h3 class="lab-section-title">🔬 C. تحليل البول والراسب</h3>
@@ -3439,6 +3565,12 @@
             <label class="lab-req-item"><input type="checkbox" class="lab-req-checkbox" value="CK (Creatine Kinase)"> <span class="text-sm text-gray-800">CK — كرياتين كيناز</span></label>
             <label class="lab-req-item"><input type="checkbox" class="lab-req-checkbox" value="CK-MB"> <span class="text-sm text-gray-800">CK-MB — كرياتين كيناز MB</span></label>
             <label class="lab-req-item"><input type="checkbox" class="lab-req-checkbox" value="Myoglobin"> <span class="text-sm text-gray-800">Myoglobin — الميوغلوبين</span></label>
+
+            <!-- E. التحاليل الفيروسية -->
+            <div class="lab-req-section-title" style="color:#be185d; background:#fff0f6; border-right-color:#be185d;">🦠 E. التحاليل الفيروسية (Viral Serology)</div>
+            <label class="lab-req-item"><input type="checkbox" class="lab-req-checkbox" value="HBsAg (التهاب الكبد B)"> <span class="text-sm text-gray-800">HBsAg — التهاب الكبد B</span></label>
+            <label class="lab-req-item"><input type="checkbox" class="lab-req-checkbox" value="Anti-HCV (التهاب الكبد C)"> <span class="text-sm text-gray-800">Anti-HCV — التهاب الكبد C</span></label>
+            <label class="lab-req-item"><input type="checkbox" class="lab-req-checkbox" value="HIV Ag/Ab (الإيدز)"> <span class="text-sm text-gray-800">HIV Ag/Ab — الإيدز HIV</span></label>
 
             <!-- C. تحليل البول -->
             <div class="lab-req-section-title">🔬 C. تحليل البول والراسب</div>
@@ -5907,6 +6039,42 @@
             var urineNotesEl = document.getElementById('lab_urine_notes');
             if (urineNotesEl) urineNotesEl.value = labs['urine_notes'];
         }
+        // تحميل التحاليل الفيروسية
+        ['hbsag','hcv','hiv'].forEach(function(field) {
+            // النوعي
+            var qualVal = labs[field];
+            if (qualVal) {
+                var selectEl = document.getElementById('lab_' + field);
+                if (selectEl) {
+                    selectEl.value = qualVal;
+                    updateViralStatus(field);
+                }
+            }
+            // الكمي
+            var quantVal = labs[field + '_quant'];
+            if (quantVal) {
+                var quantEl = document.getElementById('lab_' + field + '_quant');
+                if (quantEl) {
+                    quantEl.value = quantVal;
+                    // تبديل إلى وضع كمي
+                    var qualWrap  = document.getElementById(field + '_qual_wrap');
+                    var quantWrap = document.getElementById(field + '_quant_wrap');
+                    var btns = document.querySelectorAll('[onclick*="setViralMode(\'' + field + '\'"]');
+                    if (qualWrap && quantWrap) {
+                        qualWrap.style.display  = 'none';
+                        quantWrap.style.display = '';
+                    }
+                    // تحديث أزرار التبديل يدوياً
+                    var container = quantEl.closest('.viral-field-card');
+                    if (container) {
+                        var toggleBtns = container.querySelectorAll('.viral-toggle-btn');
+                        toggleBtns.forEach(function(b, i) {
+                            b.classList.toggle('active', i === 1);
+                        });
+                    }
+                }
+            }
+        });
         
         // (جديد B.d) تحميل الإجراءات التشخيصية
         const diags = visit.diagnostics || {};
@@ -6106,6 +6274,16 @@
         });
         // تجميع حقول select في تحليل البول
         ['lab_urine_bacteria','lab_urine_protein','lab_urine_oxalate'].forEach(function(id) {
+            var el = document.getElementById(id);
+            if (el && el.value) labs[id.substring(4)] = el.value;
+        });
+        // تجميع التحاليل الفيروسية (نوعي + كمي)
+        ['lab_hbsag','lab_hcv','lab_hiv'].forEach(function(id) {
+            var qualEl = document.getElementById(id);
+            if (qualEl && qualEl.value) labs[id.substring(4)] = qualEl.value;
+        });
+        // الحفظ الكمي للتحاليل الفيروسية (إذا كان الوضع كمياً)
+        ['lab_hbsag_quant','lab_hcv_quant','lab_hiv_quant'].forEach(function(id) {
             var el = document.getElementById(id);
             if (el && el.value) labs[id.substring(4)] = el.value;
         });
@@ -6485,6 +6663,47 @@
             statusEl.innerHTML = '&#10003;'; // علامة صح
         }
     }
+
+    // ===== دوال التحاليل الفيروسية =====
+    window.setViralMode = function(field, mode, btn) {
+        var qualWrap  = document.getElementById(field + '_qual_wrap');
+        var quantWrap = document.getElementById(field + '_quant_wrap');
+        var btns = btn.closest('.viral-toggle-btns').querySelectorAll('.viral-toggle-btn');
+        btns.forEach(function(b) { b.classList.remove('active'); });
+        btn.classList.add('active');
+        if (mode === 'qual') {
+            if (qualWrap)  qualWrap.style.display  = '';
+            if (quantWrap) quantWrap.style.display = 'none';
+            // مسح الحقل الكمي عند التبديل
+            var quantInput = document.getElementById('lab_' + field + '_quant');
+            if (quantInput) quantInput.value = '';
+        } else {
+            if (qualWrap)  qualWrap.style.display  = 'none';
+            if (quantWrap) quantWrap.style.display = '';
+            // مسح الحقل النوعي عند التبديل
+            var qualSelect = document.getElementById('lab_' + field);
+            if (qualSelect) { qualSelect.value = ''; updateViralStatus(field); }
+        }
+    };
+
+    window.updateViralStatus = function(field) {
+        var select   = document.getElementById('lab_' + field);
+        var statusEl = document.getElementById('lab_' + field + '_status');
+        if (!select || !statusEl) return;
+        var val = select.value;
+        if (!val) {
+            statusEl.innerHTML = '';
+            statusEl.className = 'lab-status-indicator';
+            return;
+        }
+        if (val === 'ايجابي') {
+            statusEl.className = 'lab-status-indicator lab-status-high';
+            statusEl.innerHTML = '!';
+        } else {
+            statusEl.className = 'lab-status-indicator lab-status-normal';
+            statusEl.innerHTML = '&#10003;';
+        }
+    };
 
     // (جديد C.o) دالة خاصة بمؤشرات Inbody (تأخذ الجنس بعين الاعتبار)
     function updateInbodyStatusIndicator(inputId, key, value) {
@@ -8980,6 +9199,21 @@
             `;
         };
         
+        // دالة لعرض حقل التحليل الفيروسي (سلبي / إيجابي)
+        const renderViralField = (label, value) => {
+            if (value === null || value === undefined || value === '') return '';
+            const isPos = value === 'ايجابي';
+            const badge = isPos
+                ? `<span class="viral-status-pos">إيجابي ●</span>`
+                : `<span class="viral-status-neg">سلبي ✓</span>`;
+            return `
+                <div class="py-2 flex items-center gap-2">
+                    <span class="text-sm font-semibold text-gray-500">${label}:</span>
+                    ${badge}
+                </div>
+            `;
+        };
+        
         // (جديد A.b) دالة لعرض صور الهوية
         const renderIdImages = () => {
             let html = '';
@@ -9325,6 +9559,20 @@
                         ${l.ck ? renderLabField('CK', l.ck, 'ck', normalRanges) : ''}
                         ${l.ckmb ? renderLabField('CK-MB', l.ckmb, 'ckmb', normalRanges) : ''}
                         ${l.myoglobin ? renderLabField('Myoglobin', l.myoglobin, 'myoglobin', normalRanges) : ''}
+                    </div>
+                </div>` : ''}
+
+                <!-- التحاليل الفيروسية -->
+                ${(l.hbsag || l.hbsag_quant || l.hcv || l.hcv_quant || l.hiv || l.hiv_quant) ? `
+                <div class="lab-section" style="border-color:#fce7f3; background:linear-gradient(135deg,#fff5f9 0%,#fff0f6 100%);">
+                    <h3 class="lab-section-title" style="color:#be185d; border-bottom-color:#fce7f3;">🦠 E. التحاليل الفيروسية</h3>
+                    <div class="lab-grid">
+                        ${l.hbsag ? renderViralField('التهاب الكبد B (HBsAg)', l.hbsag) : ''}
+                        ${l.hbsag_quant ? renderLabField('HBsAg كمي', l.hbsag_quant, 'hbsag_quant', normalRanges) : ''}
+                        ${l.hcv ? renderViralField('التهاب الكبد C (Anti-HCV)', l.hcv) : ''}
+                        ${l.hcv_quant ? renderLabField('HCV كمي', l.hcv_quant, 'hcv_quant', normalRanges) : ''}
+                        ${l.hiv ? renderViralField('الإيدز (HIV)', l.hiv) : ''}
+                        ${l.hiv_quant ? renderLabField('HIV كمي', l.hiv_quant, 'hiv_quant', normalRanges) : ''}
                     </div>
                 </div>` : ''}
                 
