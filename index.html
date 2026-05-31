@@ -2062,9 +2062,9 @@
                                 <label for="neck-circ" class="block text-sm font-medium text-gray-700">محيط الرقبة (سم)</label>
                                 <input type="number" id="neck-circ" name="neck_circ" class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-2">
                             </div>
-                            <div>
+                            <div id="arm-circ-container" style="display:none;">
                                 <label for="arm-circ" class="block text-sm font-medium text-gray-700">محيط الذراع (سم)</label>
-                                <input type="number" id="arm-circ" name="arm_circ" class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-2" required>
+                                <input type="number" id="arm-circ" name="arm_circ" class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-2">
                             </div>
                             <div id="waist-circ-container" style="display:none;">
                                 <label for="waist-circ" class="block text-sm font-medium text-gray-700">محيط الخصر (سم)</label>
@@ -2345,15 +2345,33 @@
                         <h3 class="lab-section-title">A. قسم التحاليل الدموية</h3>
                         <div class="lab-grid">
                             <!-- WBC -->
-                            <div>
-                                <label for="lab_wbc" class="block text-sm font-medium text-gray-700">WBC</label>
-                                <div class="lab-input-group">
-                                    <input type="number" id="lab_wbc" name="lab_wbc" data-lab="wbc" class="lab-input lab-field-input" step="any">
-                                    <span class="font-bold">N:</span>
-                                    <input type="number" id="lab_wbc_n" name="lab_wbc_n" placeholder="%" class="lab-input lab-input-small" step="any">
-                                    <span class="font-bold">L:</span>
-                                    <input type="number" id="lab_wbc_l" name="lab_wbc_l" placeholder="%" class="lab-input lab-input-small" step="any">
+                            <div class="lab-grid-span-full" style="grid-column:1/-1;">
+                                <label for="lab_wbc" class="block text-sm font-medium text-gray-700">WBC (كريات الدم البيضاء)</label>
+                                <div class="lab-input-group" style="flex-wrap:wrap;gap:6px;">
+                                    <input type="number" id="lab_wbc" name="lab_wbc" data-lab="wbc" class="lab-input lab-field-input" step="any" placeholder="WBC ×10³">
                                     <span id="lab_wbc_status" class="lab-status-indicator"></span>
+                                </div>
+                                <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;">
+                                    <div style="display:flex;flex-direction:column;align-items:center;gap:3px;min-width:80px;">
+                                        <label style="font-size:0.72rem;font-weight:700;color:#374151;white-space:nowrap;">Neutrophils %</label>
+                                        <input type="number" id="lab_wbc_neu" name="lab_wbc_neu" placeholder="%" class="lab-input lab-input-small" step="any" style="width:72px;text-align:center;">
+                                    </div>
+                                    <div style="display:flex;flex-direction:column;align-items:center;gap:3px;min-width:80px;">
+                                        <label style="font-size:0.72rem;font-weight:700;color:#374151;white-space:nowrap;">Lymphocytes %</label>
+                                        <input type="number" id="lab_wbc_lym" name="lab_wbc_lym" placeholder="%" class="lab-input lab-input-small" step="any" style="width:72px;text-align:center;">
+                                    </div>
+                                    <div style="display:flex;flex-direction:column;align-items:center;gap:3px;min-width:80px;">
+                                        <label style="font-size:0.72rem;font-weight:700;color:#374151;white-space:nowrap;">Monocytes %</label>
+                                        <input type="number" id="lab_wbc_mon" name="lab_wbc_mon" placeholder="%" class="lab-input lab-input-small" step="any" style="width:72px;text-align:center;">
+                                    </div>
+                                    <div style="display:flex;flex-direction:column;align-items:center;gap:3px;min-width:80px;">
+                                        <label style="font-size:0.72rem;font-weight:700;color:#374151;white-space:nowrap;">Eosinophils %</label>
+                                        <input type="number" id="lab_wbc_eos" name="lab_wbc_eos" placeholder="%" class="lab-input lab-input-small" step="any" style="width:72px;text-align:center;">
+                                    </div>
+                                    <div style="display:flex;flex-direction:column;align-items:center;gap:3px;min-width:80px;">
+                                        <label style="font-size:0.72rem;font-weight:700;color:#374151;white-space:nowrap;">Basophils %</label>
+                                        <input type="number" id="lab_wbc_bas" name="lab_wbc_bas" placeholder="%" class="lab-input lab-input-small" step="any" style="width:72px;text-align:center;">
+                                    </div>
                                 </div>
                             </div>
                             <!-- RBC -->
@@ -9067,8 +9085,11 @@
                     <h3 class="lab-section-title">A. قسم التحاليل الدموية</h3>
                     <div class="lab-grid">
                         ${renderLabField('WBC', l.wbc, 'wbc', normalRanges)}
-                        ${renderField('N%', l.wbc_n)}
-                        ${renderField('L%', l.wbc_l)}
+                        ${l.wbc_neu !== undefined && l.wbc_neu !== '' ? renderField('Neutrophils %', l.wbc_neu) : ''}
+                        ${l.wbc_lym !== undefined && l.wbc_lym !== '' ? renderField('Lymphocytes %', l.wbc_lym) : ''}
+                        ${l.wbc_mon !== undefined && l.wbc_mon !== '' ? renderField('Monocytes %', l.wbc_mon) : ''}
+                        ${l.wbc_eos !== undefined && l.wbc_eos !== '' ? renderField('Eosinophils %', l.wbc_eos) : ''}
+                        ${l.wbc_bas !== undefined && l.wbc_bas !== '' ? renderField('Basophils %', l.wbc_bas) : ''}
                         ${renderLabField('RBC', l.rbc, 'rbc', normalRanges)}
                         ${l.mcv ? renderLabField('MCV', l.mcv, 'mcv', normalRanges) : ''}
                         ${l.mch ? renderLabField('MCH', l.mch, 'mch', normalRanges) : ''}
@@ -14176,11 +14197,13 @@ function applyNutritionProgramVisibility(enabled) {
     var viewTab7 = document.getElementById('patient-view-tab-7');
     if (viewTab7) viewTab7.style.display = enabled ? '' : 'none';
 
-    // إظهار/إخفاء قياسات الرقبة والخصر
+    // إظهار/إخفاء قياسات الرقبة والخصر والذراع
     var neckContainer = document.getElementById('neck-circ-container');
     if (neckContainer) neckContainer.style.display = enabled ? '' : 'none';
     var waistContainer = document.getElementById('waist-circ-container');
     if (waistContainer) waistContainer.style.display = enabled ? '' : 'none';
+    var armContainer = document.getElementById('arm-circ-container');
+    if (armContainer) armContainer.style.display = enabled ? '' : 'none';
 
     // الطول والوزن: مطلوبان فقط عند تفعيل البرامج الغذائية
     var heightInput = document.getElementById('height');
@@ -16030,6 +16053,11 @@ window._loadGeminiKeyFromDrive = async function() {
     // خريطة الحقول: اسم Gemini → ID الحقل في النموذج + التسمية العربية
     var OCR_FIELD_MAP = [
         { keys: ['wbc','كريات بيضاء','white blood cell','white blood count'],       id: 'lab_wbc',           label: 'WBC (كريات بيضاء)',    unit: '×10³/µL' },
+        { keys: ['neutrophils','neutrophil','neutro','neu%','pmn'], id: 'lab_wbc_neu', label: 'Neutrophils %', unit: '%' },
+        { keys: ['lymphocytes','lymphocyte','lympho','lym%','lymph%'], id: 'lab_wbc_lym', label: 'Lymphocytes %', unit: '%' },
+        { keys: ['monocytes','monocyte','mono','mono%'], id: 'lab_wbc_mon', label: 'Monocytes %', unit: '%' },
+        { keys: ['eosinophils','eosinophil','eos','eos%'], id: 'lab_wbc_eos', label: 'Eosinophils %', unit: '%' },
+        { keys: ['basophils','basophil','baso','baso%','bas%'], id: 'lab_wbc_bas', label: 'Basophils %', unit: '%' },
         { keys: ['rbc','كريات حمراء','red blood cell','red blood count'],        id: 'lab_rbc',           label: 'RBC (كريات حمراء)',    unit: '×10⁶/µL' },
         { keys: ['hemoglobin','خضاب','هيموغلوبين','haemoglobin'], id: 'lab_hb', label: 'HB (هيموغلوبين)',      unit: 'g/dL' },
         { keys: ['hematocrit','هيماتوكريت'], id: 'lab_ht',         label: 'HT (هيماتوكريت)',      unit: '%' },
