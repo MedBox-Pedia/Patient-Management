@@ -2941,6 +2941,11 @@
                                 <label for="inbody-report-input" class="block text-sm font-medium text-gray-700">تحميل صورة تقرير Inbody</label>
                                 <input type="file" id="inbody-report-input" name="inbody_report_input" accept="image/*" class="image-upload-input" data-preview="inbody-report-preview" data-storage="inbody_report_img" data-orientation="horizontal">
                                 <img id="inbody-report-preview" class="image-preview" alt="Inbody Report Image">
+                                <!-- زر OCR لـ InBody -->
+                                <button type="button" onclick="window._openInbodyOcrModal()" title="قراءة تقرير InBody بالذكاء الاصطناعي" style="margin-top:10px;width:100%;display:flex;align-items:center;justify-content:center;gap:8px;padding:9px 14px;background:linear-gradient(135deg,#0790AC 0%,#056a80 100%);color:#fff;border:none;border-radius:10px;font-family:'Cairo',sans-serif;font-size:0.82rem;font-weight:700;cursor:pointer;box-shadow:0 2px 8px rgba(7,144,172,0.25);transition:all 0.18s;" onmouseover="this.style.transform='translateY(-1px)'" onmouseout="this.style.transform=''">
+                                    <svg style="width:17px;height:17px;flex-shrink:0;" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" /></svg>
+                                    قراءة تقرير InBody بالذكاء الاصطناعي
+                                </button>
                             </div>
                             
                             <!-- جهة البيانات -->
@@ -15526,6 +15531,463 @@ window._loadGeminiKeyFromDrive = async function() {
     </div>
 </div>
 <!-- ====== نهاية نافذة OCR ====== -->
+<!-- ====== نافذة OCR InBody ====== -->
+<div id="inbody-ocr-modal" style="display:none;position:fixed;inset:0;z-index:99997;background:rgba(0,0,0,0.65);align-items:center;justify-content:center;animation:fadeInModal 0.2s ease;font-family:'Cairo',sans-serif;direction:rtl;">
+    <div style="background:#fff;border-radius:20px;box-shadow:0 24px 80px rgba(0,0,0,0.25);width:min(96vw,760px);max-height:92vh;display:flex;flex-direction:column;overflow:hidden;animation:slideUpModal 0.25s ease;">
+
+        <!-- Header -->
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 24px;border-bottom:2px solid #e6f4f7;background:linear-gradient(135deg,#f0fafc 0%,#fff 100%);flex-shrink:0;">
+            <div style="display:flex;align-items:center;gap:10px;">
+                <span style="font-size:1.5rem;">⚖️</span>
+                <div>
+                    <div style="font-size:1rem;font-weight:700;color:#0790AC;">قراءة تقرير InBody بالذكاء الاصطناعي</div>
+                    <div style="font-size:0.75rem;color:#6b7280;">ارفع صورة تقرير InBody ليتم استخراج القيم تلقائياً</div>
+                </div>
+            </div>
+            <button onclick="window._closeInbodyOcrModal()" style="background:#f3f4f6;border:none;border-radius:50%;width:34px;height:34px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:1.1rem;color:#6b7280;transition:all 0.15s;" onmouseover="this.style.background='#fee2e2';this.style.color='#dc2626'" onmouseout="this.style.background='#f3f4f6';this.style.color='#6b7280'">✕</button>
+        </div>
+
+        <!-- API Key -->
+        <div style="padding:14px 24px;background:#fafbfc;border-bottom:1px solid #f0f0f0;flex-shrink:0;">
+            <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+                <label style="font-size:0.82rem;font-weight:700;color:#374151;white-space:nowrap;flex-shrink:0;">🔑 Gemini API Key:</label>
+                <input id="inbody-ocr-api-key" type="password" placeholder="أدخل مفتاح Gemini API"
+                    style="flex:1;min-width:200px;padding:8px 12px;border:1.5px solid #d1d5db;border-radius:8px;font-family:'Cairo',sans-serif;font-size:0.82rem;outline:none;transition:border-color 0.15s;"
+                    onfocus="this.style.borderColor='#0790AC'" onblur="this.style.borderColor='#d1d5db'">
+                <button onclick="window._saveInbodyOcrApiKey()" style="padding:8px 14px;background:#0790AC;color:#fff;border:none;border-radius:8px;font-family:'Cairo',sans-serif;font-size:0.82rem;font-weight:700;cursor:pointer;white-space:nowrap;" onmouseover="this.style.background='#056a80'" onmouseout="this.style.background='#0790AC'">حفظ</button>
+                <a href="https://aistudio.google.com/app/apikey" target="_blank" style="font-size:0.76rem;color:#0790AC;text-decoration:none;white-space:nowrap;">احصل على مفتاح ↗</a>
+            </div>
+            <div id="inbody-ocr-key-status" style="font-size:0.76rem;margin-top:5px;color:#6b7280;"></div>
+        </div>
+
+        <!-- Body -->
+        <div style="flex:1;overflow-y:auto;padding:22px 24px;display:flex;flex-direction:column;gap:16px;">
+
+            <!-- Upload area -->
+            <div style="display:flex;gap:10px;flex-wrap:wrap;">
+                <div id="inbody-ocr-upload-area" style="flex:1;min-width:220px;border:2.5px dashed #80c9d9;border-radius:14px;padding:28px 20px;text-align:center;cursor:pointer;transition:all 0.2s;background:#f0fafc;"
+                    onclick="document.getElementById('inbody-ocr-file-input').click()"
+                    ondragover="event.preventDefault();this.style.borderColor='#0790AC';this.style.background='#e6f4f7';"
+                    ondragleave="this.style.borderColor='#80c9d9';this.style.background='#f0fafc';"
+                    ondrop="event.preventDefault();this.style.borderColor='#80c9d9';this.style.background='#f0fafc';window._handleInbodyOcrFileDrop(event);">
+                    <div style="font-size:2.2rem;margin-bottom:8px;">⚖️</div>
+                    <div style="font-size:0.9rem;font-weight:700;color:#0790AC;margin-bottom:4px;">انقر لرفع صورة تقرير InBody</div>
+                    <div style="font-size:0.78rem;color:#9ca3af;">JPG، PNG، WEBP</div>
+                    <input id="inbody-ocr-file-input" type="file" accept="image/*" style="display:none" onchange="window._handleInbodyOcrFileSelect(event)">
+                </div>
+                <div id="inbody-ocr-camera-area" style="flex:1;min-width:220px;border:2.5px dashed #80c9d9;border-radius:14px;padding:28px 20px;text-align:center;cursor:pointer;transition:all 0.2s;background:#f0fafc;"
+                    onclick="window._openInbodyOcrCamera()"
+                    onmouseover="this.style.borderColor='#0790AC';this.style.background='#e6f4f7';"
+                    onmouseout="this.style.borderColor='#80c9d9';this.style.background='#f0fafc';">
+                    <div style="font-size:2.2rem;margin-bottom:8px;">📸</div>
+                    <div style="font-size:0.9rem;font-weight:700;color:#0790AC;margin-bottom:4px;">فتح الكاميرا</div>
+                    <div style="font-size:0.78rem;color:#9ca3af;">التقاط صورة مباشرة</div>
+                </div>
+            </div>
+
+            <!-- Camera modal -->
+            <div id="inbody-ocr-camera-modal" style="display:none;position:fixed;inset:0;z-index:999999;background:rgba(0,0,0,0.92);align-items:center;justify-content:center;flex-direction:column;gap:16px;">
+                <video id="inbody-ocr-camera-video" style="width:min(92vw,540px);height:auto;border-radius:14px;background:#000;max-height:65vh;object-fit:cover;" autoplay playsinline></video>
+                <canvas id="inbody-ocr-camera-canvas" style="display:none;"></canvas>
+                <div style="display:flex;gap:12px;">
+                    <button onclick="window._captureInbodyOcrPhoto()" style="padding:12px 32px;background:#0790AC;color:#fff;border:none;border-radius:10px;font-family:'Cairo',sans-serif;font-size:1rem;font-weight:700;cursor:pointer;">📷 التقاط</button>
+                    <button onclick="window._closeInbodyOcrCamera()" style="padding:12px 24px;background:#fff;color:#374151;border:none;border-radius:10px;font-family:'Cairo',sans-serif;font-size:1rem;font-weight:700;cursor:pointer;">إلغاء</button>
+                </div>
+            </div>
+
+            <!-- Preview -->
+            <div id="inbody-ocr-preview-wrap" style="display:none;text-align:center;">
+                <img id="inbody-ocr-preview-img" style="max-width:100%;max-height:260px;border-radius:10px;border:2px solid #b3dde7;object-fit:contain;" alt="معاينة تقرير InBody">
+                <div style="margin-top:6px;font-size:0.8rem;color:#6b7280;" id="inbody-ocr-file-name"></div>
+            </div>
+
+            <!-- Loading -->
+            <div id="inbody-ocr-loading" style="display:none;text-align:center;padding:30px 0;">
+                <div style="font-size:2rem;animation:spin 1s linear infinite;display:inline-block;">⚙️</div>
+                <div style="font-size:0.95rem;font-weight:700;color:#374151;margin-top:8px;">يقوم Gemini بقراءة تقرير InBody...</div>
+                <div style="font-size:0.82rem;color:#9ca3af;margin-top:4px;">جارٍ استخراج قيم التكوين الجسدي</div>
+            </div>
+
+            <!-- Results -->
+            <div id="inbody-ocr-result-section" style="display:none;">
+                <div style="display:flex;gap:14px;align-items:flex-start;">
+                    <!-- Side image -->
+                    <div id="inbody-ocr-side-image-wrap" style="flex:0 0 auto;width:180px;min-width:140px;background:#f8fafc;border:1.5px solid #b3dde7;border-radius:12px;overflow:hidden;position:sticky;top:8px;">
+                        <div style="padding:8px 10px;border-bottom:1px solid #e6f4f7;font-size:0.72rem;font-weight:700;color:#0790AC;text-align:center;">صورة التقرير</div>
+                        <div style="padding:8px;">
+                            <img id="inbody-ocr-side-img" src="" style="width:100%;border-radius:8px;cursor:zoom-in;" alt="صورة التقرير"
+                                onclick="var o=document.getElementById('inbody-ocr-img-zoom-overlay');var b=document.getElementById('inbody-ocr-img-zoom-big');if(o&&b){b.src=this.src;o.style.display='flex';}">
+                        </div>
+                    </div>
+                    <!-- Results table -->
+                    <div style="flex:1;min-width:0;">
+                        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;gap:8px;flex-wrap:wrap;">
+                            <h3 style="font-size:0.95rem;font-weight:700;color:#374151;margin:0;">✅ قيم InBody المستخرجة</h3>
+                            <span style="font-size:0.78rem;color:#6b7280;background:#f3f4f6;padding:3px 10px;border-radius:20px;" id="inbody-ocr-matched-count"></span>
+                        </div>
+                        <div style="overflow-x:auto;border-radius:10px;border:1.5px solid #e6f4f7;">
+                            <table style="width:100%;border-collapse:collapse;font-size:0.82rem;">
+                                <thead>
+                                    <tr style="background:#0790AC;color:#fff;">
+                                        <th style="padding:9px 12px;text-align:right;font-weight:700;">القياس</th>
+                                        <th style="padding:9px 12px;text-align:center;font-weight:700;">القيمة</th>
+                                        <th style="padding:9px 12px;text-align:center;font-weight:700;">الوحدة</th>
+                                        <th style="padding:9px 12px;text-align:center;font-weight:700;">الحالة</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="inbody-ocr-result-table-body"></tbody>
+                            </table>
+                        </div>
+                        <div id="inbody-ocr-raw-notes" style="display:none;margin-top:10px;background:#fffbeb;border:1px solid #fde68a;border-radius:10px;padding:12px 16px;font-size:0.82rem;color:#92400e;line-height:1.7;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Image zoom overlay -->
+            <div id="inbody-ocr-img-zoom-overlay" style="display:none;position:fixed;inset:0;z-index:9999999;background:rgba(0,0,0,0.88);align-items:center;justify-content:center;cursor:zoom-out;" onclick="this.style.display='none'">
+                <img id="inbody-ocr-img-zoom-big" src="" style="max-width:92vw;max-height:90vh;border-radius:12px;object-fit:contain;">
+            </div>
+
+            <!-- Error -->
+            <div id="inbody-ocr-error" style="display:none;background:#fef2f2;border-radius:12px;padding:16px;border:1.5px solid #fca5a5;">
+                <div style="font-size:0.9rem;font-weight:700;color:#dc2626;margin-bottom:4px;">⚠️ حدث خطأ</div>
+                <div id="inbody-ocr-error-msg" style="font-size:0.82rem;color:#7f1d1d;"></div>
+            </div>
+
+        </div>
+
+        <!-- Footer -->
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 24px;border-top:1px solid #e5e7eb;background:#fafafa;flex-shrink:0;gap:10px;flex-wrap:wrap;">
+            <div style="font-size:0.75rem;color:#9ca3af;">⚠️ يرجى مراجعة القيم قبل التعبئة</div>
+            <div style="display:flex;gap:8px;">
+                <button id="inbody-ocr-apply-btn" onclick="window._applyInbodyOcrResults()" style="display:none;padding:9px 22px;background:linear-gradient(135deg,#0790AC 0%,#056a80 100%);color:#fff;border:none;border-radius:8px;font-family:'Cairo',sans-serif;font-size:0.88rem;font-weight:700;cursor:pointer;box-shadow:0 2px 10px rgba(7,144,172,0.3);transition:all 0.15s;" onmouseover="this.style.transform='translateY(-1px)'" onmouseout="this.style.transform=''">✍️ تعبئة الحقول تلقائياً</button>
+                <button id="inbody-ocr-scan-btn" onclick="window._startInbodyOcrScan()" style="padding:9px 22px;background:#0790AC;color:#fff;border:none;border-radius:8px;font-family:'Cairo',sans-serif;font-size:0.88rem;font-weight:700;cursor:pointer;transition:all 0.15s;" onmouseover="this.style.background='#056a80'" onmouseout="this.style.background='#0790AC'">🔍 بدء القراءة</button>
+                <button onclick="window._closeInbodyOcrModal()" style="padding:9px 16px;background:#fff;color:#6b7280;border:1.5px solid #e5e7eb;border-radius:8px;font-family:'Cairo',sans-serif;font-size:0.82rem;font-weight:700;cursor:pointer;">إغلاق</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+<!-- ====== نهاية نافذة OCR InBody ====== -->
+
+<script>
+// ===== منطق OCR InBody باستخدام Gemini Vision =====
+(function() {
+
+    var _ib_imageBase64 = null;
+    var _ib_imageMime = 'image/jpeg';
+    var _ib_extractedData = {};
+    var _ib_cameraStream = null;
+
+    // خريطة حقول InBody
+    var IB_FIELD_MAP = [
+        { keys: ['bmi','body mass index'], id: 'inbody_bmi', label: 'BMI', unit: '' },
+        { keys: ['tbf','total body fat','body fat percentage','fat%','fat %'], id: 'inbody_tbf', label: 'TBF %', unit: '%' },
+        { keys: ['vfi','visceral fat index','visceral fat level'], id: 'inbody_vfi', label: 'VFI', unit: '' },
+        { keys: ['tbw','total body water','body water','water%','water %'], id: 'inbody_tbw', label: 'TBW %', unit: '%' },
+        { keys: ['sm','skeletal muscle','muscle mass percentage','sm%','sm %','smm'], id: 'inbody_sm', label: 'SM %', unit: '%' },
+        { keys: ['bmc','bone mineral content','bone mass'], id: 'inbody_bmc', label: 'BMC (kg)', unit: 'kg' },
+        { keys: ['bmr','basal metabolic rate','basal metabolism'], id: 'inbody_bmr', label: 'BMR', unit: 'kcal' }
+    ];
+
+    // فتح النافذة
+    window._openInbodyOcrModal = function() {
+        var savedKey = localStorage.getItem('_gemini_api_key') || '';
+        document.getElementById('inbody-ocr-api-key').value = savedKey;
+        document.getElementById('inbody-ocr-key-status').textContent = savedKey
+            ? '✅ المفتاح محفوظ' : '';
+        document.getElementById('inbody-ocr-modal').style.display = 'flex';
+    };
+
+    // إغلاق النافذة
+    window._closeInbodyOcrModal = function() {
+        document.getElementById('inbody-ocr-modal').style.display = 'none';
+        _closeInbodyOcrCamera();
+    };
+
+    // إغلاق بالنقر خارج النافذة
+    document.getElementById('inbody-ocr-modal').addEventListener('click', function(e) {
+        if (e.target === this) window._closeInbodyOcrModal();
+    });
+
+    // حفظ المفتاح
+    window._saveInbodyOcrApiKey = function() {
+        var key = document.getElementById('inbody-ocr-api-key').value.trim();
+        if (!key) { document.getElementById('inbody-ocr-key-status').textContent = '⚠️ يرجى إدخال المفتاح أولاً'; return; }
+        localStorage.setItem('_gemini_api_key', key);
+        document.getElementById('inbody-ocr-key-status').textContent = '✅ تم حفظ المفتاح محلياً';
+    };
+
+    // رفع ملف
+    window._handleInbodyOcrFileSelect = function(event) {
+        var file = event.target.files[0];
+        if (!file) return;
+        _loadInbodyOcrFile(file);
+    };
+
+    window._handleInbodyOcrFileDrop = function(event) {
+        var file = event.dataTransfer.files[0];
+        if (!file) return;
+        _loadInbodyOcrFile(file);
+    };
+
+    function _loadInbodyOcrFile(file) {
+        _ib_imageMime = file.type || 'image/jpeg';
+        var reader = new FileReader();
+        reader.onload = function(e) {
+            _ib_imageBase64 = e.target.result.split(',')[1];
+            document.getElementById('inbody-ocr-preview-img').src = e.target.result;
+            document.getElementById('inbody-ocr-file-name').textContent = file.name;
+            document.getElementById('inbody-ocr-preview-wrap').style.display = 'block';
+            document.getElementById('inbody-ocr-result-section').style.display = 'none';
+            document.getElementById('inbody-ocr-error').style.display = 'none';
+            document.getElementById('inbody-ocr-apply-btn').style.display = 'none';
+        };
+        reader.readAsDataURL(file);
+    }
+
+    // كاميرا
+    window._openInbodyOcrCamera = function() {
+        document.getElementById('inbody-ocr-camera-modal').style.display = 'flex';
+        navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: 'environment' } } })
+            .then(function(stream) {
+                _ib_cameraStream = stream;
+                document.getElementById('inbody-ocr-camera-video').srcObject = stream;
+            })
+            .catch(function(err) {
+                _closeInbodyOcrCamera();
+                if (typeof showToast === 'function') showToast('⚠️ تعذّر الوصول إلى الكاميرا: ' + err.message, 'error');
+            });
+    };
+
+    function _closeInbodyOcrCamera() {
+        if (_ib_cameraStream) {
+            _ib_cameraStream.getTracks().forEach(function(t) { t.stop(); });
+            _ib_cameraStream = null;
+        }
+        document.getElementById('inbody-ocr-camera-modal').style.display = 'none';
+    }
+    window._closeInbodyOcrCamera = _closeInbodyOcrCamera;
+
+    window._captureInbodyOcrPhoto = function() {
+        var video = document.getElementById('inbody-ocr-camera-video');
+        var canvas = document.getElementById('inbody-ocr-camera-canvas');
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        canvas.getContext('2d').drawImage(video, 0, 0);
+        var dataUrl = canvas.toDataURL('image/jpeg', 0.92);
+        _ib_imageBase64 = dataUrl.split(',')[1];
+        _ib_imageMime = 'image/jpeg';
+        document.getElementById('inbody-ocr-preview-img').src = dataUrl;
+        document.getElementById('inbody-ocr-file-name').textContent = 'صورة ملتقطة من الكاميرا';
+        document.getElementById('inbody-ocr-preview-wrap').style.display = 'block';
+        document.getElementById('inbody-ocr-result-section').style.display = 'none';
+        document.getElementById('inbody-ocr-error').style.display = 'none';
+        document.getElementById('inbody-ocr-apply-btn').style.display = 'none';
+        _closeInbodyOcrCamera();
+        if (typeof showToast === 'function') showToast('✅ تم التقاط الصورة — اضغط "بدء القراءة"', 'success');
+    };
+
+    // عرض خطأ
+    function _showInbodyOcrError(msg) {
+        document.getElementById('inbody-ocr-loading').style.display = 'none';
+        document.getElementById('inbody-ocr-error').style.display = 'block';
+        document.getElementById('inbody-ocr-error-msg').textContent = msg;
+        document.getElementById('inbody-ocr-scan-btn').disabled = false;
+    }
+
+    // بدء المسح
+    window._startInbodyOcrScan = async function() {
+        if (!_ib_imageBase64) { _showInbodyOcrError('يرجى رفع صورة تقرير InBody أولاً.'); return; }
+        var apiKey = document.getElementById('inbody-ocr-api-key').value.trim()
+                  || localStorage.getItem('_gemini_api_key') || '';
+        if (!apiKey) { _showInbodyOcrError('يرجى إدخال مفتاح Gemini API أولاً.'); return; }
+
+        document.getElementById('inbody-ocr-loading').style.display = 'block';
+        document.getElementById('inbody-ocr-result-section').style.display = 'none';
+        document.getElementById('inbody-ocr-error').style.display = 'none';
+        document.getElementById('inbody-ocr-apply-btn').style.display = 'none';
+        document.getElementById('inbody-ocr-scan-btn').disabled = true;
+        setTimeout(function() {
+            var el = document.getElementById('inbody-ocr-loading');
+            if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 80);
+
+        var prompt = "You are an expert at reading InBody body composition analysis reports.\n\n" +
+            "Extract ONLY the following measurements from this InBody report image. Return a single valid JSON object. No markdown, no text outside JSON.\n\n" +
+            "Fields to extract (use null if not found):\n" +
+            "- bmi: Body Mass Index (number)\n" +
+            "- tbf: Total Body Fat percentage (number, the % value)\n" +
+            "- vfi: Visceral Fat Index or Level (number)\n" +
+            "- tbw: Total Body Water percentage (number, the % value)\n" +
+            "- sm: Skeletal Muscle percentage or SMM (number, the % value if available, otherwise kg)\n" +
+            "- bmc: Bone Mineral Content in kg (number)\n" +
+            "- bmr: Basal Metabolic Rate in kcal (number)\n\n" +
+            "Output format (strict JSON only):\n" +
+            '{"bmi":22.5,"tbf":18.3,"vfi":4,"tbw":62.1,"sm":35.2,"bmc":2.8,"bmr":1654,"notes":""}\n\n' +
+            "Now extract from the image:";
+
+        var MODEL_PRIORITY = ['gemini-2.5-flash','gemini-2.0-flash','gemini-2.0-flash-lite','gemini-1.5-flash','gemini-1.5-flash-latest','gemini-1.5-pro','gemini-pro-vision'];
+
+        async function _callGemini(apiKey, body) {
+            var availableModels = [];
+            try {
+                var listRes = await fetch('https://generativelanguage.googleapis.com/v1beta/models?key=' + apiKey);
+                if (listRes.ok) {
+                    var listData = await listRes.json();
+                    availableModels = (listData.models || [])
+                        .filter(function(m) { return m.name && m.name.indexOf('gemini') !== -1 && (m.supportedGenerationMethods || []).includes('generateContent'); })
+                        .map(function(m) { return m.name.replace(/^models\//, ''); });
+                }
+            } catch(e) {}
+            var ordered = MODEL_PRIORITY.filter(function(m) { return availableModels.indexOf(m) !== -1; });
+            var remaining = availableModels.filter(function(m) { return MODEL_PRIORITY.indexOf(m) === -1; });
+            var candidates = ordered.concat(remaining);
+            if (candidates.length === 0) candidates = MODEL_PRIORITY.slice();
+            var lastErr = null;
+            for (var i = 0; i < candidates.length; i++) {
+                try {
+                    var url = 'https://generativelanguage.googleapis.com/v1beta/models/' + candidates[i] + ':generateContent?key=' + apiKey;
+                    var res = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+                    if (!res.ok) {
+                        var errJ = await res.clone().json().catch(function(){ return {}; });
+                        var errM = (errJ.error && errJ.error.message) ? errJ.error.message : 'HTTP ' + res.status;
+                        if (errM.indexOf('responseMimeType') !== -1 || errM.indexOf('Unknown field') !== -1) {
+                            var b2 = JSON.parse(JSON.stringify(body));
+                            if (b2.generationConfig) delete b2.generationConfig.responseMimeType;
+                            res = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(b2) });
+                        }
+                    }
+                    if (res.ok) return res;
+                    var ej = await res.json().catch(function(){ return {}; });
+                    var em = (ej.error && ej.error.message) ? ej.error.message : 'HTTP ' + res.status;
+                    if (res.status === 404 || em.indexOf('not found') !== -1 || em.indexOf('not supported') !== -1) { lastErr = em; continue; }
+                    throw new Error(em);
+                } catch(fe) {
+                    if ((fe.message||'').indexOf('not found') !== -1) { lastErr = fe.message; continue; }
+                    throw fe;
+                }
+            }
+            throw new Error('لم يتم العثور على نموذج Gemini مدعوم. آخر خطأ: ' + (lastErr || 'غير معروف'));
+        }
+
+        try {
+            var requestBody = {
+                contents: [{ parts: [
+                    { text: prompt },
+                    { inline_data: { mime_type: _ib_imageMime, data: _ib_imageBase64 } }
+                ]}],
+                generationConfig: { temperature: 0.1, maxOutputTokens: 1024, responseMimeType: 'application/json' }
+            };
+
+            var response = await _callGemini(apiKey, requestBody);
+            var data = await response.json();
+            var rawText = (data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts)
+                ? data.candidates[0].content.parts.map(function(p) { return p.text || ''; }).join('') : '';
+
+            rawText = rawText.replace(/```json\s*/gi, '').replace(/```\s*/g, '').trim();
+
+            var parsed;
+            try { parsed = JSON.parse(rawText); }
+            catch(e) {
+                var m = rawText.match(/\{[\s\S]*\}/);
+                if (m) { try { parsed = JSON.parse(m[0]); } catch(e2) { _showInbodyOcrError('تعذّر تحليل استجابة Gemini. حاول مرة أخرى.'); return; } }
+                else { _showInbodyOcrError('لم يتمكن Gemini من قراءة التقرير. حاول برفع صورة أوضح.'); return; }
+            }
+
+            document.getElementById('inbody-ocr-loading').style.display = 'none';
+            document.getElementById('inbody-ocr-scan-btn').disabled = false;
+
+            // بناء الجدول
+            _ib_extractedData = {};
+            var tbody = document.getElementById('inbody-ocr-result-table-body');
+            tbody.innerHTML = '';
+            var matchedCount = 0;
+
+            IB_FIELD_MAP.forEach(function(field) {
+                var val = parsed[field.id.replace('inbody_', '')];
+                if (val === null || val === undefined) return;
+                var numVal = parseFloat(val);
+                if (isNaN(numVal)) return;
+                _ib_extractedData[field.id] = numVal;
+                matchedCount++;
+
+                var statusText = '';
+                var statusColor = '#6b7280';
+                // تحديد الحالة
+                var statusMap = {
+                    inbody_bmi: function(v) { return v < 18.5 ? ['نقص وزن','#3b82f6'] : v < 25 ? ['طبيعي','#10b981'] : v < 30 ? ['زيادة وزن','#f59e0b'] : ['سمنة','#ef4444']; },
+                    inbody_tbf: function(v) { return v < 10 ? ['منخفض','#3b82f6'] : v < 25 ? ['طبيعي','#10b981'] : v < 32 ? ['مرتفع','#f59e0b'] : ['مرتفع جداً','#ef4444']; },
+                    inbody_vfi: function(v) { return v <= 9 ? ['طبيعي','#10b981'] : v <= 14 ? ['مرتفع','#f59e0b'] : ['مرتفع جداً','#ef4444']; }
+                };
+                if (statusMap[field.id]) {
+                    var s = statusMap[field.id](numVal);
+                    statusText = s[0]; statusColor = s[1];
+                }
+
+                var tr = document.createElement('tr');
+                tr.style.borderBottom = '1px solid #f3f4f6';
+                tr.innerHTML = '<td style="padding:9px 12px;font-weight:600;color:#374151;">' + field.label + '</td>' +
+                    '<td style="padding:9px 12px;text-align:center;font-weight:700;color:#0790AC;font-size:0.95rem;">' + numVal + '</td>' +
+                    '<td style="padding:9px 12px;text-align:center;color:#6b7280;font-size:0.8rem;">' + field.unit + '</td>' +
+                    '<td style="padding:9px 12px;text-align:center;"><span style="padding:3px 10px;border-radius:20px;font-size:0.75rem;font-weight:700;background:' + statusColor + '20;color:' + statusColor + ';">' + (statusText || '—') + '</span></td>';
+                tbody.appendChild(tr);
+            });
+
+            document.getElementById('inbody-ocr-matched-count').textContent = matchedCount + ' قيمة تم استخراجها';
+
+            if (parsed.notes && parsed.notes.trim()) {
+                var notesEl = document.getElementById('inbody-ocr-raw-notes');
+                notesEl.style.display = 'block';
+                notesEl.textContent = '💡 ' + parsed.notes;
+            }
+
+            // نسخ الصورة للجانب
+            var previewSrc = document.getElementById('inbody-ocr-preview-img').src;
+            var sideImg = document.getElementById('inbody-ocr-side-img');
+            var sideImgZoom = document.getElementById('inbody-ocr-img-zoom-big');
+            if (previewSrc && sideImg) { sideImg.src = previewSrc; if (sideImgZoom) sideImgZoom.src = previewSrc; }
+
+            document.getElementById('inbody-ocr-result-section').style.display = 'block';
+            if (matchedCount > 0) document.getElementById('inbody-ocr-apply-btn').style.display = 'inline-block';
+
+            setTimeout(function() {
+                var el = document.getElementById('inbody-ocr-result-section');
+                if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 120);
+
+        } catch(err) {
+            _showInbodyOcrError('خطأ: ' + (err.message || 'غير معروف'));
+        }
+    };
+
+    // تعبئة الحقول
+    window._applyInbodyOcrResults = function() {
+        var count = 0;
+        Object.keys(_ib_extractedData).forEach(function(fieldId) {
+            var el = document.getElementById(fieldId);
+            if (el) {
+                el.value = _ib_extractedData[fieldId];
+                el.dispatchEvent(new Event('input', { bubbles: true }));
+                el.dispatchEvent(new Event('change', { bubbles: true }));
+                el.style.transition = 'background 0.4s';
+                el.style.background = '#e6f4f7';
+                setTimeout(function(e) { e.style.background = ''; }.bind(null, el), 1200);
+                count++;
+            }
+        });
+        window._closeInbodyOcrModal();
+        if (typeof showToast === 'function') showToast('✅ تم تعبئة ' + count + ' حقل InBody تلقائياً', 'success');
+        setTimeout(function() {
+            var el = document.getElementById('inbody_bmi');
+            if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 350);
+    };
+
+})();
+</script>
+
+
 
 <script>
 // ===== منطق OCR التحاليل المخبرية باستخدام Gemini Vision =====
