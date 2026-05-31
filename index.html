@@ -4702,7 +4702,8 @@
         // (تعديل 5) سيتم إغلاق القائمة فقط إذا لم يكن النقر على زر يفتحها
         mainContent.addEventListener('click', (e) => {
             // تحقق مما إذا كان النقر داخل المحتوى وليس على زر في الشريط العلوي
-            if (isSidebarOpen && !e.target.closest('#top-bar')) {
+            // وليس داخل القائمة الجانبية نفسها (لتجنب إغلاقها عند التفاعل مع عناصرها)
+            if (isSidebarOpen && !e.target.closest('#top-bar') && !e.target.closest('#sidebar')) {
                 toggleSidebar();
             }
         });
@@ -7300,6 +7301,14 @@
                 </div>
             </div>
         `;
+
+        // تطبيق إعداد البرامج الغذائية على التبويبات المُنشأة حديثاً
+        (function() {
+            var nutritionEnabled = localStorage.getItem('medbox_nutrition_enabled') === '1';
+            if (typeof applyNutritionProgramVisibility === 'function') {
+                applyNutritionProgramVisibility(nutritionEnabled);
+            }
+        })();
         
         // عرض QR Code بجانب اسم المريض في عرض الزيارة وفي تبويب المقارنة
         (function(_pat) {
