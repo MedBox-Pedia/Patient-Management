@@ -2322,19 +2322,19 @@
                     </div>
 
                     <!-- زر OCR لرفع صورة التحليل -->
-                    <div class="flex items-center justify-between bg-gradient-to-r from-purple-50 to-white border border-purple-200 rounded-xl px-5 py-3 shadow-sm">
+                    <div class="flex items-center justify-between bg-gradient-to-r from-[#e6f4f7] to-white border border-[#b3dde7] rounded-xl px-5 py-3 shadow-sm">
                         <div class="flex items-center gap-3">
-                            <span class="bg-purple-600 text-white rounded-full p-2">
+                            <span class="bg-[#0790AC] text-white rounded-full p-2">
                                 <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
                                 </svg>
                             </span>
                             <div>
-                                <p class="font-bold text-purple-700 text-sm">📷 قراءة نتائج التحليل بالذكاء الاصطناعي (OCR)</p>
+                                <p class="font-bold text-[#0790AC] text-sm">📷 قراءة نتائج التحليل بالذكاء الاصطناعي (OCR)</p>
                                 <p class="text-xs text-gray-500">ارفع صورة ورقة التحليل المخبري وسيقوم Gemini بتفريغ الأرقام تلقائياً</p>
                             </div>
                         </div>
-                        <button type="button" onclick="window._openOcrModal()" class="bg-purple-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-purple-700 transition duration-200 flex items-center gap-2 shadow">
+                        <button type="button" onclick="window._openOcrModal()" class="bg-[#0790AC] text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-[#056a80] transition duration-200 flex items-center gap-2 shadow">
                             <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
                             </svg>
@@ -15287,30 +15287,58 @@ ${context}
                 <div style="font-size:0.82rem;color:#9ca3af;margin-top:4px;">جارٍ استخراج الأرقام من الصورة</div>
             </div>
 
-            <!-- Result preview table -->
+            <!-- Result preview: image + table side by side -->
             <div id="ocr-result-section" style="display:none;">
-                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:8px;">
-                    <h3 style="font-size:0.95rem;font-weight:700;color:#374151;margin:0;">✅ النتائج المستخرجة</h3>
-                    <div style="display:flex;align-items:center;gap:8px;">
-                        <span style="font-size:0.78rem;color:#6b7280;background:#f3f4f6;padding:3px 10px;border-radius:20px;" id="ocr-matched-count"></span>
-                        <button id="ocr-toggle-edit-btn" onclick="window._toggleOcrEditMode()" style="font-size:0.75rem;padding:4px 12px;background:#e6f4f7;color:#0790AC;border:1.5px solid #0790AC;border-radius:20px;font-family:'Cairo',sans-serif;font-weight:700;cursor:pointer;">✏️ تعديل القيم</button>
+                <!-- layout wrapper: على الشاشات الكبيرة جنباً إلى جنب، وعلى الصغيرة مكدّسان -->
+                <div style="display:flex;gap:16px;align-items:flex-start;flex-wrap:wrap;">
+
+                    <!-- الصورة المرجعية -->
+                    <div id="ocr-side-image-wrap" style="flex:0 0 auto;width:220px;min-width:160px;max-width:260px;background:#f8fafc;border:1.5px solid #b3dde7;border-radius:12px;overflow:hidden;position:sticky;top:8px;">
+                        <div style="padding:8px 12px;background:#0790AC;color:#fff;font-size:0.78rem;font-weight:700;display:flex;align-items:center;gap:6px;">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+                            صورة التحليل الأصلية
+                        </div>
+                        <div style="padding:8px;text-align:center;">
+                            <img id="ocr-side-img" src="" style="width:100%;border-radius:8px;cursor:zoom-in;transition:transform 0.2s;" alt="صورة التحليل"
+                                onclick="window._toggleOcrImgZoom(this)"
+                                title="اضغط للتكبير">
+                            <div style="font-size:0.7rem;color:#9ca3af;margin-top:6px;">🔍 اضغط للتكبير</div>
+                        </div>
                     </div>
+
+                    <!-- جدول النتائج -->
+                    <div style="flex:1;min-width:260px;">
+                        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:8px;">
+                            <h3 style="font-size:0.95rem;font-weight:700;color:#374151;margin:0;">✅ النتائج المستخرجة</h3>
+                            <div style="display:flex;align-items:center;gap:8px;">
+                                <span style="font-size:0.78rem;color:#6b7280;background:#f3f4f6;padding:3px 10px;border-radius:20px;" id="ocr-matched-count"></span>
+                                <button id="ocr-toggle-edit-btn" onclick="window._toggleOcrEditMode()" style="font-size:0.75rem;padding:4px 12px;background:#e6f4f7;color:#0790AC;border:1.5px solid #0790AC;border-radius:20px;font-family:'Cairo',sans-serif;font-weight:700;cursor:pointer;">✏️ تعديل القيم</button>
+                            </div>
+                        </div>
+                        <div style="background:#f0fafc;border:1px solid #b3dde7;border-radius:12px;overflow:hidden;">
+                            <table style="width:100%;border-collapse:collapse;font-size:0.85rem;">
+                                <thead>
+                                    <tr style="background:#0790AC;color:#fff;">
+                                        <th style="padding:9px 14px;text-align:right;font-weight:700;">الفحص</th>
+                                        <th style="padding:9px 14px;text-align:center;font-weight:700;">القيمة</th>
+                                        <th style="padding:9px 14px;text-align:center;font-weight:700;">الوحدة</th>
+                                        <th style="padding:9px 14px;text-align:center;font-weight:700;">ملاحظة</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="ocr-result-table-body"></tbody>
+                            </table>
+                        </div>
+                        <!-- Raw Gemini notes -->
+                        <div id="ocr-raw-notes" style="display:none;margin-top:10px;background:#fffbeb;border:1px solid #fde68a;border-radius:10px;padding:12px 16px;font-size:0.82rem;color:#92400e;line-height:1.7;"></div>
+                    </div>
+
                 </div>
-                <div style="background:#f0fafc;border:1px solid #b3dde7;border-radius:12px;overflow:hidden;">
-                    <table style="width:100%;border-collapse:collapse;font-size:0.85rem;">
-                        <thead>
-                            <tr style="background:#0790AC;color:#fff;">
-                                <th style="padding:9px 14px;text-align:right;font-weight:700;">الفحص</th>
-                                <th style="padding:9px 14px;text-align:center;font-weight:700;">القيمة</th>
-                                <th style="padding:9px 14px;text-align:center;font-weight:700;">الوحدة</th>
-                                <th style="padding:9px 14px;text-align:center;font-weight:700;">ملاحظة</th>
-                            </tr>
-                        </thead>
-                        <tbody id="ocr-result-table-body"></tbody>
-                    </table>
-                </div>
-                <!-- Raw Gemini notes -->
-                <div id="ocr-raw-notes" style="display:none;margin-top:10px;background:#fffbeb;border:1px solid #fde68a;border-radius:10px;padding:12px 16px;font-size:0.82rem;color:#92400e;line-height:1.7;"></div>
+            </div>
+
+            <!-- Image zoom overlay -->
+            <div id="ocr-img-zoom-overlay" style="display:none;position:fixed;inset:0;z-index:9999999;background:rgba(0,0,0,0.88);align-items:center;justify-content:center;cursor:zoom-out;" onclick="this.style.display='none'">
+                <img id="ocr-img-zoom-big" src="" style="max-width:92vw;max-height:90vh;border-radius:12px;box-shadow:0 20px 60px rgba(0,0,0,0.5);object-fit:contain;">
+                <div style="position:absolute;top:18px;left:50%;transform:translateX(-50%);color:rgba(255,255,255,0.7);font-size:0.82rem;font-family:'Cairo',sans-serif;">اضغط في أي مكان للإغلاق</div>
             </div>
 
             <!-- Error state -->
@@ -15580,12 +15608,17 @@ ${context}
             return;
         }
 
-        // إظهار حالة التحميل
+        // إظهار حالة التحميل والتمرير إليها
         document.getElementById('ocr-loading').style.display = 'block';
         document.getElementById('ocr-result-section').style.display = 'none';
         document.getElementById('ocr-error').style.display = 'none';
         document.getElementById('ocr-apply-btn').style.display = 'none';
         document.getElementById('ocr-scan-btn').disabled = true;
+        // التمرير التلقائي إلى منطقة التحميل
+        setTimeout(function() {
+            var loadingEl = document.getElementById('ocr-loading');
+            if (loadingEl) loadingEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 80);
 
         try {
             // الـ prompt بالإنجليزية لضمان JSON نظيف ومكتمل من Gemini
@@ -15882,6 +15915,21 @@ ${context}
         if (matchedCount > 0) {
             document.getElementById('ocr-apply-btn').style.display = 'inline-block';
         }
+
+        // نسخ الصورة المحملة إلى اللوحة الجانبية
+        var previewSrc = document.getElementById('ocr-preview-img').src;
+        var sideImg = document.getElementById('ocr-side-img');
+        var sideImgZoom = document.getElementById('ocr-img-zoom-big');
+        if (previewSrc && sideImg) {
+            sideImg.src = previewSrc;
+            if (sideImgZoom) sideImgZoom.src = previewSrc;
+        }
+
+        // التمرير التلقائي إلى منطقة النتائج
+        setTimeout(function() {
+            var resultEl = document.getElementById('ocr-result-section');
+            if (resultEl) resultEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 120);
     }
 
     // تطبيق النتائج على حقول النموذج
@@ -15923,6 +15971,15 @@ ${context}
         document.getElementById('ocr-error').style.display = 'block';
         document.getElementById('ocr-error-msg').textContent = msg;
     }
+
+    // تكبير صورة التحليل الجانبية
+    window._toggleOcrImgZoom = function(imgEl) {
+        var overlay = document.getElementById('ocr-img-zoom-overlay');
+        var bigImg  = document.getElementById('ocr-img-zoom-big');
+        if (!overlay) return;
+        bigImg.src = imgEl.src;
+        overlay.style.display = 'flex';
+    };
 
 })();
 </script>
