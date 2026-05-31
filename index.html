@@ -2330,7 +2330,7 @@
                             </span>
                             <div>
                                 <p class="font-bold text-[#0790AC] text-sm">قراءة التحاليل والتقارير الطبية بالذكاء الاصطناعي</p>
-                                <p class="text-xs text-gray-500">تحاليل مخبرية · أشعة · إيكو · طبقي محوري · رنين مغناطيسي</p>
+                                <p class="text-xs text-gray-500">تحاليل مخبرية · أشعة · إيكو · طبقي محوري · رنين مغناطيسي · تخطيط القلب</p>
                             </div>
                         </div>
                         <button type="button" onclick="window._openOcrModal()" title="رفع صورة تحليل أو تقرير طبي" class="bg-[#0790AC] text-white p-2.5 rounded-lg hover:bg-[#056a80] transition duration-200 flex items-center justify-center shadow">
@@ -2851,7 +2851,7 @@
                             </div>
                             
                             <!-- MRI -->
-                            <div class="diagnostic-item-container">
+                            <div class="diagnostic-item-container border-b pb-4">
                                 <h4 class="text-md font-semibold text-gray-700 mb-2">MRI</h4>
                                 <div class="diagnostic-item">
                                     <div class="image-upload-container">
@@ -2862,6 +2862,25 @@
                                     <div>
                                         <label for="diag_mri_report" class="block text-sm font-medium text-gray-700 mb-1">تقرير MRI</label>
                                         <textarea id="diag_mri_report" name="diag_mri_report" rows="10" class="diagnostic-report-textarea" placeholder="اكتب التقرير هنا..."></textarea>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- ECG - تخطيط القلب الكهربائي -->
+                            <div class="diagnostic-item-container">
+                                <h4 class="text-md font-semibold text-gray-700 mb-2" style="display:flex;align-items:center;gap:8px;">
+                                    <span style="display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#0790AC,#056a80);color:#fff;font-size:0.78rem;font-weight:700;flex-shrink:0;">ECG</span>
+                                    تخطيط القلب الكهربائي
+                                </h4>
+                                <div class="diagnostic-item">
+                                    <div class="image-upload-container">
+                                        <label for="diag-ecg-input" class="block text-sm font-medium text-gray-700">تحميل صورة تخطيط القلب</label>
+                                        <input type="file" id="diag-ecg-input" name="diag_ecg_input" accept="image/*" class="image-upload-input" data-preview="diag-ecg-preview" data-storage="diag_ecg_img" data-orientation="horizontal">
+                                        <img id="diag-ecg-preview" class="image-preview" alt="ECG Image">
+                                    </div>
+                                    <div>
+                                        <label for="diag_ecg_report" class="block text-sm font-medium text-gray-700 mb-1">تقرير تخطيط القلب (ECG)</label>
+                                        <textarea id="diag_ecg_report" name="diag_ecg_report" rows="10" class="diagnostic-report-textarea" placeholder="اكتب تقرير تخطيط القلب هنا... (الإيقاع، المحور، موجات P، مجمع QRS، قطعة ST، موجة T، الاستنتاج)"></textarea>
                                     </div>
                                 </div>
                             </div>
@@ -5715,7 +5734,7 @@
         
         // (جديد B.d) تحميل الإجراءات التشخيصية
         const diags = visit.diagnostics || {};
-        ['xray', 'us', 'ct', 'mri'].forEach(type => {
+        ['xray', 'us', 'ct', 'mri', 'ecg'].forEach(type => {
             if (diags[`diag_${type}_img`]) {
                 const preview = document.getElementById(`diag-${type}-preview`);
                 preview.src = diags[`diag_${type}_img`];
@@ -5920,7 +5939,7 @@
         
         // (جديد B.d) تجميع بيانات الإجراءات التشخيصية
         const diagnostics = {};
-        ['xray', 'us', 'ct', 'mri'].forEach(type => {
+        ['xray', 'us', 'ct', 'mri', 'ecg'].forEach(type => {
             const imgKey = `diag_${type}_img`;
             const reportKey = `diag_${type}_report`;
             if (data[imgKey]) { // (data) هي tempPatientData
@@ -8819,7 +8838,8 @@
                 { key: 'xray', label: 'X.Ray' },
                 { key: 'us', label: 'Ultra Sound “Eco”' },
                 { key: 'ct', label: 'CT' },
-                { key: 'mri', label: 'MRI' }
+                { key: 'mri', label: 'MRI' },
+                { key: 'ecg', label: 'تخطيط القلب الكهربائي (ECG)' }
             ];
             
             diagItems.forEach(item => {
@@ -15333,7 +15353,7 @@ window._loadGeminiKeyFromDrive = async function() {
                 </div>
                 <div>
                     <div style="font-size:1.05rem;font-weight:700;color:#0790AC;">قراءة التحاليل والتقارير الطبية — AI</div>
-                    <div style="font-size:0.82rem;color:#6b7280;">تحاليل مخبرية · أشعة · إيكو · طبقي محوري · رنين مغناطيسي</div>
+                    <div style="font-size:0.82rem;color:#6b7280;">تحاليل مخبرية · أشعة · إيكو · طبقي محوري · رنين مغناطيسي · تخطيط القلب</div>
                 </div>
             </div>
             <button onclick="window._closeOcrModal()" style="width:34px;height:34px;border-radius:8px;border:2px solid #e5e7eb;background:#fff;cursor:pointer;color:#6b7280;font-size:18px;display:flex;align-items:center;justify-content:center;transition:all 0.15s;" onmouseover="this.style.borderColor='#ef4444';this.style.color='#ef4444'" onmouseout="this.style.borderColor='#e5e7eb';this.style.color='#6b7280'">✕</button>
@@ -15348,6 +15368,7 @@ window._loadGeminiKeyFromDrive = async function() {
                 <button onclick="window._setOcrReportType('echo')" id="ocr-rtype-echo" style="padding:5px 14px;border-radius:20px;border:1.5px solid #d1d5db;background:#fff;color:#374151;font-family:'Cairo',sans-serif;font-size:0.78rem;font-weight:700;cursor:pointer;transition:all 0.15s;">🫀 إيكو</button>
                 <button onclick="window._setOcrReportType('ct')" id="ocr-rtype-ct" style="padding:5px 14px;border-radius:20px;border:1.5px solid #d1d5db;background:#fff;color:#374151;font-family:'Cairo',sans-serif;font-size:0.78rem;font-weight:700;cursor:pointer;transition:all 0.15s;">🔬 طبقي محوري</button>
                 <button onclick="window._setOcrReportType('mri')" id="ocr-rtype-mri" style="padding:5px 14px;border-radius:20px;border:1.5px solid #d1d5db;background:#fff;color:#374151;font-family:'Cairo',sans-serif;font-size:0.78rem;font-weight:700;cursor:pointer;transition:all 0.15s;">🧲 رنين مغناطيسي</button>
+                <button onclick="window._setOcrReportType('ecg')" id="ocr-rtype-ecg" style="padding:5px 14px;border-radius:20px;border:1.5px solid #d1d5db;background:#fff;color:#374151;font-family:'Cairo',sans-serif;font-size:0.78rem;font-weight:700;cursor:pointer;transition:all 0.15s;">💓 تخطيط القلب ECG</button>
             </div>
         </div>
 
@@ -15518,7 +15539,7 @@ window._loadGeminiKeyFromDrive = async function() {
     // إعداد نوع التقرير
     window._setOcrReportType = function(type) {
         _ocrReportType = type;
-        var types = ['lab','xray','echo','ct','mri'];
+        var types = ['lab','xray','echo','ct','mri','ecg'];
         types.forEach(function(t) {
             var btn = document.getElementById('ocr-rtype-' + t);
             if (!btn) return;
@@ -15529,8 +15550,8 @@ window._loadGeminiKeyFromDrive = async function() {
             }
         });
         // تحديث نص منطقة الرفع
-        var icons   = { lab:'🧪', xray:'🩻', echo:'🫀', ct:'🔬', mri:'🧲' };
-        var titles  = { lab:'انقر لرفع صورة التحليل', xray:'انقر لرفع صورة الأشعة', echo:'انقر لرفع تقرير الإيكو', ct:'انقر لرفع صورة الطبقي المحوري', mri:'انقر لرفع صورة الرنين المغناطيسي' };
+        var icons   = { lab:'🧪', xray:'🩻', echo:'🫀', ct:'🔬', mri:'🧲', ecg:'💓' };
+        var titles  = { lab:'انقر لرفع صورة التحليل', xray:'انقر لرفع صورة الأشعة', echo:'انقر لرفع تقرير الإيكو', ct:'انقر لرفع صورة الطبقي المحوري', mri:'انقر لرفع صورة الرنين المغناطيسي', ecg:'انقر لرفع صورة تخطيط القلب' };
         var iconEl  = document.getElementById('ocr-upload-icon');
         var titleEl = document.getElementById('ocr-upload-title');
         if (iconEl)  iconEl.textContent = icons[type]  || '🖼️';
@@ -15545,46 +15566,46 @@ window._loadGeminiKeyFromDrive = async function() {
 
     // خريطة الحقول: اسم Gemini → ID الحقل في النموذج + التسمية العربية
     var OCR_FIELD_MAP = [
-        { keys: ['wbc','كريات بيضاء','WBC'],       id: 'lab_wbc',           label: 'WBC (كريات بيضاء)',    unit: '×10³/µL' },
-        { keys: ['rbc','كريات حمراء','RBC'],        id: 'lab_rbc',           label: 'RBC (كريات حمراء)',    unit: '×10⁶/µL' },
-        { keys: ['hb','hemoglobin','خضاب','HB','هيموغلوبين'], id: 'lab_hb', label: 'HB (هيموغلوبين)',      unit: 'g/dL' },
-        { keys: ['ht','hematocrit','هيماتوكريت','HT'], id: 'lab_ht',         label: 'HT (هيماتوكريت)',      unit: '%' },
-        { keys: ['mcv','MCV'],                       id: 'lab_mcv',          label: 'MCV',                  unit: 'fL' },
-        { keys: ['mch','MCH'],                       id: 'lab_mch',          label: 'MCH',                  unit: 'pg' },
-        { keys: ['mchc','MCHC'],                     id: 'lab_mchc',         label: 'MCHC',                 unit: 'g/dL' },
-        { keys: ['rdw','RDW'],                       id: 'lab_rdw',          label: 'RDW',                  unit: '%' },
-        { keys: ['platelets','صفيحات','PLT'],        id: 'lab_platelets',    label: 'Platelets (صفيحات)',   unit: '×10³/µL' },
-        { keys: ['esr','ترسب','ESR'],                id: 'lab_esr',          label: 'ESR (ترسب الكريات)',   unit: 'mm/hr' },
-        { keys: ['glucose fasting','سكر صيامي','fasting glucose','FBS','سكر الصيام'], id: 'lab_glucose_fast', label: 'سكر صيامي', unit: 'mg/dL' },
-        { keys: ['glucose random','سكر عشوائي','random glucose','RBS'],      id: 'lab_glucose_random', label: 'سكر عشوائي', unit: 'mg/dL' },
-        { keys: ['homa','insulin resistance','مقاومة انسولين','HOMA-IR'],   id: 'lab_homa_ir',      label: 'HOMA-IR',              unit: '' },
-        { keys: ['creatinine','كرياتينين','Cr','cr'],id: 'lab_cr',           label: 'Creatinine (كرياتينين)',unit: 'mg/dL' },
-        { keys: ['urea','يوريا','BUN'],              id: 'lab_urea',         label: 'Urea (يوريا)',         unit: 'mg/dL' },
-        { keys: ['uric acid','حمض اليوريك','UA','ua'], id: 'lab_ua',         label: 'Uric Acid',            unit: 'mg/dL' },
-        { keys: ['crcl','creatinine clearance'],     id: 'lab_crcl',         label: 'CrCl',                 unit: 'mL/min' },
-        { keys: ['egfr','eGFR','معدل الترشيح'],      id: 'lab_egfr',         label: 'eGFR',                 unit: 'mL/min' },
-        { keys: ['alt','alanine','ناقلة أمين الألانين','SGPT'], id: 'lab_alt', label: 'ALT (SGPT)',          unit: 'U/L' },
-        { keys: ['ast','aspartate','ناقلة أمين الأسبارتات','SGOT'], id: 'lab_ast', label: 'AST (SGOT)',      unit: 'U/L' },
-        { keys: ['bilirubin total','بيليروبين كلي','T.bili','total bilirubin'], id: 'lab_bili_t', label: 'بيليروبين كلي', unit: 'mg/dL' },
-        { keys: ['albumin','ألبومين'],               id: 'lab_albumin',      label: 'Albumin (ألبومين)',    unit: 'g/dL' },
-        { keys: ['crp','c-reactive','بروتين تفاعلي','CRP'], id: 'lab_crp',   label: 'CRP',                  unit: 'mg/L' },
-        { keys: ['vitamin b6','b6','vit b6','فيتامين ب6','B6'], id: 'lab_vit_b6', label: 'Vit B6',           unit: 'ng/mL' },
-        { keys: ['folate','folic','b9','vit b9','حمض الفوليك'], id: 'lab_vit_b9', label: 'Folate/B9',        unit: 'ng/mL' },
-        { keys: ['b12','vitamin b12','vit b12','فيتامين ب12','cobalamin'], id: 'lab_vit_b12', label: 'Vit B12', unit: 'pg/mL' },
-        { keys: ['vitamin d','vit d','25-oh','d3','فيتامين د'], id: 'lab_vit_d3', label: 'Vit D3',           unit: 'ng/mL' },
-        { keys: ['potassium','بوتاسيوم','K','k+'],  id: 'lab_k',            label: 'K (بوتاسيوم)',         unit: 'mEq/L' },
-        { keys: ['sodium','صوديوم','Na','na+'],      id: 'lab_na',           label: 'Na (صوديوم)',          unit: 'mEq/L' },
-        { keys: ['chloride','كلور','Cl','cl-'],      id: 'lab_cl',           label: 'Cl (كلور)',            unit: 'mEq/L' },
-        { keys: ['magnesium','مغنيسيوم','Mg','mg'],  id: 'lab_mg',           label: 'Mg (مغنيسيوم)',        unit: 'mg/dL' },
-        { keys: ['phosphorus','فوسفور','P','phosphate'], id: 'lab_p',        label: 'P (فوسفور)',           unit: 'mg/dL' },
-        { keys: ['calcium','كالسيوم','Ca'],          id: 'lab_ca',           label: 'Ca (كالسيوم)',         unit: 'mg/dL' },
-        { keys: ['tsh','thyroid stimulating','ثيروتروبين','TSH'], id: 'lab_tsh', label: 'TSH',               unit: 'µIU/mL' },
+        { keys: ['wbc','كريات بيضاء','white blood cell','white blood count'],       id: 'lab_wbc',           label: 'WBC (كريات بيضاء)',    unit: '×10³/µL' },
+        { keys: ['rbc','كريات حمراء','red blood cell','red blood count'],        id: 'lab_rbc',           label: 'RBC (كريات حمراء)',    unit: '×10⁶/µL' },
+        { keys: ['hemoglobin','خضاب','هيموغلوبين','haemoglobin'], id: 'lab_hb', label: 'HB (هيموغلوبين)',      unit: 'g/dL' },
+        { keys: ['hematocrit','هيماتوكريت'], id: 'lab_ht',         label: 'HT (هيماتوكريت)',      unit: '%' },
+        { keys: ['mcv','mean corpuscular volume'],                       id: 'lab_mcv',          label: 'MCV',                  unit: 'fL' },
+        { keys: ['mch','mean corpuscular hemoglobin'],                       id: 'lab_mch',          label: 'MCH',                  unit: 'pg' },
+        { keys: ['mchc','mean corpuscular hemoglobin concentration'],                     id: 'lab_mchc',         label: 'MCHC',                 unit: 'g/dL' },
+        { keys: ['rdw','red cell distribution width'],                       id: 'lab_rdw',          label: 'RDW',                  unit: '%' },
+        { keys: ['platelets','صفيحات','plt','platelet count'],        id: 'lab_platelets',    label: 'Platelets (صفيحات)',   unit: '×10³/µL' },
+        { keys: ['esr','erythrocyte sedimentation','ترسب الكريات','sedimentation rate'],                id: 'lab_esr',          label: 'ESR (ترسب الكريات)',   unit: 'mm/hr' },
+        { keys: ['glucose fasting','سكر صيامي','fasting glucose','fbs','سكر الصيام','fasting blood sugar'], id: 'lab_glucose_fast', label: 'سكر صيامي', unit: 'mg/dL' },
+        { keys: ['glucose random','سكر عشوائي','random glucose','rbs','random blood sugar'],      id: 'lab_glucose_random', label: 'سكر عشوائي', unit: 'mg/dL' },
+        { keys: ['homa','homa-ir','insulin resistance','مقاومة انسولين'],   id: 'lab_homa_ir',      label: 'HOMA-IR',              unit: '' },
+        { keys: ['creatinine','كرياتينين','serum creatinine'],id: 'lab_cr',           label: 'Creatinine (كرياتينين)',unit: 'mg/dL' },
+        { keys: ['urea','يوريا','bun','blood urea nitrogen'],              id: 'lab_urea',         label: 'Urea (يوريا)',         unit: 'mg/dL' },
+        { keys: ['uric acid','حمض اليوريك','urate'],  id: 'lab_ua',         label: 'Uric Acid',            unit: 'mg/dL' },
+        { keys: ['crcl','creatinine clearance','creatinine cl'],     id: 'lab_crcl',         label: 'CrCl',                 unit: 'mL/min' },
+        { keys: ['egfr','estimated gfr','glomerular filtration','معدل الترشيح'],      id: 'lab_egfr',         label: 'eGFR',                 unit: 'mL/min' },
+        { keys: ['alt','alanine aminotransferase','alanine transaminase','ناقلة أمين الألانين','sgpt'], id: 'lab_alt', label: 'ALT (SGPT)',          unit: 'U/L' },
+        { keys: ['ast','aspartate aminotransferase','aspartate transaminase','ناقلة أمين الأسبارتات','sgot'], id: 'lab_ast', label: 'AST (SGOT)',      unit: 'U/L' },
+        { keys: ['bilirubin total','بيليروبين كلي','t.bili','total bilirubin','total bili'], id: 'lab_bili_t', label: 'بيليروبين كلي', unit: 'mg/dL' },
+        { keys: ['albumin','ألبومين','serum albumin'],               id: 'lab_albumin',      label: 'Albumin (ألبومين)',    unit: 'g/dL' },
+        { keys: ['c-reactive protein','crp','بروتين تفاعلي','c reactive protein'], id: 'lab_crp',   label: 'CRP',                  unit: 'mg/L' },
+        { keys: ['vitamin b6','vit b6','فيتامين ب6','pyridoxine'], id: 'lab_vit_b6', label: 'Vit B6',           unit: 'ng/mL' },
+        { keys: ['folate','folic acid','فيتامين ب9','حمض الفوليك','vitamin b9','vit b9'], id: 'lab_vit_b9', label: 'Folate/B9',        unit: 'ng/mL' },
+        { keys: ['vitamin b12','vit b12','فيتامين ب12','cobalamin','b12','cyanocobalamin'], id: 'lab_vit_b12', label: 'Vit B12', unit: 'pg/mL' },
+        { keys: ['vitamin d','vit d','25-oh','25(oh)d','cholecalciferol','فيتامين د','vitamin d3'], id: 'lab_vit_d3', label: 'Vit D3',           unit: 'ng/mL' },
+        { keys: ['potassium','بوتاسيوم','serum potassium'],  id: 'lab_k',            label: 'K (بوتاسيوم)',         unit: 'mEq/L' },
+        { keys: ['sodium','صوديوم','serum sodium'],      id: 'lab_na',           label: 'Na (صوديوم)',          unit: 'mEq/L' },
+        { keys: ['chloride','كلور','serum chloride'],      id: 'lab_cl',           label: 'Cl (كلور)',            unit: 'mEq/L' },
+        { keys: ['magnesium','مغنيسيوم','serum magnesium'],  id: 'lab_mg',           label: 'Mg (مغنيسيوم)',        unit: 'mg/dL' },
+        { keys: ['phosphorus','فوسفور','phosphate','serum phosphorus','inorganic phosphorus'],  id: 'lab_p',        label: 'P (فوسفور)',           unit: 'mg/dL' },
+        { keys: ['calcium','كالسيوم','serum calcium','total calcium'],          id: 'lab_ca',           label: 'Ca (كالسيوم)',         unit: 'mg/dL' },
+        { keys: ['tsh','thyroid stimulating hormone','ثيروتروبين'], id: 'lab_tsh', label: 'TSH',               unit: 'µIU/mL' },
         { keys: ['t3','triiodothyronine','ثيرونين'],  id: 'lab_t3',          label: 'T3',                   unit: 'ng/dL' },
         { keys: ['t4','thyroxine','ثيروكسين'],        id: 'lab_t4',          label: 'T4',                   unit: 'µg/dL' },
-        { keys: ['fsh','follicle stimulating','هرمون تنبيه الجريب'], id: 'lab_fsh', label: 'FSH',             unit: 'mIU/mL' },
-        { keys: ['lh','luteinizing','هرمون الجسم الأصفر'], id: 'lab_lh',    label: 'LH',                   unit: 'mIU/mL' },
+        { keys: ['fsh','follicle stimulating hormone','هرمون تنبيه الجريب'], id: 'lab_fsh', label: 'FSH',             unit: 'mIU/mL' },
+        { keys: ['lh','luteinizing hormone','هرمون الجسم الأصفر'], id: 'lab_lh',    label: 'LH',                   unit: 'mIU/mL' },
         { keys: ['testosterone','تستوستيرون'],        id: 'lab_testo',       label: 'Testosterone',         unit: 'ng/dL' },
-        { keys: ['pth','parathyroid','الغدة الجار درقية'], id: 'lab_pth',    label: 'PTH',                  unit: 'pg/mL' },
+        { keys: ['pth','parathyroid hormone','الغدة الجار درقية','parathormone'], id: 'lab_pth',    label: 'PTH',                  unit: 'pg/mL' },
     ];
 
     // فتح النافذة
@@ -15806,16 +15827,16 @@ window._loadGeminiKeyFromDrive = async function() {
             var isLabType = (_ocrReportType === 'lab');
 
             if (isLabType) {
-                prompt = "You are a medical lab report reader. Extract all numeric test results from this lab report image.\n\nCRITICAL RULES:\n1. Return ONLY a single valid complete JSON object. No text before or after. No markdown fences.\n2. The JSON MUST be complete and properly closed - never truncate it.\n3. Every value must be a plain number (float or int), never a string.\n4. For values like >200 or <5 use only the number 200 or 5.\n5. Only include tests with a clearly visible numeric result in the image.\n6. Keep notes very short under 50 chars or empty string.\n\nExact output format (no deviations):\n{\"results\":[{\"test\":\"WBC\",\"value\":6.5,\"unit\":\"10^3/uL\",\"flag\":\"normal\"},{\"test\":\"HB\",\"value\":11.2,\"unit\":\"g/dL\",\"flag\":\"L\"}],\"notes\":\"\"}\n\nNow extract from the image:";
+                prompt = "You are a medical lab report reader. Extract ONLY the numeric test results that are EXPLICITLY and CLEARLY VISIBLE in this lab report image.\n\nCRITICAL RULES:\n1. Return ONLY a single valid complete JSON object. No text before or after. No markdown fences.\n2. The JSON MUST be complete and properly closed - never truncate it.\n3. Every value must be a plain number (float or int), never a string.\n4. For values like >200 or <5 use only the number 200 or 5.\n5. ONLY include tests with a clearly visible numeric result ACTUALLY PRINTED in the image. Do NOT infer, estimate, or hallucinate values for tests not present.\n6. Do NOT add tests like Phosphorus (P), Creatinine (Cr), or any other test unless its numeric value is explicitly written in the image.\n7. Keep notes very short under 50 chars or empty string.\n8. If a test name is ambiguous, use its full name (e.g. 'C-Reactive Protein' not 'CRP').\n\nExact output format (no deviations):\n{\"results\":[{\"test\":\"WBC\",\"value\":6.5,\"unit\":\"10^3/uL\",\"flag\":\"normal\"},{\"test\":\"Hemoglobin\",\"value\":11.2,\"unit\":\"g/dL\",\"flag\":\"L\"}],\"notes\":\"\"}\n\nNow extract ONLY what is visible in the image:";
             } else {
-                var reportTypeNames = { xray: 'X-Ray (Radiology)', echo: 'Echocardiography (Echo)', ct: 'CT Scan (Computed Tomography)', mri: 'MRI (Magnetic Resonance Imaging)' };
+                var reportTypeNames = { xray: 'X-Ray (Radiology)', echo: 'Echocardiography (Echo)', ct: 'CT Scan (Computed Tomography)', mri: 'MRI (Magnetic Resonance Imaging)', ecg: 'ECG (Electrocardiogram)' };
                 var reportTypeName = reportTypeNames[_ocrReportType] || 'Medical Report';
                 prompt = "You are an expert medical report reader specialized in " + reportTypeName + " reports.\n\nExtract and summarize ALL findings from this medical report image.\n\nRULES:\n1. Write your response in Arabic.\n2. Organize findings with clear sections and headings.\n3. Include: main findings, measurements, impressions/conclusions, and recommendations if present.\n4. Be concise but complete — do not omit any finding.\n5. Format as readable Arabic text (not JSON).\n6. If the image is unclear or unreadable, say so.\n\nBegin extraction:";
             }
 
             // تحديث نص التحميل
-            var loadingTitles = { lab:'يقوم Gemini بقراءة التحليل...', xray:'يقوم Gemini بقراءة تقرير الأشعة...', echo:'يقوم Gemini بقراءة تقرير الإيكو...', ct:'يقوم Gemini بقراءة الطبقي المحوري...', mri:'يقوم Gemini بقراءة الرنين المغناطيسي...' };
-            var loadingSubs  = { lab:'جارٍ استخراج الأرقام من الصورة', xray:'جارٍ تحليل نتائج الأشعة', echo:'جارٍ استخراج قياسات القلب', ct:'جارٍ تحليل نتائج الطبقي', mri:'جارٍ تحليل نتائج الرنين' };
+            var loadingTitles = { lab:'يقوم Gemini بقراءة التحليل...', xray:'يقوم Gemini بقراءة تقرير الأشعة...', echo:'يقوم Gemini بقراءة تقرير الإيكو...', ct:'يقوم Gemini بقراءة الطبقي المحوري...', mri:'يقوم Gemini بقراءة الرنين المغناطيسي...', ecg:'يقوم Gemini بقراءة تخطيط القلب...' };
+            var loadingSubs  = { lab:'جارٍ استخراج الأرقام من الصورة', xray:'جارٍ تحليل نتائج الأشعة', echo:'جارٍ استخراج قياسات القلب', ct:'جارٍ تحليل نتائج الطبقي', mri:'جارٍ تحليل نتائج الرنين', ecg:'جارٍ قراءة مخطط الكهرباء القلبية' };
             var ltEl = document.getElementById('ocr-loading-title');
             var lsEl = document.getElementById('ocr-loading-sub');
             if (ltEl) ltEl.textContent = loadingTitles[_ocrReportType] || 'يقوم Gemini بقراءة المستند...';
@@ -15940,7 +15961,7 @@ window._loadGeminiKeyFromDrive = async function() {
                     _showOcrError('لم يتمكن Gemini من قراءة التقرير. حاول برفع صورة أوضح.');
                     return;
                 }
-                var reportLabels = { xray:'نتيجة تقرير الأشعة 🩻', echo:'نتيجة تقرير الإيكو 🫀', ct:'نتيجة الطبقي المحوري 🔬', mri:'نتيجة الرنين المغناطيسي 🧲' };
+                var reportLabels = { xray:'نتيجة تقرير الأشعة 🩻', echo:'نتيجة تقرير الإيكو 🫀', ct:'نتيجة الطبقي المحوري 🔬', mri:'نتيجة الرنين المغناطيسي 🧲', ecg:'نتيجة تخطيط القلب 💓' };
                 var labelEl = document.getElementById('ocr-report-result-label');
                 var bodyEl  = document.getElementById('ocr-report-result-body');
                 var resEl   = document.getElementById('ocr-report-result');
@@ -16096,12 +16117,23 @@ window._loadGeminiKeyFromDrive = async function() {
             var value = parseFloat(item.value);
             if (isNaN(value)) return;
 
-            // البحث عن الحقل المطابق
+            // البحث عن الحقل المطابق — مطابقة دقيقة بحدود كلمات
             var matchedField = null;
             for (var i = 0; i < OCR_FIELD_MAP.length; i++) {
                 var fieldDef = OCR_FIELD_MAP[i];
                 var matched = fieldDef.keys.some(function(key) {
-                    return testName.indexOf(key.toLowerCase()) !== -1 || key.toLowerCase().indexOf(testName) !== -1;
+                    var k = key.toLowerCase();
+                    var t = testName;
+                    // مطابقة تامة أو: الـ key موجود كـ "كلمة" داخل testName
+                    // أو testName تساوي key تماماً (بعد trim)
+                    if (t === k) return true;
+                    // التحقق من وجود الـ key كـ token كامل في testName
+                    // (لا نسمح بمطابقة جزئية لمنع: "cr" → "crp"، "p" → "alt")
+                    var re = new RegExp('(?:^|[\\s\\-\\/\\(])' + k.replace(/[.*+?^${}()|[\]\\]/g,'\\$&') + '(?:[\\s\\-\\/\\)\\,]|$)');
+                    if (re.test(t)) return true;
+                    // السماح فقط بتطابق testName داخل key إذا كان testName أطول من 3 أحرف
+                    if (t.length > 3 && k.indexOf(t) !== -1) return true;
+                    return false;
                 });
                 if (matched) {
                     matchedField = fieldDef;
@@ -16230,9 +16262,24 @@ window._loadGeminiKeyFromDrive = async function() {
     window._saveOcrReportToNotes = function() {
         var bodyEl = document.getElementById('ocr-report-result-body');
         if (!bodyEl || !bodyEl.textContent.trim()) return;
-        var reportLabels = { xray:'تقرير الأشعة', echo:'تقرير الإيكو', ct:'تقرير الطبقي المحوري', mri:'تقرير الرنين المغناطيسي' };
+        var reportLabels = { xray:'تقرير الأشعة', echo:'تقرير الإيكو', ct:'تقرير الطبقي المحوري', mri:'تقرير الرنين المغناطيسي', ecg:'تقرير تخطيط القلب' };
         var label = reportLabels[_ocrReportType] || 'تقرير طبي';
         var content = '【' + label + '】\n' + bodyEl.textContent.trim();
+
+        // محاولة الحفظ في الحقل المباشر للنوع المحدد
+        var directFieldMap = { xray:'diag_xray_report', echo:'diag_us_report', ct:'diag_ct_report', mri:'diag_mri_report', ecg:'diag_ecg_report' };
+        var directFieldId = directFieldMap[_ocrReportType];
+        if (directFieldId) {
+            var directEl = document.getElementById(directFieldId);
+            if (directEl) {
+                directEl.value = bodyEl.textContent.trim();
+                directEl.dispatchEvent(new Event('input', { bubbles: true }));
+                if (typeof showToast === 'function') showToast('✅ تم حفظ ' + label + ' في الحقل المخصص', 'success');
+                window._closeOcrModal();
+                return;
+            }
+        }
+
         // البحث عن حقل الملاحظات في النموذج
         var notesFields = ['notes','visit_notes','clinical_notes','notes_text'];
         var appended = false;
