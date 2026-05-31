@@ -2973,72 +2973,132 @@
                         <h3 class="lab-section-title">📷 D. الإجراءات التشخيصية</h3>
                         <div class="space-y-6">
                             
-                            <!-- X.Ray -->
+                            <!-- X.Ray - متعدد الصور -->
                             <div class="diagnostic-item-container border-b pb-4">
-                                <h4 class="text-md font-semibold text-gray-700 mb-2">X.Ray</h4>
-                                <div class="diagnostic-item">
-                                    <div class="image-upload-container">
-                                        <label for="diag-xray-input" class="lab-field-label">تحميل صورة الأشعة</label>
-                                        <input type="file" id="diag-xray-input" name="diag_xray_input" accept="image/*" class="image-upload-input" data-preview="diag-xray-preview" data-storage="diag_xray_img" data-orientation="horizontal">
-                                        <img id="diag-xray-preview" class="image-preview" alt="X.Ray Image">
-                                    </div>
-                                    <div>
-                                        <label for="diag_xray_report" class="block text-sm font-medium text-gray-700 mb-1">تقرير X.Ray</label>
-                                        <textarea id="diag_xray_report" name="diag_xray_report" rows="10" class="diagnostic-report-textarea" placeholder="اكتب التقرير هنا..."></textarea>
+                                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+                                    <h4 class="text-md font-semibold text-gray-700">🩻 X.Ray — أشعة سينية</h4>
+                                    <button type="button" onclick="window._addDiagImage('xray')" style="display:inline-flex;align-items:center;gap:5px;padding:5px 12px;background:#0790AC;color:#fff;border:none;border-radius:8px;font-family:'Cairo',sans-serif;font-size:0.8rem;font-weight:700;cursor:pointer;">
+                                        <svg style="width:14px;height:14px;" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+                                        إضافة صورة
+                                    </button>
+                                </div>
+                                <div id="diag-xray-images-container" class="space-y-3">
+                                    <div class="diag-image-entry" data-type="xray" data-index="0" style="border:1px solid #e5e7eb;border-radius:10px;padding:12px;background:#f9fafb;">
+                                        <div style="margin-bottom:8px;">
+                                            <label class="block text-sm font-medium text-gray-700 mb-1">🏷️ العضو / المنطقة المصوَّرة</label>
+                                            <input type="text" name="diag_xray_bodypart_0" placeholder="مثال: الصدر، الرأس، الساعد، العمود الفقري..." class="w-full border border-gray-300 rounded-lg p-2 text-sm" style="background:#fff;">
+                                        </div>
+                                        <div class="diagnostic-item">
+                                            <div class="image-upload-container">
+                                                <label class="lab-field-label">تحميل صورة الأشعة</label>
+                                                <input type="file" accept="image/*" class="image-upload-input diag-img-file-input" data-type="xray" data-index="0" data-orientation="horizontal">
+                                                <img class="image-preview diag-img-preview" alt="X.Ray Image">
+                                            </div>
+                                            <div>
+                                                <label class="block text-sm font-medium text-gray-700 mb-1">تقرير X.Ray</label>
+                                                <textarea rows="8" class="diagnostic-report-textarea diag-report-textarea" placeholder="اكتب التقرير هنا..."></textarea>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
+                                <textarea id="diag_xray_report" name="diag_xray_report" style="display:none;"></textarea>
                             </div>
                             
-                            <!-- Ultra Sound “Eco” -->
+                            <!-- Ultra Sound "Eco" - متعدد الصور -->
                             <div class="diagnostic-item-container border-b pb-4">
-                                <h4 class="text-md font-semibold text-gray-700 mb-2">Ultra Sound “Eco”</h4>
-                                <div class="diagnostic-item">
-                                    <div class="image-upload-container">
-                                        <label for="diag-us-input" class="lab-field-label">تحميل صورة الإيكو</label>
-                                        <input type="file" id="diag-us-input" name="diag_us_input" accept="image/*" class="image-upload-input" data-preview="diag-us-preview" data-storage="diag_us_img" data-orientation="horizontal">
-                                        <img id="diag-us-preview" class="image-preview" alt="Ultra Sound Image">
-                                    </div>
-                                    <div>
-                                        <label for="diag_us_report" class="block text-sm font-medium text-gray-700 mb-1">تقرير Ultra Sound</label>
-                                        <textarea id="diag_us_report" name="diag_us_report" rows="10" class="diagnostic-report-textarea" placeholder="اكتب التقرير هنا..."></textarea>
+                                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+                                    <h4 class="text-md font-semibold text-gray-700">🫀 Ultra Sound "Eco" — إيكو / موجات فوق صوتية</h4>
+                                    <button type="button" onclick="window._addDiagImage('us')" style="display:inline-flex;align-items:center;gap:5px;padding:5px 12px;background:#0790AC;color:#fff;border:none;border-radius:8px;font-family:'Cairo',sans-serif;font-size:0.8rem;font-weight:700;cursor:pointer;">
+                                        <svg style="width:14px;height:14px;" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+                                        إضافة صورة
+                                    </button>
+                                </div>
+                                <div id="diag-us-images-container" class="space-y-3">
+                                    <div class="diag-image-entry" data-type="us" data-index="0" style="border:1px solid #e5e7eb;border-radius:10px;padding:12px;background:#f9fafb;">
+                                        <div style="margin-bottom:8px;">
+                                            <label class="block text-sm font-medium text-gray-700 mb-1">🏷️ العضو / المنطقة المصوَّرة</label>
+                                            <input type="text" name="diag_us_bodypart_0" placeholder="مثال: البطن، الكبد، الكلى، الغدة الدرقية، القلب..." class="w-full border border-gray-300 rounded-lg p-2 text-sm" style="background:#fff;">
+                                        </div>
+                                        <div class="diagnostic-item">
+                                            <div class="image-upload-container">
+                                                <label class="lab-field-label">تحميل صورة الإيكو</label>
+                                                <input type="file" accept="image/*" class="image-upload-input diag-img-file-input" data-type="us" data-index="0" data-orientation="horizontal">
+                                                <img class="image-preview diag-img-preview" alt="Ultra Sound Image">
+                                            </div>
+                                            <div>
+                                                <label class="block text-sm font-medium text-gray-700 mb-1">تقرير Ultra Sound</label>
+                                                <textarea rows="8" class="diagnostic-report-textarea diag-report-textarea" placeholder="اكتب التقرير هنا..."></textarea>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
+                                <textarea id="diag_us_report" name="diag_us_report" style="display:none;"></textarea>
                             </div>
                             
-                            <!-- CT -->
+                            <!-- CT - متعدد الصور -->
                             <div class="diagnostic-item-container border-b pb-4">
-                                <h4 class="text-md font-semibold text-gray-700 mb-2">CT</h4>
-                                <div class="diagnostic-item">
-                                    <div class="image-upload-container">
-                                        <label for="diag-ct-input" class="lab-field-label">تحميل صورة CT</label>
-                                        <input type="file" id="diag-ct-input" name="diag_ct_input" accept="image/*" class="image-upload-input" data-preview="diag-ct-preview" data-storage="diag_ct_img" data-orientation="horizontal">
-                                        <img id="diag-ct-preview" class="image-preview" alt="CT Image">
-                                    </div>
-                                    <div>
-                                        <label for="diag_ct_report" class="block text-sm font-medium text-gray-700 mb-1">تقرير CT</label>
-                                        <textarea id="diag_ct_report" name="diag_ct_report" rows="10" class="diagnostic-report-textarea" placeholder="اكتب التقرير هنا..."></textarea>
+                                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+                                    <h4 class="text-md font-semibold text-gray-700">🔬 CT — طبقي محوري</h4>
+                                    <button type="button" onclick="window._addDiagImage('ct')" style="display:inline-flex;align-items:center;gap:5px;padding:5px 12px;background:#0790AC;color:#fff;border:none;border-radius:8px;font-family:'Cairo',sans-serif;font-size:0.8rem;font-weight:700;cursor:pointer;">
+                                        <svg style="width:14px;height:14px;" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+                                        إضافة صورة
+                                    </button>
+                                </div>
+                                <div id="diag-ct-images-container" class="space-y-3">
+                                    <div class="diag-image-entry" data-type="ct" data-index="0" style="border:1px solid #e5e7eb;border-radius:10px;padding:12px;background:#f9fafb;">
+                                        <div style="margin-bottom:8px;">
+                                            <label class="block text-sm font-medium text-gray-700 mb-1">🏷️ العضو / المنطقة المصوَّرة</label>
+                                            <input type="text" name="diag_ct_bodypart_0" placeholder="مثال: الرأس، الصدر، البطن والحوض..." class="w-full border border-gray-300 rounded-lg p-2 text-sm" style="background:#fff;">
+                                        </div>
+                                        <div class="diagnostic-item">
+                                            <div class="image-upload-container">
+                                                <label class="lab-field-label">تحميل صورة CT</label>
+                                                <input type="file" accept="image/*" class="image-upload-input diag-img-file-input" data-type="ct" data-index="0" data-orientation="horizontal">
+                                                <img class="image-preview diag-img-preview" alt="CT Image">
+                                            </div>
+                                            <div>
+                                                <label class="block text-sm font-medium text-gray-700 mb-1">تقرير CT</label>
+                                                <textarea rows="8" class="diagnostic-report-textarea diag-report-textarea" placeholder="اكتب التقرير هنا..."></textarea>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
+                                <textarea id="diag_ct_report" name="diag_ct_report" style="display:none;"></textarea>
                             </div>
                             
-                            <!-- MRI -->
+                            <!-- MRI - متعدد الصور -->
                             <div class="diagnostic-item-container border-b pb-4">
-                                <h4 class="text-md font-semibold text-gray-700 mb-2">MRI</h4>
-                                <div class="diagnostic-item">
-                                    <div class="image-upload-container">
-                                        <label for="diag-mri-input" class="lab-field-label">تحميل صورة MRI</label>
-                                        <input type="file" id="diag-mri-input" name="diag_mri_input" accept="image/*" class="image-upload-input" data-preview="diag-mri-preview" data-storage="diag_mri_img" data-orientation="horizontal">
-                                        <img id="diag-mri-preview" class="image-preview" alt="MRI Image">
-                                    </div>
-                                    <div>
-                                        <label for="diag_mri_report" class="block text-sm font-medium text-gray-700 mb-1">تقرير MRI</label>
-                                        <textarea id="diag_mri_report" name="diag_mri_report" rows="10" class="diagnostic-report-textarea" placeholder="اكتب التقرير هنا..."></textarea>
+                                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+                                    <h4 class="text-md font-semibold text-gray-700">🧲 MRI — رنين مغناطيسي</h4>
+                                    <button type="button" onclick="window._addDiagImage('mri')" style="display:inline-flex;align-items:center;gap:5px;padding:5px 12px;background:#0790AC;color:#fff;border:none;border-radius:8px;font-family:'Cairo',sans-serif;font-size:0.8rem;font-weight:700;cursor:pointer;">
+                                        <svg style="width:14px;height:14px;" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+                                        إضافة صورة
+                                    </button>
+                                </div>
+                                <div id="diag-mri-images-container" class="space-y-3">
+                                    <div class="diag-image-entry" data-type="mri" data-index="0" style="border:1px solid #e5e7eb;border-radius:10px;padding:12px;background:#f9fafb;">
+                                        <div style="margin-bottom:8px;">
+                                            <label class="block text-sm font-medium text-gray-700 mb-1">🏷️ العضو / المنطقة المصوَّرة</label>
+                                            <input type="text" name="diag_mri_bodypart_0" placeholder="مثال: الدماغ، العمود الفقري، الركبة، الكتف..." class="w-full border border-gray-300 rounded-lg p-2 text-sm" style="background:#fff;">
+                                        </div>
+                                        <div class="diagnostic-item">
+                                            <div class="image-upload-container">
+                                                <label class="lab-field-label">تحميل صورة MRI</label>
+                                                <input type="file" accept="image/*" class="image-upload-input diag-img-file-input" data-type="mri" data-index="0" data-orientation="horizontal">
+                                                <img class="image-preview diag-img-preview" alt="MRI Image">
+                                            </div>
+                                            <div>
+                                                <label class="block text-sm font-medium text-gray-700 mb-1">تقرير MRI</label>
+                                                <textarea rows="8" class="diagnostic-report-textarea diag-report-textarea" placeholder="اكتب التقرير هنا..."></textarea>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
+                                <textarea id="diag_mri_report" name="diag_mri_report" style="display:none;"></textarea>
                             </div>
 
                             <!-- ECG - تخطيط القلب الكهربائي -->
-                            <div class="diagnostic-item-container">
+                            <div class="diagnostic-item-container border-b pb-4">
                                 <h4 class="text-md font-semibold text-gray-700 mb-2" style="display:flex;align-items:center;gap:8px;">
                                     <span style="display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#0790AC,#056a80);color:#fff;font-size:0.78rem;font-weight:700;flex-shrink:0;">ECG</span>
                                     تخطيط القلب الكهربائي
@@ -3056,9 +3116,83 @@
                                 </div>
                             </div>
 
+                            <!-- E. التحاليل الفيروسية -->
+                            <div class="diagnostic-item-container">
+                                <h4 class="text-md font-semibold mb-3" style="display:flex;align-items:center;gap:8px;color:#991b1b;">
+                                    <span style="display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#dc2626,#991b1b);color:#fff;font-size:0.8rem;font-weight:700;flex-shrink:0;">🦠</span>
+                                    E. التحاليل الفيروسية (Viral Serology)
+                                </h4>
+                                <div class="lab-grid">
+                                    <!-- التهاب الكبد B -->
+                                    <div class="lab-field-card" style="border-color:#fca5a5;background:#fff5f5;">
+                                        <label class="lab-field-label" style="color:#dc2626;">HBsAg — التهاب الكبد B (سطحي)</label>
+                                        <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-top:4px;">
+                                            <select id="lab_hbsag" name="lab_hbsag" class="lab-input" style="flex:1;min-width:110px;">
+                                                <option value="">—</option>
+                                                <option value="سالب">سالب (Negative)</option>
+                                                <option value="موجب">موجب (Positive)</option>
+                                            </select>
+                                            <input type="text" id="lab_hbsag_value" name="lab_hbsag_value" class="lab-input" placeholder="القيمة (IU/mL)" style="max-width:130px;">
+                                        </div>
+                                    </div>
+                                    <!-- Anti-HBs -->
+                                    <div class="lab-field-card" style="border-color:#fca5a5;background:#fff5f5;">
+                                        <label class="lab-field-label" style="color:#dc2626;">Anti-HBs — مناعة الكبد B</label>
+                                        <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-top:4px;">
+                                            <select id="lab_antihbs" name="lab_antihbs" class="lab-input" style="flex:1;min-width:110px;">
+                                                <option value="">—</option>
+                                                <option value="سالب">سالب (Negative)</option>
+                                                <option value="موجب">موجب (Positive)</option>
+                                            </select>
+                                            <input type="text" id="lab_antihbs_value" name="lab_antihbs_value" class="lab-input" placeholder="القيمة (mIU/mL)" style="max-width:130px;">
+                                        </div>
+                                    </div>
+                                    <!-- التهاب الكبد C -->
+                                    <div class="lab-field-card" style="border-color:#fca5a5;background:#fff5f5;">
+                                        <label class="lab-field-label" style="color:#dc2626;">Anti-HCV — التهاب الكبد C</label>
+                                        <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-top:4px;">
+                                            <select id="lab_hcv" name="lab_hcv" class="lab-input" style="flex:1;min-width:110px;">
+                                                <option value="">—</option>
+                                                <option value="سالب">سالب (Negative)</option>
+                                                <option value="موجب">موجب (Positive)</option>
+                                            </select>
+                                            <input type="text" id="lab_hcv_value" name="lab_hcv_value" class="lab-input" placeholder="القيمة (S/CO)" style="max-width:130px;">
+                                        </div>
+                                    </div>
+                                    <!-- HIV -->
+                                    <div class="lab-field-card" style="border-color:#fca5a5;background:#fff5f5;">
+                                        <label class="lab-field-label" style="color:#dc2626;">HIV Ab — نقص المناعة المكتسب</label>
+                                        <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-top:4px;">
+                                            <select id="lab_hiv" name="lab_hiv" class="lab-input" style="flex:1;min-width:110px;">
+                                                <option value="">—</option>
+                                                <option value="سالب">سالب (Negative)</option>
+                                                <option value="موجب">موجب (Positive)</option>
+                                            </select>
+                                            <input type="text" id="lab_hiv_value" name="lab_hiv_value" class="lab-input" placeholder="القيمة العددية" style="max-width:130px;">
+                                        </div>
+                                    </div>
+                                    <!-- VDRL -->
+                                    <div class="lab-field-card" style="border-color:#fca5a5;background:#fff5f5;">
+                                        <label class="lab-field-label" style="color:#dc2626;">VDRL / RPR — الزهري (Syphilis)</label>
+                                        <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-top:4px;">
+                                            <select id="lab_vdrl" name="lab_vdrl" class="lab-input" style="flex:1;min-width:110px;">
+                                                <option value="">—</option>
+                                                <option value="سالب">سالب (Negative)</option>
+                                                <option value="موجب">موجب (Positive)</option>
+                                            </select>
+                                            <input type="text" id="lab_vdrl_value" name="lab_vdrl_value" class="lab-input" placeholder="العيار (Titer)" style="max-width:130px;">
+                                        </div>
+                                    </div>
+                                    <!-- ملاحظات -->
+                                    <div class="lab-field-card" style="grid-column:1/-1;border-color:#fca5a5;background:#fff5f5;">
+                                        <label class="lab-field-label" style="color:#dc2626;">ملاحظات إضافية على التحاليل الفيروسية</label>
+                                        <textarea id="lab_viral_notes" name="lab_viral_notes" rows="2" class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-2" placeholder="أي ملاحظات إضافية..."></textarea>
+                                    </div>
+                                </div>
+                            </div>
+
                         </div>
                     </div>
-
                 </div>
 
                 <!-- القائمة 5: الحالة التغذوية -->
@@ -3456,6 +3590,15 @@
             <label class="lab-req-item"><input type="checkbox" class="lab-req-checkbox" value="Ultra Sound / Eco (إيكو / موجات فوق صوتية)"> <span class="text-sm text-gray-800">Ultra Sound / Eco — إيكو / موجات فوق صوتية</span></label>
             <label class="lab-req-item"><input type="checkbox" class="lab-req-checkbox" value="CT Scan"> <span class="text-sm text-gray-800">CT Scan — مقطعية محوسبة</span></label>
             <label class="lab-req-item"><input type="checkbox" class="lab-req-checkbox" value="MRI (رنين مغناطيسي)"> <span class="text-sm text-gray-800">MRI — رنين مغناطيسي</span></label>
+            <label class="lab-req-item"><input type="checkbox" class="lab-req-checkbox" value="ECG (تخطيط القلب)"> <span class="text-sm text-gray-800">ECG — تخطيط القلب الكهربائي</span></label>
+
+            <!-- E. التحاليل الفيروسية -->
+            <div class="lab-req-section-title">🦠 E. التحاليل الفيروسية (Viral Serology)</div>
+            <label class="lab-req-item"><input type="checkbox" class="lab-req-checkbox" value="HBsAg (التهاب الكبد B)"> <span class="text-sm text-gray-800">HBsAg — التهاب الكبد B السطحي</span></label>
+            <label class="lab-req-item"><input type="checkbox" class="lab-req-checkbox" value="Anti-HBs (مناعة الكبد B)"> <span class="text-sm text-gray-800">Anti-HBs — مناعة التهاب الكبد B</span></label>
+            <label class="lab-req-item"><input type="checkbox" class="lab-req-checkbox" value="Anti-HCV (التهاب الكبد C)"> <span class="text-sm text-gray-800">Anti-HCV — التهاب الكبد C</span></label>
+            <label class="lab-req-item"><input type="checkbox" class="lab-req-checkbox" value="HIV Ab (نقص المناعة المكتسب)"> <span class="text-sm text-gray-800">HIV Ab — نقص المناعة المكتسب</span></label>
+            <label class="lab-req-item"><input type="checkbox" class="lab-req-checkbox" value="VDRL / RPR (الزهري)"> <span class="text-sm text-gray-800">VDRL / RPR — الزهري (Syphilis)</span></label>
         </div>
 
         <!-- أزرار الأسفل -->
@@ -5777,6 +5920,25 @@
         clearAllImagePreviews(); // (جديد A.a)
         validateAllTabs(); // (إصلاح 2) لمسح أي حدود حمراء سابقة
         renderMedicationsTable();
+        // إعادة ضبط الصور المتعددة والتحاليل الفيروسية
+        if (typeof window._diagImageData !== 'undefined') window._diagImageData = {};
+        ['xray','us','ct','mri'].forEach(function(t) {
+            var c = document.getElementById('diag-' + t + '-images-container');
+            if (c) {
+                var entries = c.querySelectorAll('.diag-image-entry');
+                entries.forEach(function(e, i) {
+                    if (i === 0) {
+                        // مسح الحقول فقط للعنصر الأول
+                        e.querySelectorAll('input[type="text"],textarea').forEach(function(f) { f.value=''; });
+                        var img = e.querySelector('.diag-img-preview');
+                        if (img) { img.src=''; img.classList.remove('visible','image-preview-horizontal'); }
+                    } else {
+                        e.remove();
+                    }
+                });
+            }
+        });
+        if (typeof window._clearViralLabData === 'function') window._clearViralLabData();
         
         cigarettesInput.disabled = true;
         litersInput.disabled = true;
@@ -5910,17 +6072,24 @@
         
         // (جديد B.d) تحميل الإجراءات التشخيصية
         const diags = visit.diagnostics || {};
-        ['xray', 'us', 'ct', 'mri', 'ecg'].forEach(type => {
-            if (diags[`diag_${type}_img`]) {
-                const preview = document.getElementById(`diag-${type}-preview`);
-                preview.src = diags[`diag_${type}_img`];
-                preview.classList.add('visible', 'image-preview-horizontal');
-                tempPatientData[`diag_${type}_img`] = diags[`diag_${type}_img`];
-            }
-            if (diags[`diag_${type}_report`]) {
-                document.getElementById(`diag_${type}_report`).value = diags[`diag_${type}_report`];
-            }
-        });
+        // تحميل الصور المتعددة
+        if (diags.multi && typeof window._loadMultiDiagData === 'function') {
+            window._loadMultiDiagData(diags.multi);
+        }
+        // ECG
+        if (diags['diag_ecg_img']) {
+            const ecgPreview = document.getElementById('diag-ecg-preview');
+            if (ecgPreview) { ecgPreview.src = diags['diag_ecg_img']; ecgPreview.classList.add('visible','image-preview-horizontal'); }
+            tempPatientData['diag_ecg_img'] = diags['diag_ecg_img'];
+        }
+        if (diags['diag_ecg_report']) {
+            const ecgReport = document.getElementById('diag_ecg_report');
+            if (ecgReport) ecgReport.value = diags['diag_ecg_report'];
+        }
+        // التحاليل الفيروسية
+        if (diags.viral && typeof window._loadViralLabData === 'function') {
+            window._loadViralLabData(diags.viral);
+        }
 
 
         // 5. الحالة التغذوية
@@ -6115,16 +6284,18 @@
         
         // (جديد B.d) تجميع بيانات الإجراءات التشخيصية
         const diagnostics = {};
-        ['xray', 'us', 'ct', 'mri', 'ecg'].forEach(type => {
-            const imgKey = `diag_${type}_img`;
-            const reportKey = `diag_${type}_report`;
-            if (data[imgKey]) { // (data) هي tempPatientData
-                diagnostics[imgKey] = data[imgKey];
-            }
-            if (data[reportKey]) {
-                diagnostics[reportKey] = data[reportKey];
-            }
-        });
+        // الصور المتعددة (xray, us, ct, mri)
+        if (typeof window._collectMultiDiagData === 'function') {
+            diagnostics.multi = window._collectMultiDiagData();
+        }
+        // ECG (صورة واحدة - تعالج بالطريقة القديمة)
+        if (data['diag_ecg_img']) diagnostics['diag_ecg_img'] = data['diag_ecg_img'];
+        const ecgReport = document.getElementById('diag_ecg_report');
+        if (ecgReport && ecgReport.value) diagnostics['diag_ecg_report'] = ecgReport.value;
+        // التحاليل الفيروسية
+        if (typeof window._collectViralLabData === 'function') {
+            diagnostics.viral = window._collectViralLabData();
+        }
         
         // (جديد C.o) تجميع بيانات Inbody
         const inbody = {};
@@ -15553,6 +15724,13 @@ window._loadGeminiKeyFromDrive = async function() {
             </div>
         </div>
 
+        <!-- حقل العضو المصور (يظهر عند اختيار أشعة/إيكو/CT/MRI) -->
+        <div id="ocr-bodypart-row" style="display:none;padding:10px 24px;background:#fffbeb;border-bottom:1px solid #fde68a;flex-shrink:0;align-items:center;gap:10px;flex-wrap:wrap;">
+            <label style="font-size:0.82rem;font-weight:700;color:#92400e;white-space:nowrap;flex-shrink:0;">🏷️ العضو / المنطقة المصوَّرة:</label>
+            <input id="ocr-bodypart-input" type="text" placeholder="مثال: الصدر، الكبد، الدماغ، الركبة..." style="flex:1;min-width:200px;padding:7px 12px;border:1.5px solid #fcd34d;border-radius:8px;font-family:'Cairo',sans-serif;font-size:0.85rem;background:#fff;outline:none;" onfocus="this.style.borderColor='#f59e0b'" onblur="this.style.borderColor='#fcd34d'">
+            <span style="font-size:0.75rem;color:#92400e;">سيُضاف تلقائياً لتقرير هذه الصورة</span>
+        </div>
+
         <!-- API Key Row -->
         <div id="ocr-apikey-section" style="padding:14px 24px;background:#fafbfc;border-bottom:1px solid #f0f0f0;flex-shrink:0;">
             <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
@@ -16201,6 +16379,14 @@ window._loadGeminiKeyFromDrive = async function() {
         var reportResultEl = document.getElementById('ocr-report-result');
         if (reportResultEl) reportResultEl.style.display = 'none';
         document.getElementById('ocr-apply-btn').style.display = 'none'; var _irbtn = document.getElementById('ocr-insert-report-btn'); if(_irbtn) _irbtn.style.display = 'none';
+        // إظهار/إخفاء حقل العضو المصور
+        var bodypartRow = document.getElementById('ocr-bodypart-row');
+        if (bodypartRow) {
+            var imagingTypes = ['xray', 'echo', 'ct', 'mri'];
+            bodypartRow.style.display = (imagingTypes.indexOf(type) !== -1) ? 'flex' : 'none';
+            var bodypartInput = document.getElementById('ocr-bodypart-input');
+            if (bodypartInput) bodypartInput.value = '';
+        }
     };
 
     // خريطة الحقول: اسم Gemini → ID الحقل في النموذج + التسمية العربية
@@ -16914,10 +17100,32 @@ window._loadGeminiKeyFromDrive = async function() {
         var reportLabels = { xray:'تقرير الأشعة', echo:'تقرير الإيكو', ct:'تقرير الطبقي المحوري', mri:'تقرير الرنين المغناطيسي', ecg:'تقرير تخطيط القلب' };
         var directFieldId = directFieldMap[_ocrReportType];
         var label = reportLabels[_ocrReportType] || 'تقرير طبي';
+        // إضافة العضو المصور إلى التقرير إن وُجد
+        var bodypartInput = document.getElementById('ocr-bodypart-input');
+        var bodypart = bodypartInput ? bodypartInput.value.trim() : '';
+        var reportText = bodyEl.textContent.trim();
+        if (bodypart) reportText = '【العضو: ' + bodypart + '】
+' + reportText;
         if (directFieldId) {
             var directEl = document.getElementById(directFieldId);
+            // محاولة إدراج في أول حقل نصي في الصورة الأولى (للنظام الجديد متعدد الصور)
+            var typeMap = { xray:'xray', echo:'us', ct:'ct', mri:'mri' };
+            var diagType = typeMap[_ocrReportType];
+            if (diagType) {
+                var firstEntry = document.querySelector('#diag-' + diagType + '-images-container .diag-image-entry:first-child');
+                if (firstEntry) {
+                    var firstReport = firstEntry.querySelector('.diag-report-textarea');
+                    var firstBodypart = firstEntry.querySelector('[name*="_bodypart_0"]');
+                    if (firstReport) { firstReport.value = reportText; firstReport.dispatchEvent(new Event('input',{bubbles:true})); }
+                    if (firstBodypart && bodypart && !firstBodypart.value) firstBodypart.value = bodypart;
+                    if (typeof showToast === 'function') showToast('✅ تم إدراج ' + label + ' في الحقل المخصص', 'success');
+                    window._closeOcrModal();
+                    setTimeout(function() { if(firstReport) firstReport.scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 350);
+                    return;
+                }
+            }
             if (directEl) {
-                directEl.value = bodyEl.textContent.trim();
+                directEl.value = reportText;
                 directEl.dispatchEvent(new Event('input', { bubbles: true }));
                 directEl.dispatchEvent(new Event('change', { bubbles: true }));
                 // تأثير بصري
@@ -16978,6 +17186,207 @@ window._loadGeminiKeyFromDrive = async function() {
 
 })();
 </script>
+
+<script>
+// ===== نظام الصور المتعددة للإجراءات التشخيصية =====
+(function() {
+
+    // تتبع عدد الصور لكل نوع
+    var _diagImageCounts = { xray: 1, us: 1, ct: 1, mri: 1 };
+    // تخزين بيانات الصور (base64)
+    window._diagImageData = {};
+
+    // إضافة صورة جديدة
+    window._addDiagImage = function(type) {
+        var container = document.getElementById('diag-' + type + '-images-container');
+        if (!container) return;
+        var idx = _diagImageCounts[type]++;
+        var labels = { xray: 'الأشعة السينية', us: 'الإيكو', ct: 'CT المحوري', mri: 'الرنين المغناطيسي' };
+        var placeholders = {
+            xray: 'مثال: الصدر، الرأس، الساعد، العمود الفقري...',
+            us: 'مثال: البطن، الكبد، الكلى، الغدة الدرقية...',
+            ct: 'مثال: الرأس، الصدر، البطن والحوض...',
+            mri: 'مثال: الدماغ، العمود الفقري، الركبة...'
+        };
+        var entry = document.createElement('div');
+        entry.className = 'diag-image-entry';
+        entry.setAttribute('data-type', type);
+        entry.setAttribute('data-index', idx);
+        entry.style.cssText = 'border:1px solid #e5e7eb;border-radius:10px;padding:12px;background:#f9fafb;position:relative;';
+        entry.innerHTML = `
+            <button type="button" onclick="window._removeDiagImage(this, '${type}')" style="position:absolute;top:8px;left:8px;background:#fee2e2;color:#dc2626;border:none;border-radius:6px;width:26px;height:26px;cursor:pointer;font-size:1rem;font-weight:700;display:flex;align-items:center;justify-content:center;" title="حذف هذه الصورة">×</button>
+            <div style="margin-bottom:8px;">
+                <label class="block text-sm font-medium text-gray-700 mb-1">🏷️ العضو / المنطقة المصوَّرة</label>
+                <input type="text" name="diag_${type}_bodypart_${idx}" placeholder="${placeholders[type]}" class="w-full border border-gray-300 rounded-lg p-2 text-sm" style="background:#fff;">
+            </div>
+            <div class="diagnostic-item">
+                <div class="image-upload-container">
+                    <label class="lab-field-label">تحميل صورة ${labels[type]}</label>
+                    <input type="file" accept="image/*" class="image-upload-input diag-img-file-input" data-type="${type}" data-index="${idx}" data-orientation="horizontal">
+                    <img class="image-preview diag-img-preview" alt="Image">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">التقرير</label>
+                    <textarea rows="8" class="diagnostic-report-textarea diag-report-textarea" placeholder="اكتب التقرير هنا..."></textarea>
+                </div>
+            </div>`;
+        container.appendChild(entry);
+        // ربط حدث رفع الصورة
+        var fileInput = entry.querySelector('.diag-img-file-input');
+        var preview = entry.querySelector('.diag-img-preview');
+        _bindDiagImageInput(fileInput, preview, type, idx);
+        if (typeof showToast === 'function') showToast('✅ تم إضافة صورة ' + labels[type] + ' جديدة', 'success');
+    };
+
+    // حذف صورة
+    window._removeDiagImage = function(btn, type) {
+        var entry = btn.closest('.diag-image-entry');
+        if (!entry) return;
+        var idx = entry.getAttribute('data-index');
+        delete window._diagImageData[type + '_' + idx];
+        entry.remove();
+        if (typeof showToast === 'function') showToast('🗑️ تم حذف الصورة', 'info');
+    };
+
+    // ربط حدث رفع الصورة
+    function _bindDiagImageInput(fileInput, preview, type, idx) {
+        fileInput.addEventListener('change', function(e) {
+            var file = e.target.files[0];
+            if (!file) return;
+            var reader = new FileReader();
+            reader.onload = function(ev) {
+                var dataUrl = ev.target.result;
+                preview.src = dataUrl;
+                preview.classList.add('visible', 'image-preview-horizontal');
+                window._diagImageData[type + '_' + idx] = dataUrl;
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+
+    // ربط الصور الأولى عند تحميل الصفحة
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.diag-img-file-input').forEach(function(input) {
+            var type = input.getAttribute('data-type');
+            var idx = parseInt(input.getAttribute('data-index'));
+            var preview = input.closest('.diag-image-entry, .image-upload-container').querySelector('.diag-img-preview');
+            if (preview) _bindDiagImageInput(input, preview, type, idx);
+        });
+    });
+
+    // =========================================================
+    // حفظ/تحميل بيانات الإجراءات التشخيصية المتعددة
+    // =========================================================
+
+    // جمع بيانات الصور المتعددة (يُستدعى من collectFormData)
+    window._collectMultiDiagData = function() {
+        var result = {};
+        ['xray', 'us', 'ct', 'mri'].forEach(function(type) {
+            var container = document.getElementById('diag-' + type + '-images-container');
+            if (!container) return;
+            var entries = container.querySelectorAll('.diag-image-entry');
+            var list = [];
+            entries.forEach(function(entry) {
+                var idx = entry.getAttribute('data-index');
+                var bodypart = entry.querySelector('[name="diag_' + type + '_bodypart_' + idx + '"]');
+                var report = entry.querySelector('.diag-report-textarea');
+                var imgData = window._diagImageData[type + '_' + idx] || null;
+                list.push({
+                    bodypart: bodypart ? bodypart.value : '',
+                    report: report ? report.value : '',
+                    img: imgData
+                });
+            });
+            result[type] = list;
+        });
+        return result;
+    };
+
+    // تحميل بيانات الصور المتعددة (يُستدعى عند فتح الزيارة)
+    window._loadMultiDiagData = function(multiDiag) {
+        if (!multiDiag) return;
+        ['xray', 'us', 'ct', 'mri'].forEach(function(type) {
+            var container = document.getElementById('diag-' + type + '-images-container');
+            if (!container) return;
+            var items = multiDiag[type];
+            if (!items || !items.length) return;
+            // مسح الحاوية وإعادة البناء
+            container.innerHTML = '';
+            _diagImageCounts[type] = 0;
+            var labels = { xray: 'الأشعة السينية', us: 'الإيكو', ct: 'CT المحوري', mri: 'الرنين المغناطيسي' };
+            var placeholders = {
+                xray: 'مثال: الصدر، الرأس، الساعد...',
+                us: 'مثال: البطن، الكبد، الكلى...',
+                ct: 'مثال: الرأس، الصدر، البطن...',
+                mri: 'مثال: الدماغ، العمود الفقري...'
+            };
+            items.forEach(function(item, idx) {
+                _diagImageCounts[type]++;
+                var isFirst = idx === 0;
+                var entry = document.createElement('div');
+                entry.className = 'diag-image-entry';
+                entry.setAttribute('data-type', type);
+                entry.setAttribute('data-index', idx);
+                entry.style.cssText = 'border:1px solid #e5e7eb;border-radius:10px;padding:12px;background:#f9fafb;position:relative;';
+                entry.innerHTML = (isFirst ? '' : `<button type="button" onclick="window._removeDiagImage(this, '${type}')" style="position:absolute;top:8px;left:8px;background:#fee2e2;color:#dc2626;border:none;border-radius:6px;width:26px;height:26px;cursor:pointer;font-size:1rem;font-weight:700;display:flex;align-items:center;justify-content:center;" title="حذف">×</button>`) + `
+                    <div style="margin-bottom:8px;">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">🏷️ العضو / المنطقة المصوَّرة</label>
+                        <input type="text" name="diag_${type}_bodypart_${idx}" value="${(item.bodypart||'').replace(/"/g,'&quot;')}" placeholder="${placeholders[type]}" class="w-full border border-gray-300 rounded-lg p-2 text-sm" style="background:#fff;">
+                    </div>
+                    <div class="diagnostic-item">
+                        <div class="image-upload-container">
+                            <label class="lab-field-label">تحميل صورة ${labels[type]}</label>
+                            <input type="file" accept="image/*" class="image-upload-input diag-img-file-input" data-type="${type}" data-index="${idx}" data-orientation="horizontal">
+                            <img class="image-preview diag-img-preview${item.img ? ' visible image-preview-horizontal' : ''}" ${item.img ? 'src="'+item.img+'"' : ''} alt="Image">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">التقرير</label>
+                            <textarea rows="8" class="diagnostic-report-textarea diag-report-textarea" placeholder="اكتب التقرير هنا...">${(item.report||'').replace(/</g,'&lt;')}</textarea>
+                        </div>
+                    </div>`;
+                container.appendChild(entry);
+                if (item.img) window._diagImageData[type + '_' + idx] = item.img;
+                var fileInput = entry.querySelector('.diag-img-file-input');
+                var preview = entry.querySelector('.diag-img-preview');
+                _bindDiagImageInput(fileInput, preview, type, idx);
+            });
+        });
+    };
+
+    // =========================================================
+    // حفظ/تحميل التحاليل الفيروسية
+    // =========================================================
+
+    window._collectViralLabData = function() {
+        var fields = ['hbsag','hbsag_value','antihbs','antihbs_value','hcv','hcv_value','hiv','hiv_value','vdrl','vdrl_value','viral_notes'];
+        var result = {};
+        fields.forEach(function(f) {
+            var el = document.getElementById('lab_' + f);
+            if (el && el.value) result[f] = el.value;
+        });
+        return result;
+    };
+
+    window._loadViralLabData = function(viralData) {
+        if (!viralData) return;
+        var fields = ['hbsag','hbsag_value','antihbs','antihbs_value','hcv','hcv_value','hiv','hiv_value','vdrl','vdrl_value','viral_notes'];
+        fields.forEach(function(f) {
+            var el = document.getElementById('lab_' + f);
+            if (el && viralData[f] !== undefined) el.value = viralData[f];
+        });
+    };
+
+    window._clearViralLabData = function() {
+        var fields = ['hbsag','hbsag_value','antihbs','antihbs_value','hcv','hcv_value','hiv','hiv_value','vdrl','vdrl_value','viral_notes'];
+        fields.forEach(function(f) {
+            var el = document.getElementById('lab_' + f);
+            if (el) el.value = '';
+        });
+    };
+
+})();
+</script>
+
 
 <script>
 // ===== زر الطباعة متعدد المهام =====
