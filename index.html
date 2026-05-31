@@ -16058,16 +16058,23 @@ window._loadGeminiKeyFromDrive = async function() {
 
     // فتح النافذة
     window._openInbodyOcrModal = function() {
+        var modal = document.getElementById('inbody-ocr-modal');
+        if (!modal) return;
+        if (modal.parentNode !== document.body) {
+            document.body.appendChild(modal);
+        }
         var savedKey = localStorage.getItem('_gemini_api_key') || '';
         document.getElementById('inbody-ocr-api-key').value = savedKey;
         document.getElementById('inbody-ocr-key-status').textContent = savedKey
             ? '✅ المفتاح محفوظ' : '';
-        document.getElementById('inbody-ocr-modal').style.display = 'flex';
+        modal.style.display = 'flex';
+        modal.style.zIndex = '2147483647';
     };
 
     // إغلاق النافذة
     window._closeInbodyOcrModal = function() {
-        document.getElementById('inbody-ocr-modal').style.display = 'none';
+        var modal = document.getElementById('inbody-ocr-modal');
+        if (modal) modal.style.display = 'none';
         _closeInbodyOcrCamera();
     };
 
@@ -16452,6 +16459,12 @@ window._loadGeminiKeyFromDrive = async function() {
 
     // فتح النافذة
     window._openOcrModal = function() {
+        var modal = document.getElementById('ocr-lab-modal');
+        if (!modal) return;
+        // نقل النافذة إلى body مباشرةً لتجاوز أي stacking context من النوافذ الأب
+        if (modal.parentNode !== document.body) {
+            document.body.appendChild(modal);
+        }
         var savedKey = localStorage.getItem('_gemini_api_key') || '';
         document.getElementById('ocr-api-key-input').value = savedKey;
         var isCloudConnected = window._cloudAccessToken && Date.now() < (window._cloudTokenExpiry || 0);
@@ -16459,11 +16472,13 @@ window._loadGeminiKeyFromDrive = async function() {
             ? (isCloudConnected ? '✅ المفتاح محفوظ محلياً وعلى Google Drive ☁️' : '✅ المفتاح محفوظ')
             : '';
         _resetOcrModal();
-        document.getElementById('ocr-lab-modal').style.display = 'flex';
+        modal.style.display = 'flex';
+        modal.style.zIndex = '2147483647';
     };
 
     window._closeOcrModal = function() {
-        document.getElementById('ocr-lab-modal').style.display = 'none';
+        var modal = document.getElementById('ocr-lab-modal');
+        if (modal) modal.style.display = 'none';
     };
 
     // إغلاق عند النقر خارج النافذة
