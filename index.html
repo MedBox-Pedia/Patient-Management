@@ -15208,14 +15208,14 @@ ${context}
     <div style="background:#fff;border-radius:20px;box-shadow:0 24px 80px rgba(0,0,0,0.35);width:96vw;max-width:680px;max-height:92vh;display:flex;flex-direction:column;overflow:hidden;animation:slideUpModal 0.25s ease;">
 
         <!-- Header -->
-        <div style="display:flex;align-items:center;justify-content:space-between;padding:18px 24px;border-bottom:2px solid #ede9fe;background:linear-gradient(135deg,#f5f3ff 0%,#fff 100%);flex-shrink:0;">
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:18px 24px;border-bottom:2px solid #e6f4f7;background:linear-gradient(135deg,#f0fafc 0%,#fff 100%);flex-shrink:0;">
             <div style="display:flex;align-items:center;gap:10px;">
-                <div style="width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,#7c3aed 0%,#a855f7 100%);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                <div style="width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,#0790AC 0%,#056a80 100%);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z"/></svg>
                 </div>
                 <div>
-                    <div style="font-size:1.05rem;font-weight:700;color:#7c3aed;">📷 قراءة التحاليل بالذكاء الاصطناعي — OCR</div>
-                    <div style="font-size:0.82rem;color:#6b7280;">ارفع صورة ورقة التحليل وسيقوم Gemini بتفريغ الأرقام تلقائياً</div>
+                    <div style="font-size:1.05rem;font-weight:700;color:#0790AC;">📷 قراءة التحاليل بالذكاء الاصطناعي — OCR</div>
+                    <div style="font-size:0.82rem;color:#6b7280;">ارفع صورة أو التقط صورة ورقة التحليل وسيقوم Gemini بتفريغ الأرقام تلقائياً</div>
                 </div>
             </div>
             <button onclick="window._closeOcrModal()" style="width:34px;height:34px;border-radius:8px;border:2px solid #e5e7eb;background:#fff;cursor:pointer;color:#6b7280;font-size:18px;display:flex;align-items:center;justify-content:center;transition:all 0.15s;" onmouseover="this.style.borderColor='#ef4444';this.style.color='#ef4444'" onmouseout="this.style.borderColor='#e5e7eb';this.style.color='#6b7280'">✕</button>
@@ -15227,9 +15227,9 @@ ${context}
                 <label style="font-size:0.82rem;font-weight:700;color:#374151;white-space:nowrap;flex-shrink:0;">🔑 Gemini API Key:</label>
                 <input id="ocr-api-key-input" type="password" placeholder="أدخل مفتاح Gemini API"
                     style="flex:1;min-width:200px;padding:8px 12px;border:1.5px solid #d1d5db;border-radius:8px;font-family:'Cairo',sans-serif;font-size:0.82rem;outline:none;transition:border-color 0.15s;"
-                    onfocus="this.style.borderColor='#7c3aed'" onblur="this.style.borderColor='#d1d5db'">
-                <button onclick="window._saveOcrApiKey()" style="padding:8px 14px;background:#7c3aed;color:#fff;border:none;border-radius:8px;font-family:'Cairo',sans-serif;font-size:0.82rem;font-weight:700;cursor:pointer;white-space:nowrap;" onmouseover="this.style.background='#6d28d9'" onmouseout="this.style.background='#7c3aed'">حفظ</button>
-                <a href="https://aistudio.google.com/app/apikey" target="_blank" style="font-size:0.76rem;color:#7c3aed;text-decoration:none;white-space:nowrap;">احصل على مفتاح ↗</a>
+                    onfocus="this.style.borderColor='#0790AC'" onblur="this.style.borderColor='#d1d5db'">
+                <button onclick="window._saveOcrApiKey()" style="padding:8px 14px;background:#0790AC;color:#fff;border:none;border-radius:8px;font-family:'Cairo',sans-serif;font-size:0.82rem;font-weight:700;cursor:pointer;white-space:nowrap;" onmouseover="this.style.background='#056a80'" onmouseout="this.style.background='#0790AC'">حفظ</button>
+                <a href="https://aistudio.google.com/app/apikey" target="_blank" style="font-size:0.76rem;color:#0790AC;text-decoration:none;white-space:nowrap;">احصل على مفتاح ↗</a>
             </div>
             <div id="ocr-key-status" style="font-size:0.76rem;margin-top:5px;color:#6b7280;"></div>
         </div>
@@ -15238,15 +15238,37 @@ ${context}
         <div style="flex:1;overflow-y:auto;padding:22px 24px;display:flex;flex-direction:column;gap:16px;">
 
             <!-- Upload area -->
-            <div id="ocr-upload-area" style="border:2.5px dashed #c4b5fd;border-radius:14px;padding:32px 20px;text-align:center;cursor:pointer;transition:all 0.2s;background:#faf5ff;"
-                onclick="document.getElementById('ocr-file-input').click()"
-                ondragover="event.preventDefault();this.style.borderColor='#7c3aed';this.style.background='#ede9fe';"
-                ondragleave="this.style.borderColor='#c4b5fd';this.style.background='#faf5ff';"
-                ondrop="event.preventDefault();this.style.borderColor='#c4b5fd';this.style.background='#faf5ff';window._handleOcrFileDrop(event);">
-                <div style="font-size:2.5rem;margin-bottom:10px;">🖼️</div>
-                <div style="font-size:1rem;font-weight:700;color:#7c3aed;margin-bottom:4px;">انقر لرفع صورة أو اسحب وأفلت هنا</div>
-                <div style="font-size:0.82rem;color:#9ca3af;">يدعم: JPG، PNG، WEBP، PDF (حتى 10 ميغابايت)</div>
-                <input id="ocr-file-input" type="file" accept="image/*,application/pdf" style="display:none" onchange="window._handleOcrFileSelect(event)">
+            <div style="display:flex;gap:10px;flex-wrap:wrap;">
+                <div id="ocr-upload-area" style="flex:1;min-width:220px;border:2.5px dashed #80c9d9;border-radius:14px;padding:28px 20px;text-align:center;cursor:pointer;transition:all 0.2s;background:#f0fafc;"
+                    onclick="document.getElementById('ocr-file-input').click()"
+                    ondragover="event.preventDefault();this.style.borderColor='#0790AC';this.style.background='#e6f4f7';"
+                    ondragleave="this.style.borderColor='#80c9d9';this.style.background='#f0fafc';"
+                    ondrop="event.preventDefault();this.style.borderColor='#80c9d9';this.style.background='#f0fafc';window._handleOcrFileDrop(event);">
+                    <div style="font-size:2.2rem;margin-bottom:8px;">🖼️</div>
+                    <div style="font-size:0.9rem;font-weight:700;color:#0790AC;margin-bottom:4px;">انقر لرفع صورة</div>
+                    <div style="font-size:0.78rem;color:#9ca3af;">JPG، PNG، WEBP، PDF</div>
+                    <input id="ocr-file-input" type="file" accept="image/*,application/pdf" style="display:none" onchange="window._handleOcrFileSelect(event)">
+                </div>
+                <!-- Camera capture button -->
+                <div id="ocr-camera-area" style="flex:1;min-width:220px;border:2.5px dashed #80c9d9;border-radius:14px;padding:28px 20px;text-align:center;cursor:pointer;transition:all 0.2s;background:#f0fafc;"
+                    onclick="window._openOcrCamera()"
+                    onmouseover="this.style.borderColor='#0790AC';this.style.background='#e6f4f7';"
+                    onmouseout="this.style.borderColor='#80c9d9';this.style.background='#f0fafc';">
+                    <div style="font-size:2.2rem;margin-bottom:8px;">📸</div>
+                    <div style="font-size:0.9rem;font-weight:700;color:#0790AC;margin-bottom:4px;">فتح الكاميرا</div>
+                    <div style="font-size:0.78rem;color:#9ca3af;">التقاط صورة مباشرة</div>
+                </div>
+            </div>
+
+            <!-- Camera Modal -->
+            <div id="ocr-camera-modal" style="display:none;position:fixed;inset:0;z-index:999999;background:rgba(0,0,0,0.92);align-items:center;justify-content:center;flex-direction:column;gap:16px;">
+                <div style="color:#fff;font-family:'Cairo',sans-serif;font-size:1rem;font-weight:700;margin-bottom:4px;">📸 وجّه الكاميرا نحو ورقة التحليل</div>
+                <video id="ocr-camera-video" style="width:min(92vw,540px);height:auto;border-radius:14px;background:#000;max-height:65vh;object-fit:cover;" autoplay playsinline></video>
+                <canvas id="ocr-camera-canvas" style="display:none;"></canvas>
+                <div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center;">
+                    <button onclick="window._captureOcrPhoto()" style="padding:12px 28px;background:#0790AC;color:#fff;border:none;border-radius:10px;font-family:'Cairo',sans-serif;font-size:1rem;font-weight:700;cursor:pointer;box-shadow:0 4px 16px rgba(7,144,172,0.5);">📷 التقاط</button>
+                    <button onclick="window._closeOcrCamera()" style="padding:12px 22px;background:#fff;color:#374151;border:none;border-radius:10px;font-family:'Cairo',sans-serif;font-size:0.9rem;font-weight:700;cursor:pointer;">إلغاء</button>
+                </div>
             </div>
 
             <!-- Image preview -->
@@ -15260,23 +15282,26 @@ ${context}
 
             <!-- Loading state -->
             <div id="ocr-loading" style="display:none;text-align:center;padding:30px 0;">
-                <div style="width:48px;height:48px;border-radius:50%;border:4px solid #ede9fe;border-top:4px solid #7c3aed;animation:spin 1s linear infinite;margin:0 auto 14px;"></div>
+                <div style="width:48px;height:48px;border-radius:50%;border:4px solid #e6f4f7;border-top:4px solid #0790AC;animation:spin 1s linear infinite;margin:0 auto 14px;"></div>
                 <div style="font-size:0.95rem;font-weight:700;color:#374151;">يقوم Gemini بقراءة التحليل...</div>
                 <div style="font-size:0.82rem;color:#9ca3af;margin-top:4px;">جارٍ استخراج الأرقام من الصورة</div>
             </div>
 
             <!-- Result preview table -->
             <div id="ocr-result-section" style="display:none;">
-                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:8px;">
                     <h3 style="font-size:0.95rem;font-weight:700;color:#374151;margin:0;">✅ النتائج المستخرجة</h3>
-                    <span style="font-size:0.78rem;color:#6b7280;background:#f3f4f6;padding:3px 10px;border-radius:20px;" id="ocr-matched-count"></span>
+                    <div style="display:flex;align-items:center;gap:8px;">
+                        <span style="font-size:0.78rem;color:#6b7280;background:#f3f4f6;padding:3px 10px;border-radius:20px;" id="ocr-matched-count"></span>
+                        <button id="ocr-toggle-edit-btn" onclick="window._toggleOcrEditMode()" style="font-size:0.75rem;padding:4px 12px;background:#e6f4f7;color:#0790AC;border:1.5px solid #0790AC;border-radius:20px;font-family:'Cairo',sans-serif;font-weight:700;cursor:pointer;">✏️ تعديل القيم</button>
+                    </div>
                 </div>
-                <div style="background:#faf5ff;border:1px solid #ede9fe;border-radius:12px;overflow:hidden;">
+                <div style="background:#f0fafc;border:1px solid #b3dde7;border-radius:12px;overflow:hidden;">
                     <table style="width:100%;border-collapse:collapse;font-size:0.85rem;">
                         <thead>
-                            <tr style="background:#7c3aed;color:#fff;">
+                            <tr style="background:#0790AC;color:#fff;">
                                 <th style="padding:9px 14px;text-align:right;font-weight:700;">الفحص</th>
-                                <th style="padding:9px 14px;text-align:center;font-weight:700;">القيمة المقروءة</th>
+                                <th style="padding:9px 14px;text-align:center;font-weight:700;">القيمة</th>
                                 <th style="padding:9px 14px;text-align:center;font-weight:700;">الوحدة</th>
                                 <th style="padding:9px 14px;text-align:center;font-weight:700;">ملاحظة</th>
                             </tr>
@@ -15300,8 +15325,8 @@ ${context}
         <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 24px;border-top:1px solid #e5e7eb;background:#fafafa;flex-shrink:0;gap:10px;flex-wrap:wrap;">
             <div style="font-size:0.75rem;color:#9ca3af;">⚠️ يرجى مراجعة القيم قبل الحفظ — الذكاء الاصطناعي قد لا يقرأ كل قيمة بدقة</div>
             <div style="display:flex;gap:8px;">
-                <button id="ocr-apply-btn" onclick="window._applyOcrResults()" style="display:none;padding:9px 22px;background:linear-gradient(135deg,#7c3aed 0%,#a855f7 100%);color:#fff;border:none;border-radius:8px;font-family:'Cairo',sans-serif;font-size:0.88rem;font-weight:700;cursor:pointer;box-shadow:0 2px 10px rgba(124,58,237,0.3);transition:all 0.15s;" onmouseover="this.style.transform='translateY(-1px)'" onmouseout="this.style.transform='translateY(0)'">✍️ تعبئة الحقول تلقائياً</button>
-                <button id="ocr-scan-btn" onclick="window._startOcrScan()" style="padding:9px 22px;background:#7c3aed;color:#fff;border:none;border-radius:8px;font-family:'Cairo',sans-serif;font-size:0.88rem;font-weight:700;cursor:pointer;transition:all 0.15s;" onmouseover="this.style.background='#6d28d9'" onmouseout="this.style.background='#7c3aed'">🔍 بدء القراءة</button>
+                <button id="ocr-apply-btn" onclick="window._applyOcrResults()" style="display:none;padding:9px 22px;background:linear-gradient(135deg,#0790AC 0%,#056a80 100%);color:#fff;border:none;border-radius:8px;font-family:'Cairo',sans-serif;font-size:0.88rem;font-weight:700;cursor:pointer;box-shadow:0 2px 10px rgba(7,144,172,0.3);transition:all 0.15s;" onmouseover="this.style.transform='translateY(-1px)'" onmouseout="this.style.transform='translateY(0)'">✍️ تعبئة الحقول تلقائياً</button>
+                <button id="ocr-scan-btn" onclick="window._startOcrScan()" style="padding:9px 22px;background:#0790AC;color:#fff;border:none;border-radius:8px;font-family:'Cairo',sans-serif;font-size:0.88rem;font-weight:700;cursor:pointer;transition:all 0.15s;" onmouseover="this.style.background='#056a80'" onmouseout="this.style.background='#0790AC'">🔍 بدء القراءة</button>
                 <button onclick="window._closeOcrModal()" style="padding:9px 16px;background:#fff;color:#6b7280;border:1.5px solid #e5e7eb;border-radius:8px;font-family:'Cairo',sans-serif;font-size:0.82rem;font-weight:700;cursor:pointer;">إغلاق</button>
             </div>
         </div>
@@ -15317,6 +15342,7 @@ ${context}
     var _ocrImageBase64 = null;
     var _ocrImageMime = 'image/jpeg';
     var _ocrExtractedData = {};
+    var _ocrEditMode = false;
 
     // خريطة الحقول: اسم Gemini → ID الحقل في النموذج + التسمية العربية
     var OCR_FIELD_MAP = [
@@ -15392,6 +15418,7 @@ ${context}
     function _resetOcrModal() {
         _ocrImageBase64 = null;
         _ocrExtractedData = {};
+        _ocrEditMode = false;
         document.getElementById('ocr-preview-wrap').style.display = 'none';
         document.getElementById('ocr-preview-img').src = '';
         document.getElementById('ocr-file-name').textContent = '';
@@ -15401,6 +15428,8 @@ ${context}
         document.getElementById('ocr-apply-btn').style.display = 'none';
         document.getElementById('ocr-scan-btn').style.display = 'inline-block';
         document.getElementById('ocr-file-input').value = '';
+        var editBtn = document.getElementById('ocr-toggle-edit-btn');
+        if (editBtn) { editBtn.textContent = '✏️ تعديل القيم'; editBtn.style.background='#e6f4f7'; editBtn.style.color='#0790AC'; }
     }
 
     // اختيار الملف
@@ -15443,6 +15472,98 @@ ${context}
         document.getElementById('ocr-file-input').value = '';
         document.getElementById('ocr-result-section').style.display = 'none';
         document.getElementById('ocr-apply-btn').style.display = 'none';
+    };
+
+    // ===== Camera functions =====
+    var _ocrCameraStream = null;
+
+    window._openOcrCamera = function() {
+        var modal = document.getElementById('ocr-camera-modal');
+        modal.style.display = 'flex';
+        navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: 'environment' } } })
+            .then(function(stream) {
+                _ocrCameraStream = stream;
+                var video = document.getElementById('ocr-camera-video');
+                video.srcObject = stream;
+            })
+            .catch(function(err) {
+                window._closeOcrCamera();
+                if (typeof showToast === 'function') showToast('⚠️ تعذّر الوصول إلى الكاميرا: ' + err.message, 'error');
+            });
+    };
+
+    window._closeOcrCamera = function() {
+        if (_ocrCameraStream) {
+            _ocrCameraStream.getTracks().forEach(function(t) { t.stop(); });
+            _ocrCameraStream = null;
+        }
+        document.getElementById('ocr-camera-modal').style.display = 'none';
+    };
+
+    window._captureOcrPhoto = function() {
+        var video = document.getElementById('ocr-camera-video');
+        var canvas = document.getElementById('ocr-camera-canvas');
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        canvas.getContext('2d').drawImage(video, 0, 0);
+        var dataUrl = canvas.toDataURL('image/jpeg', 0.92);
+        _ocrImageBase64 = dataUrl.split(',')[1];
+        _ocrImageMime = 'image/jpeg';
+
+        document.getElementById('ocr-preview-img').src = dataUrl;
+        document.getElementById('ocr-file-name').textContent = 'صورة ملتقطة من الكاميرا';
+        document.getElementById('ocr-preview-wrap').style.display = 'block';
+        document.getElementById('ocr-result-section').style.display = 'none';
+        document.getElementById('ocr-error').style.display = 'none';
+        document.getElementById('ocr-apply-btn').style.display = 'none';
+
+        window._closeOcrCamera();
+        if (typeof showToast === 'function') showToast('✅ تم التقاط الصورة — اضغط "بدء القراءة"', 'success');
+    };
+
+    // ===== Edit mode =====
+    var _ocrEditMode = false;
+
+    window._toggleOcrEditMode = function() {
+        _ocrEditMode = !_ocrEditMode;
+        var btn = document.getElementById('ocr-toggle-edit-btn');
+        var displays = document.querySelectorAll('.ocr-val-display');
+        var inputs = document.querySelectorAll('.ocr-val-input');
+        if (_ocrEditMode) {
+            btn.textContent = '✅ حفظ التعديلات';
+            btn.style.background = '#0790AC';
+            btn.style.color = '#fff';
+            displays.forEach(function(el) { el.style.display = 'none'; });
+            inputs.forEach(function(el) { el.style.display = 'inline-block'; });
+        } else {
+            btn.textContent = '✏️ تعديل القيم';
+            btn.style.background = '#e6f4f7';
+            btn.style.color = '#0790AC';
+            // sync edited values back to display and _ocrExtractedData
+            inputs.forEach(function(el) {
+                var newVal = parseFloat(el.value);
+                var td = el.closest('td[data-field-value]');
+                if (td) {
+                    var disp = td.querySelector('.ocr-val-display');
+                    if (disp) disp.textContent = isNaN(newVal) ? el.value : newVal;
+                    var fieldId = td.getAttribute('data-field-id');
+                    if (fieldId && !isNaN(newVal)) _ocrExtractedData[fieldId] = newVal;
+                }
+                el.style.display = 'none';
+            });
+            displays.forEach(function(el) { el.style.display = 'inline'; });
+            if (typeof showToast === 'function') showToast('✅ تم حفظ التعديلات', 'success');
+        }
+    };
+
+    window._updateOcrValue = function(input) {
+        // live sync while editing
+        var newVal = parseFloat(input.value);
+        var td = input.closest('td[data-field-value]');
+        if (td) {
+            var fieldId = td.getAttribute('data-field-id');
+            if (fieldId && !isNaN(newVal)) _ocrExtractedData[fieldId] = newVal;
+        }
     };
 
     // بدء المسح الضوئي
@@ -15736,9 +15857,9 @@ ${context}
             var fieldLabel = matchedField ? matchedField.label : (item.test + ' <span style="font-size:0.72rem;color:#9ca3af;">(غير مدعوم)</span>');
 
             var tr = document.createElement('tr');
-            tr.style.cssText = rowStyle + 'border-bottom:1px solid #ede9fe;';
-            tr.innerHTML = '<td style="padding:8px 14px;font-weight:600;color:#374151;">' + fieldLabel + '</td>' +
-                           '<td style="padding:8px 14px;text-align:center;font-weight:800;color:#7c3aed;font-size:1rem;">' + value + '</td>' +
+            tr.style.cssText = rowStyle + 'border-bottom:1px solid #e6f4f7;';
+            tr.innerHTML = '<td style="padding:8px 14px;font-weight:600;color:#374151;" data-field-label>' + fieldLabel + '</td>' +
+                           '<td style="padding:8px 14px;text-align:center;" data-field-value data-field-id="' + (matchedField ? matchedField.id : '') + '"><span class="ocr-val-display" style="font-weight:800;color:#0790AC;font-size:1rem;">' + value + '</span><input class="ocr-val-input" type="number" step="any" value="' + value + '" style="display:none;width:80px;padding:4px 6px;border:1.5px solid #0790AC;border-radius:6px;text-align:center;font-family:Cairo,sans-serif;font-size:0.9rem;font-weight:700;color:#0790AC;" oninput="window._updateOcrValue(this)"></td>' +
                            '<td style="padding:8px 14px;text-align:center;color:#6b7280;font-size:0.8rem;">' + (item.unit || '') + '</td>' +
                            '<td style="padding:8px 14px;text-align:center;">' + flagBadge + '</td>';
             tbody.appendChild(tr);
@@ -15775,7 +15896,7 @@ ${context}
                 el.dispatchEvent(new Event('change', { bubbles: true }));
                 // تأثير بصري
                 el.style.transition = 'background 0.4s';
-                el.style.background = '#ede9fe';
+                el.style.background = '#e6f4f7';
                 setTimeout(function(e) { e.style.background = ''; }.bind(null, el), 1200);
                 count++;
             }
