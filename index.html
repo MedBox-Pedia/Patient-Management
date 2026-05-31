@@ -921,25 +921,296 @@
             object-fit: contain;
         }
         
-        /* (جديد B.d) تصميم قسم الإجراءات التشخيصية */
+        /* (جديد B.d) تصميم قسم الإجراءات التشخيصية - مُحدَّث */
+
+        /* بطاقة كل إجراء تشخيصي */
+        .diag-card {
+            background: #fff;
+            border: 1.5px solid #e0f2fe;
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 10px;
+            box-shadow: 0 1px 6px rgba(7,144,172,0.08);
+            transition: box-shadow 0.2s, border-color 0.2s;
+        }
+        .diag-card:hover {
+            border-color: #0790AC;
+            box-shadow: 0 3px 14px rgba(7,144,172,0.14);
+        }
+
+        /* رأس البطاقة (Header) - قابل للطي/التوسيع */
+        .diag-card-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 14px;
+            background: linear-gradient(135deg, #f0fafc 0%, #e6f7fb 100%);
+            border-bottom: 1.5px solid #e0f2fe;
+            cursor: pointer;
+            user-select: none;
+            transition: background 0.15s;
+        }
+        .diag-card-header:hover {
+            background: linear-gradient(135deg, #e0f5fa 0%, #d4f0f7 100%);
+        }
+        .diag-card-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 44px;
+            height: 28px;
+            padding: 0 8px;
+            border-radius: 7px;
+            background: linear-gradient(135deg, #0790AC, #056a80);
+            color: #fff;
+            font-size: 0.72rem;
+            font-weight: 800;
+            letter-spacing: 0.03em;
+            flex-shrink: 0;
+            box-shadow: 0 2px 6px rgba(7,144,172,0.25);
+        }
+        .diag-card-title {
+            flex: 1;
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: #0a6e85;
+        }
+        .diag-card-subtitle {
+            font-size: 0.72rem;
+            color: #6b7280;
+            font-weight: 400;
+        }
+        .diag-card-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 20px;
+            background: #f3f4f6;
+            color: #9ca3af;
+            flex-shrink: 0;
+            transition: all 0.2s;
+        }
+        .diag-card-status.has-data {
+            background: #dcfce7;
+            color: #16a34a;
+        }
+        .diag-card-toggle {
+            width: 22px;
+            height: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #0790AC;
+            transition: transform 0.25s ease;
+            flex-shrink: 0;
+        }
+        .diag-card.collapsed .diag-card-toggle {
+            transform: rotate(-90deg);
+        }
+
+        /* جسم البطاقة */
+        .diag-card-body {
+            padding: 12px 14px;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+            transition: all 0.25s ease;
+        }
+        @media (min-width: 900px) {
+            .diag-card-body {
+                grid-template-columns: 1fr 1fr;
+                align-items: flex-start;
+            }
+        }
+        .diag-card.collapsed .diag-card-body {
+            display: none;
+        }
+
+        /* منطقة رفع الصورة - عصرية */
+        .diag-upload-zone {
+            border: 2px dashed #c8e8f0;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #f8fbfd 0%, #f0f9fc 100%);
+            padding: 14px 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            transition: border-color 0.2s, background 0.2s;
+            cursor: pointer;
+            position: relative;
+            min-height: 130px;
+        }
+        .diag-upload-zone:hover {
+            border-color: #0790AC;
+            background: linear-gradient(135deg, #edf7fb 0%, #e0f4f9 100%);
+        }
+        .diag-upload-zone .upload-icon {
+            width: 38px;
+            height: 38px;
+            background: rgba(7,144,172,0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #0790AC;
+        }
+        .diag-upload-zone .upload-label-text {
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: #0790AC;
+            text-align: center;
+        }
+        .diag-upload-zone .upload-hint {
+            font-size: 0.65rem;
+            color: #9ca3af;
+            text-align: center;
+        }
+        .diag-upload-zone input[type="file"] {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            cursor: pointer;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* الصورة المعروضة بعد الرفع */
+        .diag-img-preview-wrap {
+            position: relative;
+            width: 100%;
+        }
+        .diag-img-preview-wrap .image-preview.visible {
+            display: block;
+            width: 100%;
+            max-height: 340px;
+            object-fit: contain;
+            border-radius: 8px;
+            border: 2px solid #c8e8f0;
+            background: #f8fbfd;
+        }
+        .diag-img-remove-btn {
+            position: absolute;
+            top: 6px;
+            left: 6px;
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            background: rgba(239,68,68,0.88);
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            transition: background 0.15s;
+            z-index: 5;
+        }
+        .diag-img-remove-btn:hover { background: #dc2626; }
+        .diag-img-preview-wrap:has(.image-preview.visible) .diag-img-remove-btn {
+            display: flex;
+        }
+
+        /* منطقة التقرير */
+        .diag-report-section {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .diag-report-label {
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: #374151;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .diag-report-label span.dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #0790AC;
+            flex-shrink: 0;
+        }
+        .diagnostic-report-textarea {
+            width: 100%;
+            min-height: 220px;
+            border: 1.5px solid #d1fae5;
+            border-radius: 8px;
+            padding: 10px 12px;
+            font-family: 'Cairo', sans-serif;
+            font-size: 0.82rem;
+            line-height: 1.7;
+            color: #1f2937;
+            background: #fff;
+            resize: vertical;
+            transition: border-color 0.18s, box-shadow 0.18s;
+            outline: none;
+        }
+        .diagnostic-report-textarea:focus {
+            border-color: #0790AC;
+            box-shadow: 0 0 0 3px rgba(7,144,172,0.1);
+        }
+        .diag-char-count {
+            font-size: 0.68rem;
+            color: #9ca3af;
+            text-align: left;
+            direction: ltr;
+        }
+
+        /* شريط الأدوات الصغير فوق textarea */
+        .diag-toolbar {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            flex-wrap: wrap;
+        }
+        .diag-toolbar-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 3px 8px;
+            border-radius: 5px;
+            border: 1px solid #e5e7eb;
+            background: #fff;
+            color: #6b7280;
+            font-family: 'Cairo', sans-serif;
+            font-size: 0.68rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .diag-toolbar-btn:hover {
+            background: #f0fafc;
+            color: #0790AC;
+            border-color: #0790AC;
+        }
+        .diag-toolbar-btn.ai-btn {
+            background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+            border-color: #bae6fd;
+            color: #0369a1;
+        }
+        .diag-toolbar-btn.ai-btn:hover {
+            background: linear-gradient(135deg, #0790AC, #056a80);
+            color: #fff;
+            border-color: #0790AC;
+        }
+
+        /* إجراء القديم - متوافق */
         .diagnostic-item {
             display: grid;
             grid-template-columns: 1fr;
-            gap: 1rem; /* gap-4 */
+            gap: 1rem;
         }
         @media (min-width: 1024px) {
             .diagnostic-item {
                 grid-template-columns: repeat(2, minmax(0, 1fr));
                 align-items: flex-start;
             }
-        }
-        .diagnostic-report-textarea {
-            width: 100%;
-            min-height: 300px; /* ارتفاع كافي لكتابة التقرير */
-            margin-top: 0.5rem; /* mt-2 */
-            border: 1px solid #D1D5DB; /* border-gray-300 */
-            border-radius: 0.5rem; /* rounded-lg */
-            padding: 0.5rem; /* p-2 */
         }
         
         /* (جديد C.o) تصميم قسم Inbody */
@@ -3094,96 +3365,403 @@
                         <input type="hidden" id="lab_urine_analysis" name="lab_urine_analysis">
                     </div>
                     
-                    <!-- (جديد B.d) D. الإجراءات التشخيصية -->
+                    <!-- (جديد B.d) D. الإجراءات التشخيصية - مُحدَّث -->
                     <div class="lab-section">
-                        <h3 class="lab-section-title">📷 D. الإجراءات التشخيصية</h3>
-                        <div class="space-y-6">
-                            
-                            <!-- X.Ray -->
-                            <div class="diagnostic-item-container border-b pb-4">
-                                <h4 class="text-md font-semibold text-gray-700 mb-2">X.Ray</h4>
-                                <div class="diagnostic-item">
-                                    <div class="image-upload-container">
-                                        <label for="diag-xray-input" class="lab-field-label">تحميل صورة الأشعة</label>
-                                        <input type="file" id="diag-xray-input" name="diag_xray_input" accept="image/*" class="image-upload-input" data-preview="diag-xray-preview" data-storage="diag_xray_img" data-orientation="horizontal">
+                        <h3 class="lab-section-title">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/><path d="M6 8l2 2 4-4 2 2 2-2"/></svg>
+                            D. الإجراءات التشخيصية
+                            <span style="font-size:0.68rem;font-weight:500;color:#6b7280;margin-right:auto;margin-left:0;">انقر على البطاقة للتوسيع</span>
+                        </h3>
+
+                        <!-- ===== X.Ray ===== -->
+                        <div class="diag-card" id="diag-card-xray">
+                            <div class="diag-card-header" onclick="toggleDiagCard('diag-card-xray')">
+                                <span class="diag-card-badge">X.Ray</span>
+                                <div style="flex:1;">
+                                    <div class="diag-card-title">أشعة سينية</div>
+                                    <div class="diag-card-subtitle">Chest X-Ray · Bone · Abdomen</div>
+                                </div>
+                                <span class="diag-card-status" id="diag-status-xray">
+                                    <svg width="8" height="8" viewBox="0 0 8 8"><circle cx="4" cy="4" r="4" fill="currentColor"/></svg>
+                                    فارغ
+                                </span>
+                                <span class="diag-card-toggle">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+                                </span>
+                            </div>
+                            <div class="diag-card-body">
+                                <!-- منطقة الصورة -->
+                                <div>
+                                    <div class="diag-upload-zone" id="diag-upload-zone-xray">
+                                        <div class="upload-icon">
+                                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                                        </div>
+                                        <div class="upload-label-text">تحميل صورة الأشعة</div>
+                                        <div class="upload-hint">PNG · JPG · DICOM — حتى 10MB</div>
+                                        <input type="file" id="diag-xray-input" name="diag_xray_input" accept="image/*" class="image-upload-input" data-preview="diag-xray-preview" data-storage="diag_xray_img" data-orientation="horizontal" onchange="updateDiagStatus('xray')">
+                                    </div>
+                                    <div class="diag-img-preview-wrap" style="margin-top:8px;">
                                         <img id="diag-xray-preview" class="image-preview" alt="X.Ray Image">
-                                    </div>
-                                    <div>
-                                        <label for="diag_xray_report" class="block text-sm font-medium text-gray-700 mb-1">تقرير X.Ray</label>
-                                        <textarea id="diag_xray_report" name="diag_xray_report" rows="10" class="diagnostic-report-textarea" placeholder="اكتب التقرير هنا..."></textarea>
+                                        <button class="diag-img-remove-btn" onclick="removeDiagImage('xray')" title="حذف الصورة" type="button">✕</button>
                                     </div>
                                 </div>
-                            </div>
-                            
-                            <!-- Ultra Sound “Eco” -->
-                            <div class="diagnostic-item-container border-b pb-4">
-                                <h4 class="text-md font-semibold text-gray-700 mb-2">Ultra Sound “Eco”</h4>
-                                <div class="diagnostic-item">
-                                    <div class="image-upload-container">
-                                        <label for="diag-us-input" class="lab-field-label">تحميل صورة الإيكو</label>
-                                        <input type="file" id="diag-us-input" name="diag_us_input" accept="image/*" class="image-upload-input" data-preview="diag-us-preview" data-storage="diag_us_img" data-orientation="horizontal">
-                                        <img id="diag-us-preview" class="image-preview" alt="Ultra Sound Image">
+                                <!-- منطقة التقرير -->
+                                <div class="diag-report-section">
+                                    <div class="diag-report-label">
+                                        <span class="dot"></span>
+                                        تقرير الأشعة السينية (X-Ray Report)
                                     </div>
-                                    <div>
-                                        <label for="diag_us_report" class="block text-sm font-medium text-gray-700 mb-1">تقرير Ultra Sound</label>
-                                        <textarea id="diag_us_report" name="diag_us_report" rows="10" class="diagnostic-report-textarea" placeholder="اكتب التقرير هنا..."></textarea>
+                                    <div class="diag-toolbar">
+                                        <button type="button" class="diag-toolbar-btn ai-btn" onclick="window._openOcrModal && window._openOcrModal('xray')" title="استخراج التقرير من الصورة بالذكاء الاصطناعي">
+                                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 1 0 10 10"/><path d="M12 8v4l3 3"/></svg>
+                                            استخراج بالذكاء الاصطناعي
+                                        </button>
+                                        <button type="button" class="diag-toolbar-btn" onclick="clearDiagReport('diag_xray_report','xray')" title="مسح التقرير">
+                                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/></svg>
+                                            مسح
+                                        </button>
                                     </div>
-                                </div>
-                            </div>
-                            
-                            <!-- CT -->
-                            <div class="diagnostic-item-container border-b pb-4">
-                                <h4 class="text-md font-semibold text-gray-700 mb-2">CT</h4>
-                                <div class="diagnostic-item">
-                                    <div class="image-upload-container">
-                                        <label for="diag-ct-input" class="lab-field-label">تحميل صورة CT</label>
-                                        <input type="file" id="diag-ct-input" name="diag_ct_input" accept="image/*" class="image-upload-input" data-preview="diag-ct-preview" data-storage="diag_ct_img" data-orientation="horizontal">
-                                        <img id="diag-ct-preview" class="image-preview" alt="CT Image">
-                                    </div>
-                                    <div>
-                                        <label for="diag_ct_report" class="block text-sm font-medium text-gray-700 mb-1">تقرير CT</label>
-                                        <textarea id="diag_ct_report" name="diag_ct_report" rows="10" class="diagnostic-report-textarea" placeholder="اكتب التقرير هنا..."></textarea>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <!-- MRI -->
-                            <div class="diagnostic-item-container border-b pb-4">
-                                <h4 class="text-md font-semibold text-gray-700 mb-2">MRI</h4>
-                                <div class="diagnostic-item">
-                                    <div class="image-upload-container">
-                                        <label for="diag-mri-input" class="lab-field-label">تحميل صورة MRI</label>
-                                        <input type="file" id="diag-mri-input" name="diag_mri_input" accept="image/*" class="image-upload-input" data-preview="diag-mri-preview" data-storage="diag_mri_img" data-orientation="horizontal">
-                                        <img id="diag-mri-preview" class="image-preview" alt="MRI Image">
-                                    </div>
-                                    <div>
-                                        <label for="diag_mri_report" class="block text-sm font-medium text-gray-700 mb-1">تقرير MRI</label>
-                                        <textarea id="diag_mri_report" name="diag_mri_report" rows="10" class="diagnostic-report-textarea" placeholder="اكتب التقرير هنا..."></textarea>
-                                    </div>
-                                </div>
-                            </div>
+                                    <textarea id="diag_xray_report" name="diag_xray_report" class="diagnostic-report-textarea" placeholder="أدخل نتائج الأشعة السينية هنا...
 
-                            <!-- ECG - تخطيط القلب الكهربائي -->
-                            <div class="diagnostic-item-container">
-                                <h4 class="text-md font-semibold text-gray-700 mb-2" style="display:flex;align-items:center;gap:8px;">
-                                    <span style="display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#0790AC,#056a80);color:#fff;font-size:0.78rem;font-weight:700;flex-shrink:0;">ECG</span>
-                                    تخطيط القلب الكهربائي
-                                </h4>
-                                <div class="diagnostic-item">
-                                    <div class="image-upload-container">
-                                        <label for="diag-ecg-input" class="lab-field-label">تحميل صورة تخطيط القلب</label>
-                                        <input type="file" id="diag-ecg-input" name="diag_ecg_input" accept="image/*" class="image-upload-input" data-preview="diag-ecg-preview" data-storage="diag_ecg_img" data-orientation="horizontal">
-                                        <img id="diag-ecg-preview" class="image-preview" alt="ECG Image">
-                                    </div>
-                                    <div>
-                                        <label for="diag_ecg_report" class="block text-sm font-medium text-gray-700 mb-1">تقرير تخطيط القلب (ECG)</label>
-                                        <textarea id="diag_ecg_report" name="diag_ecg_report" rows="10" class="diagnostic-report-textarea" placeholder="اكتب تقرير تخطيط القلب هنا... (الإيقاع، المحور، موجات P، مجمع QRS، قطعة ST، موجة T، الاستنتاج)"></textarea>
-                                    </div>
+الرئتان: ...
+القلب: ...
+الهيكل العظمي: ...
+الاستنتاج: ..." oninput="updateDiagStatus('xray')"></textarea>
+                                    <div class="diag-char-count" id="diag-chars-xray">0 حرف</div>
                                 </div>
                             </div>
-
                         </div>
+
+                        <!-- ===== Ultra Sound / Echo ===== -->
+                        <div class="diag-card collapsed" id="diag-card-echo">
+                            <div class="diag-card-header" onclick="toggleDiagCard('diag-card-echo')">
+                                <span class="diag-card-badge">Echo</span>
+                                <div style="flex:1;">
+                                    <div class="diag-card-title">إيكو / موجات فوق صوتية</div>
+                                    <div class="diag-card-subtitle">Ultra Sound · Echocardiography</div>
+                                </div>
+                                <span class="diag-card-status" id="diag-status-echo">
+                                    <svg width="8" height="8" viewBox="0 0 8 8"><circle cx="4" cy="4" r="4" fill="currentColor"/></svg>
+                                    فارغ
+                                </span>
+                                <span class="diag-card-toggle">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+                                </span>
+                            </div>
+                            <div class="diag-card-body">
+                                <div>
+                                    <div class="diag-upload-zone" id="diag-upload-zone-echo">
+                                        <div class="upload-icon">
+                                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                                        </div>
+                                        <div class="upload-label-text">تحميل صورة الإيكو</div>
+                                        <div class="upload-hint">PNG · JPG — حتى 10MB</div>
+                                        <input type="file" id="diag-us-input" name="diag_us_input" accept="image/*" class="image-upload-input" data-preview="diag-us-preview" data-storage="diag_us_img" data-orientation="horizontal" onchange="updateDiagStatus('echo')">
+                                    </div>
+                                    <div class="diag-img-preview-wrap" style="margin-top:8px;">
+                                        <img id="diag-us-preview" class="image-preview" alt="Ultra Sound Image">
+                                        <button class="diag-img-remove-btn" onclick="removeDiagImage('echo')" title="حذف الصورة" type="button">✕</button>
+                                    </div>
+                                </div>
+                                <div class="diag-report-section">
+                                    <div class="diag-report-label">
+                                        <span class="dot"></span>
+                                        تقرير الإيكو / الموجات فوق الصوتية
+                                    </div>
+                                    <div class="diag-toolbar">
+                                        <button type="button" class="diag-toolbar-btn ai-btn" onclick="window._openOcrModal && window._openOcrModal('echo')" title="استخراج التقرير من الصورة بالذكاء الاصطناعي">
+                                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 1 0 10 10"/><path d="M12 8v4l3 3"/></svg>
+                                            استخراج بالذكاء الاصطناعي
+                                        </button>
+                                        <button type="button" class="diag-toolbar-btn" onclick="clearDiagReport('diag_us_report','echo')" title="مسح التقرير">
+                                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg>
+                                            مسح
+                                        </button>
+                                    </div>
+                                    <textarea id="diag_us_report" name="diag_us_report" class="diagnostic-report-textarea" placeholder="أدخل نتائج الإيكو / الموجات فوق الصوتية...
+
+الكبد: ...
+المرارة: ...
+الطحال: ...
+الكلى: ...
+الاستنتاج: ..." oninput="updateDiagStatus('echo')"></textarea>
+                                    <div class="diag-char-count" id="diag-chars-echo">0 حرف</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ===== CT Scan ===== -->
+                        <div class="diag-card collapsed" id="diag-card-ct">
+                            <div class="diag-card-header" onclick="toggleDiagCard('diag-card-ct')">
+                                <span class="diag-card-badge">CT</span>
+                                <div style="flex:1;">
+                                    <div class="diag-card-title">الطبقي المحوري</div>
+                                    <div class="diag-card-subtitle">CT Scan · Computed Tomography</div>
+                                </div>
+                                <span class="diag-card-status" id="diag-status-ct">
+                                    <svg width="8" height="8" viewBox="0 0 8 8"><circle cx="4" cy="4" r="4" fill="currentColor"/></svg>
+                                    فارغ
+                                </span>
+                                <span class="diag-card-toggle">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+                                </span>
+                            </div>
+                            <div class="diag-card-body">
+                                <div>
+                                    <div class="diag-upload-zone" id="diag-upload-zone-ct">
+                                        <div class="upload-icon">
+                                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                                        </div>
+                                        <div class="upload-label-text">تحميل صورة CT</div>
+                                        <div class="upload-hint">PNG · JPG — حتى 10MB</div>
+                                        <input type="file" id="diag-ct-input" name="diag_ct_input" accept="image/*" class="image-upload-input" data-preview="diag-ct-preview" data-storage="diag_ct_img" data-orientation="horizontal" onchange="updateDiagStatus('ct')">
+                                    </div>
+                                    <div class="diag-img-preview-wrap" style="margin-top:8px;">
+                                        <img id="diag-ct-preview" class="image-preview" alt="CT Image">
+                                        <button class="diag-img-remove-btn" onclick="removeDiagImage('ct')" title="حذف الصورة" type="button">✕</button>
+                                    </div>
+                                </div>
+                                <div class="diag-report-section">
+                                    <div class="diag-report-label">
+                                        <span class="dot"></span>
+                                        تقرير الطبقي المحوري (CT Report)
+                                    </div>
+                                    <div class="diag-toolbar">
+                                        <button type="button" class="diag-toolbar-btn ai-btn" onclick="window._openOcrModal && window._openOcrModal('ct')" title="استخراج التقرير من الصورة بالذكاء الاصطناعي">
+                                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 1 0 10 10"/><path d="M12 8v4l3 3"/></svg>
+                                            استخراج بالذكاء الاصطناعي
+                                        </button>
+                                        <button type="button" class="diag-toolbar-btn" onclick="clearDiagReport('diag_ct_report','ct')" title="مسح التقرير">
+                                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg>
+                                            مسح
+                                        </button>
+                                    </div>
+                                    <textarea id="diag_ct_report" name="diag_ct_report" class="diagnostic-report-textarea" placeholder="أدخل نتائج الطبقي المحوري...
+
+الرأس والرقبة: ...
+الصدر: ...
+البطن والحوض: ...
+الاستنتاج: ..." oninput="updateDiagStatus('ct')"></textarea>
+                                    <div class="diag-char-count" id="diag-chars-ct">0 حرف</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ===== MRI ===== -->
+                        <div class="diag-card collapsed" id="diag-card-mri">
+                            <div class="diag-card-header" onclick="toggleDiagCard('diag-card-mri')">
+                                <span class="diag-card-badge">MRI</span>
+                                <div style="flex:1;">
+                                    <div class="diag-card-title">الرنين المغناطيسي</div>
+                                    <div class="diag-card-subtitle">Magnetic Resonance Imaging</div>
+                                </div>
+                                <span class="diag-card-status" id="diag-status-mri">
+                                    <svg width="8" height="8" viewBox="0 0 8 8"><circle cx="4" cy="4" r="4" fill="currentColor"/></svg>
+                                    فارغ
+                                </span>
+                                <span class="diag-card-toggle">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+                                </span>
+                            </div>
+                            <div class="diag-card-body">
+                                <div>
+                                    <div class="diag-upload-zone" id="diag-upload-zone-mri">
+                                        <div class="upload-icon">
+                                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                                        </div>
+                                        <div class="upload-label-text">تحميل صورة MRI</div>
+                                        <div class="upload-hint">PNG · JPG — حتى 10MB</div>
+                                        <input type="file" id="diag-mri-input" name="diag_mri_input" accept="image/*" class="image-upload-input" data-preview="diag-mri-preview" data-storage="diag_mri_img" data-orientation="horizontal" onchange="updateDiagStatus('mri')">
+                                    </div>
+                                    <div class="diag-img-preview-wrap" style="margin-top:8px;">
+                                        <img id="diag-mri-preview" class="image-preview" alt="MRI Image">
+                                        <button class="diag-img-remove-btn" onclick="removeDiagImage('mri')" title="حذف الصورة" type="button">✕</button>
+                                    </div>
+                                </div>
+                                <div class="diag-report-section">
+                                    <div class="diag-report-label">
+                                        <span class="dot"></span>
+                                        تقرير الرنين المغناطيسي (MRI Report)
+                                    </div>
+                                    <div class="diag-toolbar">
+                                        <button type="button" class="diag-toolbar-btn ai-btn" onclick="window._openOcrModal && window._openOcrModal('mri')" title="استخراج التقرير من الصورة بالذكاء الاصطناعي">
+                                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 1 0 10 10"/><path d="M12 8v4l3 3"/></svg>
+                                            استخراج بالذكاء الاصطناعي
+                                        </button>
+                                        <button type="button" class="diag-toolbar-btn" onclick="clearDiagReport('diag_mri_report','mri')" title="مسح التقرير">
+                                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg>
+                                            مسح
+                                        </button>
+                                    </div>
+                                    <textarea id="diag_mri_report" name="diag_mri_report" class="diagnostic-report-textarea" placeholder="أدخل نتائج الرنين المغناطيسي...
+
+المنطقة المفحوصة: ...
+النتائج: ...
+الاستنتاج: ..." oninput="updateDiagStatus('mri')"></textarea>
+                                    <div class="diag-char-count" id="diag-chars-mri">0 حرف</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ===== ECG ===== -->
+                        <div class="diag-card collapsed" id="diag-card-ecg">
+                            <div class="diag-card-header" onclick="toggleDiagCard('diag-card-ecg')">
+                                <span class="diag-card-badge">ECG</span>
+                                <div style="flex:1;">
+                                    <div class="diag-card-title">تخطيط القلب الكهربائي</div>
+                                    <div class="diag-card-subtitle">Electrocardiogram · 12-Lead ECG</div>
+                                </div>
+                                <span class="diag-card-status" id="diag-status-ecg">
+                                    <svg width="8" height="8" viewBox="0 0 8 8"><circle cx="4" cy="4" r="4" fill="currentColor"/></svg>
+                                    فارغ
+                                </span>
+                                <span class="diag-card-toggle">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+                                </span>
+                            </div>
+                            <div class="diag-card-body">
+                                <div>
+                                    <div class="diag-upload-zone" id="diag-upload-zone-ecg">
+                                        <div class="upload-icon">
+                                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                                        </div>
+                                        <div class="upload-label-text">تحميل صورة تخطيط القلب</div>
+                                        <div class="upload-hint">PNG · JPG — حتى 10MB</div>
+                                        <input type="file" id="diag-ecg-input" name="diag_ecg_input" accept="image/*" class="image-upload-input" data-preview="diag-ecg-preview" data-storage="diag_ecg_img" data-orientation="horizontal" onchange="updateDiagStatus('ecg')">
+                                    </div>
+                                    <div class="diag-img-preview-wrap" style="margin-top:8px;">
+                                        <img id="diag-ecg-preview" class="image-preview" alt="ECG Image">
+                                        <button class="diag-img-remove-btn" onclick="removeDiagImage('ecg')" title="حذف الصورة" type="button">✕</button>
+                                    </div>
+                                </div>
+                                <div class="diag-report-section">
+                                    <div class="diag-report-label">
+                                        <span class="dot"></span>
+                                        تقرير تخطيط القلب (ECG Report)
+                                    </div>
+                                    <div class="diag-toolbar">
+                                        <button type="button" class="diag-toolbar-btn ai-btn" onclick="window._openOcrModal && window._openOcrModal('ecg')" title="استخراج التقرير من الصورة بالذكاء الاصطناعي">
+                                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 1 0 10 10"/><path d="M12 8v4l3 3"/></svg>
+                                            استخراج بالذكاء الاصطناعي
+                                        </button>
+                                        <button type="button" class="diag-toolbar-btn" onclick="clearDiagReport('diag_ecg_report','ecg')" title="مسح التقرير">
+                                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg>
+                                            مسح
+                                        </button>
+                                    </div>
+                                    <textarea id="diag_ecg_report" name="diag_ecg_report" class="diagnostic-report-textarea" placeholder="أدخل نتائج تخطيط القلب...
+
+الإيقاع: ...
+المحور: ...
+موجات P: ...
+مجمع QRS: ...
+قطعة ST: ...
+موجة T: ...
+الاستنتاج: ..." oninput="updateDiagStatus('ecg')"></textarea>
+                                    <div class="diag-char-count" id="diag-chars-ecg">0 حرف</div>
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
+
+                    <!-- ===== سكريبت إدارة بطاقات الإجراءات التشخيصية ===== -->
+                    <script>
+                    (function() {
+                        // طي / توسيع البطاقة
+                        window.toggleDiagCard = function(cardId) {
+                            var card = document.getElementById(cardId);
+                            if (!card) return;
+                            card.classList.toggle('collapsed');
+                        };
+
+                        // مراجعة جميع البطاقات وفتح التي تحتوي بيانات
+                        function autoExpandCardsWithData() {
+                            Object.keys(diagMap).forEach(function(k) {
+                                var m = diagMap[k];
+                                var imgEl  = document.getElementById(m.imgId);
+                                var textEl = document.getElementById(m.textId);
+                                var hasImg  = imgEl  && imgEl.classList.contains('visible');
+                                var hasText = textEl && textEl.value && textEl.value.trim().length > 0;
+                                if (hasImg || hasText) {
+                                    var cardId = 'diag-card-' + k;
+                                    var card = document.getElementById(cardId);
+                                    if (card) card.classList.remove('collapsed');
+                                }
+                                updateDiagStatus(k);
+                            });
+                        }
+
+                        // تحديث مؤشر الحالة (فارغ / يحتوي بيانات)
+                        var diagMap = {
+                            xray:  { imgId: 'diag-xray-preview',  textId: 'diag_xray_report', statusId: 'diag-status-xray', charId: 'diag-chars-xray' },
+                            echo:  { imgId: 'diag-us-preview',    textId: 'diag_us_report',   statusId: 'diag-status-echo', charId: 'diag-chars-echo' },
+                            ct:    { imgId: 'diag-ct-preview',    textId: 'diag_ct_report',   statusId: 'diag-status-ct',   charId: 'diag-chars-ct'   },
+                            mri:   { imgId: 'diag-mri-preview',   textId: 'diag_mri_report',  statusId: 'diag-status-mri',  charId: 'diag-chars-mri'  },
+                            ecg:   { imgId: 'diag-ecg-preview',   textId: 'diag_ecg_report',  statusId: 'diag-status-ecg',  charId: 'diag-chars-ecg'  }
+                        };
+
+                        window.updateDiagStatus = function(key) {
+                            var m = diagMap[key];
+                            if (!m) return;
+                            var imgEl   = document.getElementById(m.imgId);
+                            var textEl  = document.getElementById(m.textId);
+                            var statEl  = document.getElementById(m.statusId);
+                            var charEl  = document.getElementById(m.charId);
+                            var hasImg  = imgEl  && imgEl.classList.contains('visible');
+                            var hasText = textEl && textEl.value && textEl.value.trim().length > 0;
+                            if (statEl) {
+                                if (hasImg || hasText) {
+                                    statEl.className = 'diag-card-status has-data';
+                                    statEl.innerHTML = '<svg width="8" height="8" viewBox="0 0 8 8"><circle cx="4" cy="4" r="4" fill="currentColor"/></svg> يحتوي بيانات';
+                                } else {
+                                    statEl.className = 'diag-card-status';
+                                    statEl.innerHTML = '<svg width="8" height="8" viewBox="0 0 8 8"><circle cx="4" cy="4" r="4" fill="currentColor"/></svg> فارغ';
+                                }
+                            }
+                            if (charEl && textEl) {
+                                charEl.textContent = (textEl.value ? textEl.value.length : 0) + ' حرف';
+                            }
+                        };
+
+                        // حذف صورة الإجراء
+                        window.removeDiagImage = function(key) {
+                            var m = diagMap[key];
+                            if (!m) return;
+                            var imgEl = document.getElementById(m.imgId);
+                            if (imgEl) {
+                                imgEl.src = '';
+                                imgEl.classList.remove('visible', 'image-preview-horizontal', 'image-preview-vertical');
+                            }
+                            var storageMap = { xray:'diag_xray_img', echo:'diag_us_img', ct:'diag_ct_img', mri:'diag_mri_img', ecg:'diag_ecg_img' };
+                            if (storageMap[key]) {
+                                try { localStorage.removeItem(storageMap[key]); } catch(e) {}
+                            }
+                            updateDiagStatus(key);
+                        };
+
+                        // مسح التقرير
+                        window.clearDiagReport = function(fieldId, key) {
+                            var el = document.getElementById(fieldId);
+                            if (el) { el.value = ''; el.dispatchEvent(new Event('input', {bubbles:true})); }
+                            updateDiagStatus(key);
+                        };
+
+                        // تحديث الحالة عند تحميل الصفحة
+                        document.addEventListener('DOMContentLoaded', function() {
+                            setTimeout(autoExpandCardsWithData, 700);
+                        });
+
+                        // تحديث عند تغيير الصور
+                        document.addEventListener('change', function(e) {
+                            if (e.target && e.target.classList.contains('image-upload-input')) {
+                                setTimeout(function() {
+                                    Object.keys(diagMap).forEach(function(k) { updateDiagStatus(k); });
+                                }, 350);
+                            }
+                        });
+                    })();
+                    </script>
 
                 </div>
 
