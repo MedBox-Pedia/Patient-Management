@@ -574,82 +574,237 @@
             box-shadow: 0 0 0 1px #ef4444;
         }
         
-        /* تصميم حقول التحاليل والعلامات الحيوية */
+        /* تصميم حقول التحاليل والعلامات الحيوية - تصميم عصري مضغوط */
         .lab-input-group {
             display: flex;
             align-items: center;
-            gap: 8px; /* 0.5rem */
+            gap: 4px;
         }
         .lab-input {
-            flex: 1 1 0%; /* min-w-0 */
+            flex: 1 1 0%;
             width: auto;
             min-width: 0;
-            padding: 6px 8px; /* py-1.5 px-2 */
-            border: 1px solid #D1D5DB; /* border-gray-300 */
-            border-radius: 0.375rem; /* rounded-md */
-            font-size: 0.875rem; /* text-sm */
+            padding: 4px 6px;
+            border: 1px solid #D1D5DB;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-family: 'Cairo', sans-serif;
+            background: #fff;
+            transition: border-color 0.15s, box-shadow 0.15s;
+            height: 30px;
+        }
+        .lab-input:focus {
+            outline: none;
+            border-color: #0790AC;
+            box-shadow: 0 0 0 2px rgba(7,144,172,0.12);
         }
         .lab-input-small {
-            flex: 0 1 70px; /* عرض أصغر */
-            width: 70px;
+            flex: 0 1 58px;
+            width: 58px;
+            min-width: 0;
+            padding: 3px 4px;
+            font-size: 0.75rem;
+            height: 28px;
+            text-align: center;
         }
         .lab-status-indicator {
-            width: 24px; /* w-6 */
-            height: 24px; /* h-6 */
+            width: 20px;
+            height: 20px;
             flex-shrink: 0;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            border-radius: 50%; /* rounded-full */
-            font-size: 1.125rem; /* text-lg */
-            font-weight: 700; /* font-bold */
+            border-radius: 50%;
+            font-size: 0.7rem;
+            font-weight: 700;
         }
         .lab-status-high {
-            background-color: #FEE2E2; /* red-100 */
-            color: #DC2626; /* red-600 */
+            background-color: #FEE2E2;
+            color: #DC2626;
         }
         .lab-status-low {
-            background-color: #DBEAFE; /* blue-100 */
-            color: #2563EB; /* blue-600 */
+            background-color: #DBEAFE;
+            color: #2563EB;
         }
         .lab-status-normal {
-            background-color: #DCFCE7; /* green-100 */
-            color: #16A34A; /* green-600 */
+            background-color: #DCFCE7;
+            color: #16A34A;
+        }
+
+        /* تسميات الحقول الصغيرة */
+        .lab-field-label {
+            font-size: 0.72rem;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
         
-        /* تصميم أقسام التحاليل */
+        /* تصميم أقسام التحاليل - عصري */
         .lab-section {
-            background-color: #F9FAFB; /* bg-gray-50 */
-            border: 1px solid #E5E7EB; /* border-gray-200 */
-            border-radius: 0.5rem; /* rounded-lg */
-            padding: 1rem; /* p-4 */
-            margin-bottom: 1rem; /* mb-4 */
+            background: linear-gradient(135deg, #f8fafc 0%, #f0f9ff 100%);
+            border: 1px solid #e0f2fe;
+            border-radius: 10px;
+            padding: 12px 14px;
+            margin-bottom: 12px;
+            box-shadow: 0 1px 4px rgba(7,144,172,0.07);
         }
         .lab-section-title {
-            font-size: 1.125rem; /* text-lg */
-            font-weight: 600; /* font-semibold */
+            font-size: 0.95rem;
+            font-weight: 700;
             color: var(--color-primary);
-            margin-bottom: 1rem; /* mb-4 */
+            margin-bottom: 10px;
             border-bottom: 2px solid var(--color-primary-light);
-            padding-bottom: 0.5rem; /* pb-2 */
+            padding-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
         .lab-subsection-title {
-            font-size: 0.875rem; /* text-sm */
-            font-weight: 600; /* font-semibold */
-            color: #4B5563; /* text-gray-600 */
-            margin-top: 1rem; /* mt-4 */
-            margin-bottom: 0.5rem; /* mb-2 */
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: #0790AC;
+            margin-top: 10px;
+            margin-bottom: 6px;
+            padding: 3px 8px;
+            background: rgba(7,144,172,0.08);
+            border-radius: 5px;
+            border-right: 3px solid #0790AC;
         }
         .lab-grid {
             display: grid;
-            grid-template-columns: repeat(1, minmax(0, 1fr));
-            gap: 1rem; /* gap-4 */
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 8px;
         }
         
-        @media (min-width: 768px) {
+        @media (min-width: 640px) {
             .lab-grid {
                 grid-template-columns: repeat(3, minmax(0, 1fr));
             }
+        }
+        @media (min-width: 900px) {
+            .lab-grid {
+                grid-template-columns: repeat(4, minmax(0, 1fr));
+            }
+        }
+
+        /* بطاقة حقل التحليل */
+        .lab-field-card {
+            background: #fff;
+            border: 1px solid #e5e7eb;
+            border-radius: 7px;
+            padding: 6px 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+            transition: border-color 0.15s, box-shadow 0.15s;
+        }
+        .lab-field-card:hover {
+            border-color: #0790AC;
+            box-shadow: 0 2px 8px rgba(7,144,172,0.1);
+        }
+
+        /* بطاقة WBC الموسعة */
+        .lab-wbc-card {
+            background: #fff;
+            border: 1px solid #e0f2fe;
+            border-radius: 8px;
+            padding: 8px 10px;
+            grid-column: 1 / -1;
+        }
+        .lab-wbc-main {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 6px;
+        }
+        .lab-wbc-label {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: #0790AC;
+            white-space: nowrap;
+        }
+        .lab-wbc-sub {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 4px;
+        }
+        .lab-wbc-sub-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+            background: #f0f9ff;
+            border: 1px solid #bae6fd;
+            border-radius: 6px;
+            padding: 4px 6px;
+            min-width: 64px;
+        }
+        .lab-wbc-sub-item label {
+            font-size: 0.65rem;
+            font-weight: 700;
+            color: #0369a1;
+            white-space: nowrap;
+        }
+        .lab-wbc-sub-item input {
+            width: 56px !important;
+            flex: none !important;
+        }
+
+        /* بطاقة RBC الموسعة */
+        .lab-rbc-card {
+            background: #fff;
+            border: 1px solid #fce7f3;
+            border-radius: 8px;
+            padding: 8px 10px;
+            grid-column: 1 / -1;
+        }
+        .lab-rbc-main {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 6px;
+        }
+        .lab-rbc-label {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: #be185d;
+            white-space: nowrap;
+        }
+        .lab-rbc-sub {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 4px;
+        }
+        .lab-rbc-sub-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+            background: #fdf2f8;
+            border: 1px solid #fbcfe8;
+            border-radius: 6px;
+            padding: 4px 6px;
+            min-width: 70px;
+            flex: 1;
+        }
+        .lab-rbc-sub-item label {
+            font-size: 0.65rem;
+            font-weight: 700;
+            color: #be185d;
+            white-space: nowrap;
+        }
+        .lab-rbc-sub-item .lab-input-group {
+            width: 100%;
+        }
+        .lab-rbc-sub-item .lab-input {
+            width: 100% !important;
+            min-width: 0 !important;
+            font-size: 0.75rem;
         }
         
         /* (جديد) تصميم حقول إدخال القيم الطبيعية */
@@ -1938,31 +2093,31 @@
                 <div id="patient-tab-1" class="patient-tab-content space-y-4">
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div class="md:col-span-1">
-                            <label for="reg-date" class="block text-sm font-medium text-gray-700">تاريخ التسجيل/المراجعة <span class="text-red-500">*</span></label>
+                            <label for="reg-date" class="lab-field-label">تاريخ التسجيل/المراجعة <span class="text-red-500">*</span></label>
                             <input type="date" id="reg-date" name="reg_date" class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-2" required>
                         </div>
                         <div class="md:col-span-2">
-                            <label for="name-ar" class="block text-sm font-medium text-gray-700">الاسم (عربي) <span class="text-red-500">*</span></label>
+                            <label for="name-ar" class="lab-field-label">الاسم (عربي) <span class="text-red-500">*</span></label>
                             <input type="text" id="name-ar" name="name_ar" class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-2" required>
                         </div>
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div>
-                            <label for="name-en" class="block text-sm font-medium text-gray-700">الاسم (انجليزي)</label>
+                            <label for="name-en" class="lab-field-label">الاسم (انجليزي)</label>
                             <input type="text" id="name-en" name="name_en" class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-2">
                         </div>
                         <div>
-                            <label for="national-id" class="block text-sm font-medium text-gray-700">الرقم الوطني <span class="text-red-500">*</span></label>
+                            <label for="national-id" class="lab-field-label">الرقم الوطني <span class="text-red-500">*</span></label>
                             <input type="text" id="national-id" name="national_id" class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-2" required>
                         </div>
                         <div>
-                            <label for="age" class="block text-sm font-medium text-gray-700">العمر <span class="text-red-500">*</span></label>
+                            <label for="age" class="lab-field-label">العمر <span class="text-red-500">*</span></label>
                             <input type="number" id="age" name="age" class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-2" required>
                         </div>
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div>
-                            <label for="gender" class="block text-sm font-medium text-gray-700">الجنس <span class="text-red-500">*</span></label>
+                            <label for="gender" class="lab-field-label">الجنس <span class="text-red-500">*</span></label>
                             <select id="gender" name="gender" class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-2" required>
                                 <option value="" disabled selected>اختر...</option>
                                 <option value="male">ذكر</option>
@@ -1970,7 +2125,7 @@
                             </select>
                         </div>
                         <div>
-                            <label for="marital-status" class="block text-sm font-medium text-gray-700">الحالة الاجتماعية</label>
+                            <label for="marital-status" class="lab-field-label">الحالة الاجتماعية</label>
                             <select id="marital-status" name="marital_status" class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-2">
                                 <option value="single">أعزب</option>
                                 <option value="married">متزوج</option>
@@ -1978,7 +2133,7 @@
                             </select>
                         </div>
                         <div>
-                            <label for="children-count" class="block text-sm font-medium text-gray-700">عدد الأطفال</label>
+                            <label for="children-count" class="lab-field-label">عدد الأطفال</label>
                             <input type="number" id="children-count" name="children_count" class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-2">
                         </div>
                     </div>
@@ -1995,7 +2150,7 @@
                         </div>
                     </div>
                     <div>
-                        <label for="financial-status" class="block text-sm font-medium text-gray-700">الوضع المادي</label>
+                        <label for="financial-status" class="lab-field-label">الوضع المادي</label>
                         <select id="financial-status" name="financial_status" class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-2">
                             <option value="weak">ضعيف</option>
                             <option value="medium">متوسط</option>
@@ -2005,20 +2160,20 @@
                         </select>
                     </div>
                     <div>
-                        <label for="beliefs-notes" class="block text-sm font-medium text-gray-700">ملاحظات (معتقدات دينية أو ثقافية)</label>
+                        <label for="beliefs-notes" class="lab-field-label">ملاحظات (معتقدات دينية أو ثقافية)</label>
                         <textarea id="beliefs-notes" name="beliefs_notes" rows="2" class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-2"></textarea>
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div>
-                            <label for="phone" class="block text-sm font-medium text-gray-700">رقم الهاتف <span class="text-red-500">*</span></label>
+                            <label for="phone" class="lab-field-label">رقم الهاتف <span class="text-red-500">*</span></label>
                             <input type="tel" id="phone" name="phone" class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-2" required>
                         </div>
                         <div>
-                            <label for="whatsapp" class="block text-sm font-medium text-gray-700">رقم الواتساب</label>
+                            <label for="whatsapp" class="lab-field-label">رقم الواتساب</label>
                             <input type="tel" id="whatsapp" name="whatsapp" class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-2">
                         </div>
                         <div class="md:col-span-1">
-                            <label for="address" class="block text-sm font-medium text-gray-700">العنوان</label>
+                            <label for="address" class="lab-field-label">العنوان</label>
                             <input type="text" id="address" name="address" class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-2">
                         </div>
                     </div>
@@ -2029,13 +2184,13 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <!-- الوجه الأمامي -->
                             <div class="image-upload-container">
-                                <label for="id-front-input" class="block text-sm font-medium text-gray-700">الوجه الأمامي</label>
+                                <label for="id-front-input" class="lab-field-label">الوجه الأمامي</label>
                                 <input type="file" id="id-front-input" name="id_front_input" accept="image/*" class="image-upload-input" data-preview="id-front-preview" data-storage="id_front_img" data-orientation="vertical">
                                 <img id="id-front-preview" class="image-preview" alt="الوجه الأمامي">
                             </div>
                             <!-- الوجه الخلفي -->
                             <div class="image-upload-container">
-                                <label for="id-back-input" class="block text-sm font-medium text-gray-700">الوجه الخلفي</label>
+                                <label for="id-back-input" class="lab-field-label">الوجه الخلفي</label>
                                 <input type="file" id="id-back-input" name="id_back_input" accept="image/*" class="image-upload-input" data-preview="id-back-preview" data-storage="id_back_img" data-orientation="vertical">
                                 <img id="id-back-preview" class="image-preview" alt="الوجه الخلفي">
                             </div>
@@ -2051,28 +2206,28 @@
                         <p class="text-sm text-gray-600 mb-4">الرجاء تعبئة البيانات المطلوبة</p>
                         <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                             <div>
-                                <label for="height" class="block text-sm font-medium text-gray-700">الطول (سم)</label>
+                                <label for="height" class="lab-field-label">الطول (سم)</label>
                                 <input type="number" id="height" name="height" class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-2">
                             </div>
                             <div>
-                                <label for="weight" class="block text-sm font-medium text-gray-700">الوزن (كغ)</label>
+                                <label for="weight" class="lab-field-label">الوزن (كغ)</label>
                                 <input type="number" id="weight" name="weight" class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-2">
                             </div>
                             <div id="neck-circ-container" style="display:none;">
-                                <label for="neck-circ" class="block text-sm font-medium text-gray-700">محيط الرقبة (سم)</label>
+                                <label for="neck-circ" class="lab-field-label">محيط الرقبة (سم)</label>
                                 <input type="number" id="neck-circ" name="neck_circ" class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-2">
                             </div>
                             <div id="arm-circ-container" style="display:none;">
-                                <label for="arm-circ" class="block text-sm font-medium text-gray-700">محيط الذراع (سم)</label>
+                                <label for="arm-circ" class="lab-field-label">محيط الذراع (سم)</label>
                                 <input type="number" id="arm-circ" name="arm_circ" class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-2">
                             </div>
                             <div id="waist-circ-container" style="display:none;">
-                                <label for="waist-circ" class="block text-sm font-medium text-gray-700">محيط الخصر (سم)</label>
+                                <label for="waist-circ" class="lab-field-label">محيط الخصر (سم)</label>
                                 <input type="number" id="waist-circ" name="waist_circ" class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-2">
                             </div>
                             <!-- (تعديل 2) حاوية قياس الورك مخفية بشكل افتراضي -->
                             <div id="hip-circ-container" class="hidden"> 
-                                <label for="hip-circ" class="block text-sm font-medium text-gray-700">محيط الورك (سم)</label>
+                                <label for="hip-circ" class="lab-field-label">محيط الورك (سم)</label>
                                 <input type="number" id="hip-circ" name="hip_circ" class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-2">
                             </div>
                         </div>
@@ -2084,14 +2239,14 @@
                         <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
                             <!-- الضغط الشرياني -->
                             <div>
-                                <label for="vital_bp_sys" class="block text-sm font-medium text-gray-700">الضغط (الانقباضي)</label>
+                                <label for="vital_bp_sys" class="lab-field-label">الضغط (الانقباضي)</label>
                                 <div class="lab-input-group">
                                     <input type="number" id="vital_bp_sys" name="vital_bp_sys" data-vital="bp_sys" class="lab-input vital-input" step="any">
                                     <span id="vital_bp_sys_status" class="lab-status-indicator"></span>
                                 </div>
                             </div>
                             <div>
-                                <label for="vital_bp_dias" class="block text-sm font-medium text-gray-700">الضغط (الانبساطي)</label>
+                                <label for="vital_bp_dias" class="lab-field-label">الضغط (الانبساطي)</label>
                                 <div class="lab-input-group">
                                     <input type="number" id="vital_bp_dias" name="vital_bp_dias" data-vital="bp_dias" class="lab-input vital-input" step="any">
                                     <span id="vital_bp_dias_status" class="lab-status-indicator"></span>
@@ -2099,7 +2254,7 @@
                             </div>
                             <!-- النبض -->
                             <div>
-                                <label for="vital_pulse" class="block text-sm font-medium text-gray-700">النبض الشرياني (bpm)</label>
+                                <label for="vital_pulse" class="lab-field-label">النبض الشرياني (bpm)</label>
                                 <div class="lab-input-group">
                                     <input type="number" id="vital_pulse" name="vital_pulse" data-vital="pulse" class="lab-input vital-input" step="any">
                                     <span id="vital_pulse_status" class="lab-status-indicator"></span>
@@ -2107,7 +2262,7 @@
                             </div>
                             <!-- التنفس -->
                             <div>
-                                <label for="vital_resp" class="block text-sm font-medium text-gray-700">حركات التنفس (bpm)</label>
+                                <label for="vital_resp" class="lab-field-label">حركات التنفس (bpm)</label>
                                 <div class="lab-input-group">
                                     <input type="number" id="vital_resp" name="vital_resp" data-vital="resp" class="lab-input vital-input" step="any">
                                     <span id="vital_resp_status" class="lab-status-indicator"></span>
@@ -2115,7 +2270,7 @@
                             </div>
                             <!-- الاشباع -->
                             <div>
-                                <label for="vital_spo2" class="block text-sm font-medium text-gray-700">نسبة الاشباع (SpO2 %)</label>
+                                <label for="vital_spo2" class="lab-field-label">نسبة الاشباع (SpO2 %)</label>
                                 <div class="lab-input-group">
                                     <input type="number" id="vital_spo2" name="vital_spo2" data-vital="spo2" class="lab-input vital-input" step="any">
                                     <span id="vital_spo2_status" class="lab-status-indicator"></span>
@@ -2123,7 +2278,7 @@
                             </div>
                             <!-- الحرارة -->
                             <div>
-                                <label for="vital_temp" class="block text-sm font-medium text-gray-700">الحرارة المحيطية (C°)</label>
+                                <label for="vital_temp" class="lab-field-label">الحرارة المحيطية (C°)</label>
                                 <div class="lab-input-group">
                                     <input type="number" id="vital_temp" name="vital_temp" data-vital="temp" class="lab-input vital-input" step="any">
                                     <span id="vital_temp_status" class="lab-status-indicator"></span>
@@ -2136,28 +2291,28 @@
                 <!-- القائمة 3: الحالة الصحية -->
                 <div id="patient-tab-3" class="patient-tab-content hidden space-y-4">
                     <div>
-                        <label for="current-complaint" class="block text-sm font-medium text-gray-700">الشكوى الحالية (سبب الحضور)</label>
+                        <label for="current-complaint" class="lab-field-label">الشكوى الحالية (سبب الحضور)</label>
                         <textarea id="current-complaint" name="current_complaint" rows="3" class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-2"></textarea>
                     </div>
                     <div>
-                        <label for="medical-diagnosis" class="block text-sm font-medium text-gray-700">التشخيص الطبي</label>
+                        <label for="medical-diagnosis" class="lab-field-label">التشخيص الطبي</label>
                         <textarea id="medical-diagnosis" name="medical_diagnosis" rows="3" class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-2" placeholder="أدخل التشخيص الطبي..."></textarea>
                     </div>
                     <div>
-                        <label for="chronic-diseases" class="block text-sm font-medium text-gray-700">الأمراض المزمنة</label>
+                        <label for="chronic-diseases" class="lab-field-label">الأمراض المزمنة</label>
                         <textarea id="chronic-diseases" name="chronic_diseases" rows="3" class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-2"></textarea>
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div>
-                            <label for="genetic-diseases" class="block text-sm font-medium text-gray-700">الأمراض الوراثية</label>
+                            <label for="genetic-diseases" class="lab-field-label">الأمراض الوراثية</label>
                             <textarea id="genetic-diseases" name="genetic_diseases" rows="2" class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-2"></textarea>
                         </div>
                         <div>
-                            <label for="surgical-history" class="block text-sm font-medium text-gray-700">السوابق الجراحية</label>
+                            <label for="surgical-history" class="lab-field-label">السوابق الجراحية</label>
                             <textarea id="surgical-history" name="surgical_history" rows="2" class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-2"></textarea>
                         </div>
                         <div>
-                            <label for="allergies" class="block text-sm font-medium text-gray-700">السوابق التحسسية</label>
+                            <label for="allergies" class="lab-field-label">السوابق التحسسية</label>
                             <textarea id="allergies" name="allergies" rows="2" class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-2"></textarea>
                         </div>
                     </div>
@@ -2342,105 +2497,103 @@
 
                     <!-- A. قسم التحاليل الدموية -->
                     <div class="lab-section">
-                        <h3 class="lab-section-title">A. قسم التحاليل الدموية</h3>
+                        <h3 class="lab-section-title">🩸 A. قسم التحاليل الدموية</h3>
                         <div class="lab-grid">
-                            <!-- WBC -->
-                            <div class="lab-grid-span-full" style="grid-column:1/-1;">
-                                <label for="lab_wbc" class="block text-sm font-medium text-gray-700">WBC (كريات الدم البيضاء)</label>
-                                <div class="lab-input-group" style="flex-wrap:wrap;gap:6px;">
-                                    <input type="number" id="lab_wbc" name="lab_wbc" data-lab="wbc" class="lab-input lab-field-input" step="any" placeholder="WBC ×10³">
+                            <!-- WBC - بطاقة موسعة مع الفروع -->
+                            <div class="lab-wbc-card">
+                                <div class="lab-wbc-main">
+                                    <span class="lab-wbc-label">🔵 WBC (كريات الدم البيضاء)</span>
+                                    <input type="number" id="lab_wbc" name="lab_wbc" data-lab="wbc" class="lab-input lab-field-input" step="any" placeholder="×10³/µL" style="max-width:120px;">
                                     <span id="lab_wbc_status" class="lab-status-indicator"></span>
                                 </div>
-                                <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;">
-                                    <div style="display:flex;flex-direction:column;align-items:center;gap:3px;min-width:80px;">
-                                        <label style="font-size:0.72rem;font-weight:700;color:#374151;white-space:nowrap;">Neutrophils %</label>
-                                        <input type="number" id="lab_wbc_neu" name="lab_wbc_neu" placeholder="%" class="lab-input lab-input-small" step="any" style="width:72px;text-align:center;">
+                                <div class="lab-wbc-sub">
+                                    <div class="lab-wbc-sub-item">
+                                        <label>Neu %</label>
+                                        <input type="number" id="lab_wbc_neu" name="lab_wbc_neu" placeholder="%" class="lab-input lab-input-small" step="any">
                                     </div>
-                                    <div style="display:flex;flex-direction:column;align-items:center;gap:3px;min-width:80px;">
-                                        <label style="font-size:0.72rem;font-weight:700;color:#374151;white-space:nowrap;">Lymphocytes %</label>
-                                        <input type="number" id="lab_wbc_lym" name="lab_wbc_lym" placeholder="%" class="lab-input lab-input-small" step="any" style="width:72px;text-align:center;">
+                                    <div class="lab-wbc-sub-item">
+                                        <label>Lym %</label>
+                                        <input type="number" id="lab_wbc_lym" name="lab_wbc_lym" placeholder="%" class="lab-input lab-input-small" step="any">
                                     </div>
-                                    <div style="display:flex;flex-direction:column;align-items:center;gap:3px;min-width:80px;">
-                                        <label style="font-size:0.72rem;font-weight:700;color:#374151;white-space:nowrap;">Monocytes %</label>
-                                        <input type="number" id="lab_wbc_mon" name="lab_wbc_mon" placeholder="%" class="lab-input lab-input-small" step="any" style="width:72px;text-align:center;">
+                                    <div class="lab-wbc-sub-item">
+                                        <label>Mono %</label>
+                                        <input type="number" id="lab_wbc_mon" name="lab_wbc_mon" placeholder="%" class="lab-input lab-input-small" step="any">
                                     </div>
-                                    <div style="display:flex;flex-direction:column;align-items:center;gap:3px;min-width:80px;">
-                                        <label style="font-size:0.72rem;font-weight:700;color:#374151;white-space:nowrap;">Eosinophils %</label>
-                                        <input type="number" id="lab_wbc_eos" name="lab_wbc_eos" placeholder="%" class="lab-input lab-input-small" step="any" style="width:72px;text-align:center;">
+                                    <div class="lab-wbc-sub-item">
+                                        <label>Eos %</label>
+                                        <input type="number" id="lab_wbc_eos" name="lab_wbc_eos" placeholder="%" class="lab-input lab-input-small" step="any">
                                     </div>
-                                    <div style="display:flex;flex-direction:column;align-items:center;gap:3px;min-width:80px;">
-                                        <label style="font-size:0.72rem;font-weight:700;color:#374151;white-space:nowrap;">Basophils %</label>
-                                        <input type="number" id="lab_wbc_bas" name="lab_wbc_bas" placeholder="%" class="lab-input lab-input-small" step="any" style="width:72px;text-align:center;">
+                                    <div class="lab-wbc-sub-item">
+                                        <label>Baso %</label>
+                                        <input type="number" id="lab_wbc_bas" name="lab_wbc_bas" placeholder="%" class="lab-input lab-input-small" step="any">
                                     </div>
                                 </div>
                             </div>
-                            <!-- RBC -->
-                            <div>
-                                <label for="lab_rbc" class="block text-sm font-medium text-gray-700">RBC</label>
-                                <div class="lab-input-group">
-                                    <input type="number" id="lab_rbc" name="lab_rbc" data-lab="rbc" class="lab-input lab-field-input" step="any">
+                            <!-- RBC - بطاقة موسعة مع الفروع MCV/MCH/MCHC/RDW -->
+                            <div class="lab-rbc-card">
+                                <div class="lab-rbc-main">
+                                    <span class="lab-rbc-label">🔴 RBC (كريات الدم الحمراء)</span>
+                                    <input type="number" id="lab_rbc" name="lab_rbc" data-lab="rbc" class="lab-input lab-field-input" step="any" placeholder="×10⁶/µL" style="max-width:120px;">
                                     <span id="lab_rbc_status" class="lab-status-indicator"></span>
                                 </div>
-                            </div>
-                            <!-- MCV -->
-                            <div>
-                                <label for="lab_mcv" class="block text-sm font-medium text-gray-700">MCV</label>
-                                <div class="lab-input-group">
-                                    <input type="number" id="lab_mcv" name="lab_mcv" data-lab="mcv" class="lab-input lab-field-input" step="any">
-                                    <span id="lab_mcv_status" class="lab-status-indicator"></span>
-                                </div>
-                            </div>
-                            <!-- MCH -->
-                            <div>
-                                <label for="lab_mch" class="block text-sm font-medium text-gray-700">MCH</label>
-                                <div class="lab-input-group">
-                                    <input type="number" id="lab_mch" name="lab_mch" data-lab="mch" class="lab-input lab-field-input" step="any">
-                                    <span id="lab_mch_status" class="lab-status-indicator"></span>
-                                </div>
-                            </div>
-                            <!-- MCHC -->
-                            <div>
-                                <label for="lab_mchc" class="block text-sm font-medium text-gray-700">MCHC</label>
-                                <div class="lab-input-group">
-                                    <input type="number" id="lab_mchc" name="lab_mchc" data-lab="mchc" class="lab-input lab-field-input" step="any">
-                                    <span id="lab_mchc_status" class="lab-status-indicator"></span>
-                                </div>
-                            </div>
-                            <!-- RDW -->
-                            <div>
-                                <label for="lab_rdw" class="block text-sm font-medium text-gray-700">RDW</label>
-                                <div class="lab-input-group">
-                                    <input type="number" id="lab_rdw" name="lab_rdw" data-lab="rdw" class="lab-input lab-field-input" step="any">
-                                    <span id="lab_rdw_status" class="lab-status-indicator"></span>
+                                <div class="lab-rbc-sub">
+                                    <div class="lab-rbc-sub-item">
+                                        <label>MCV (fL)</label>
+                                        <div class="lab-input-group">
+                                            <input type="number" id="lab_mcv" name="lab_mcv" data-lab="mcv" class="lab-input lab-field-input" step="any" placeholder="fL">
+                                            <span id="lab_mcv_status" class="lab-status-indicator"></span>
+                                        </div>
+                                    </div>
+                                    <div class="lab-rbc-sub-item">
+                                        <label>MCH (pg)</label>
+                                        <div class="lab-input-group">
+                                            <input type="number" id="lab_mch" name="lab_mch" data-lab="mch" class="lab-input lab-field-input" step="any" placeholder="pg">
+                                            <span id="lab_mch_status" class="lab-status-indicator"></span>
+                                        </div>
+                                    </div>
+                                    <div class="lab-rbc-sub-item">
+                                        <label>MCHC (g/dL)</label>
+                                        <div class="lab-input-group">
+                                            <input type="number" id="lab_mchc" name="lab_mchc" data-lab="mchc" class="lab-input lab-field-input" step="any" placeholder="g/dL">
+                                            <span id="lab_mchc_status" class="lab-status-indicator"></span>
+                                        </div>
+                                    </div>
+                                    <div class="lab-rbc-sub-item">
+                                        <label>RDW (%)</label>
+                                        <div class="lab-input-group">
+                                            <input type="number" id="lab_rdw" name="lab_rdw" data-lab="rdw" class="lab-input lab-field-input" step="any" placeholder="%">
+                                            <span id="lab_rdw_status" class="lab-status-indicator"></span>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                             <!-- HB -->
-                            <div>
-                                <label for="lab_hb" class="block text-sm font-medium text-gray-700">HB</label>
+                            <div class="lab-field-card">
+                                <label class="lab-field-label" for="lab_hb">HB (Hemoglobin)</label>
                                 <div class="lab-input-group">
-                                    <input type="number" id="lab_hb" name="lab_hb" data-lab="hb" class="lab-input lab-field-input" step="any">
+                                    <input type="number" id="lab_hb" name="lab_hb" data-lab="hb" class="lab-input lab-field-input" step="any" placeholder="g/dL">
                                     <span id="lab_hb_status" class="lab-status-indicator"></span>
                                 </div>
                             </div>
                             <!-- HT -->
-                            <div>
-                                <label for="lab_ht" class="block text-sm font-medium text-gray-700">HT</label>
+                            <div class="lab-field-card">
+                                <label class="lab-field-label" for="lab_ht">HT (Hematocrit)</label>
                                 <div class="lab-input-group">
-                                    <input type="number" id="lab_ht" name="lab_ht" data-lab="ht" class="lab-input lab-field-input" step="any">
+                                    <input type="number" id="lab_ht" name="lab_ht" data-lab="ht" class="lab-input lab-field-input" step="any" placeholder="%">
                                     <span id="lab_ht_status" class="lab-status-indicator"></span>
                                 </div>
                             </div>
                             <!-- Platelets -->
-                            <div>
-                                <label for="lab_platelets" class="block text-sm font-medium text-gray-700">Platelets</label>
+                            <div class="lab-field-card">
+                                <label class="lab-field-label" for="lab_platelets">Platelets</label>
                                 <div class="lab-input-group">
-                                    <input type="number" id="lab_platelets" name="lab_platelets" data-lab="platelets" class="lab-input lab-field-input" step="any">
+                                    <input type="number" id="lab_platelets" name="lab_platelets" data-lab="platelets" class="lab-input lab-field-input" step="any" placeholder="×10³">
                                     <span id="lab_platelets_status" class="lab-status-indicator"></span>
                                 </div>
                             </div>
                             <!-- ESR -->
-                            <div>
-                                <label for="lab_esr" class="block text-sm font-medium text-gray-700">ESR</label>
+                            <div class="lab-field-card">
+                                <label class="lab-field-label" for="lab_esr">ESR (mm/hr)</label>
                                 <div class="lab-input-group">
                                     <input type="number" id="lab_esr" name="lab_esr" data-lab="esr" class="lab-input lab-field-input" step="any">
                                     <span id="lab_esr_status" class="lab-status-indicator"></span>
@@ -2451,27 +2604,27 @@
 
                     <!-- B. قسم التحاليل الكيميائية -->
                     <div class="lab-section">
-                        <h3 class="lab-section-title">B. قسم التحاليل الكيميائية</h3>
+                        <h3 class="lab-section-title">🧪 B. قسم التحاليل الكيميائية</h3>
                         
                         <!-- a) تقييم السكر -->
-                        <h4 class="lab-subsection-title">a) التحاليل الخاصة بتقييم السكر</h4>
+                        <h4 class="lab-subsection-title">a) تقييم السكر</h4>
                         <div class="lab-grid">
-                            <div>
-                                <label for="lab_glucose_fast" class="block text-sm font-medium text-gray-700">سكر صيامي</label>
+                            <div class="lab-field-card">
+                                <label class="lab-field-label" for="lab_glucose_fast">سكر صيامي</label>
                                 <div class="lab-input-group">
                                     <input type="number" id="lab_glucose_fast" name="lab_glucose_fast" data-lab="glucose_fast" class="lab-input lab-field-input" step="any">
                                     <span id="lab_glucose_fast_status" class="lab-status-indicator"></span>
                                 </div>
                             </div>
-                            <div>
-                                <label for="lab_glucose_random" class="block text-sm font-medium text-gray-700">سكر عشوائي</label>
+                            <div class="lab-field-card">
+                                <label class="lab-field-label" for="lab_glucose_random">سكر عشوائي</label>
                                 <div class="lab-input-group">
                                     <input type="number" id="lab_glucose_random" name="lab_glucose_random" data-lab="glucose_random" class="lab-input lab-field-input" step="any">
                                     <span id="lab_glucose_random_status" class="lab-status-indicator"></span>
                                 </div>
                             </div>
-                            <div>
-                                <label for="lab_homa_ir" class="block text-sm font-medium text-gray-700">مقاومة الانسولين</label>
+                            <div class="lab-field-card">
+                                <label class="lab-field-label" for="lab_homa_ir">مقاومة الانسولين</label>
                                 <div class="lab-input-group">
                                     <input type="number" id="lab_homa_ir" name="lab_homa_ir" data-lab="homa_ir" class="lab-input lab-field-input" step="any">
                                     <span id="lab_homa_ir_status" class="lab-status-indicator"></span>
@@ -2479,39 +2632,39 @@
                             </div>
                         </div>
 
-                        <!-- b) وظائف الكلية -->
+                        <!-- b) 🫘 وظائف الكلية -->
                         <h4 class="lab-subsection-title">b) وظائف الكلية</h4>
                         <div class="lab-grid">
-                            <div>
-                                <label for="lab_cr" class="block text-sm font-medium text-gray-700">Cr</label>
+                            <div class="lab-field-card">
+                                <label for="lab_cr" class="lab-field-label">Cr</label>
                                 <div class="lab-input-group">
                                     <input type="number" id="lab_cr" name="lab_cr" data-lab="cr" class="lab-input lab-field-input" step="any">
                                     <span id="lab_cr_status" class="lab-status-indicator"></span>
                                 </div>
                             </div>
-                            <div>
-                                <label for="lab_urea" class="block text-sm font-medium text-gray-700">Urea</label>
+                            <div class="lab-field-card">
+                                <label for="lab_urea" class="lab-field-label">Urea</label>
                                 <div class="lab-input-group">
                                     <input type="number" id="lab_urea" name="lab_urea" data-lab="urea" class="lab-input lab-field-input" step="any">
                                     <span id="lab_urea_status" class="lab-status-indicator"></span>
                                 </div>
                             </div>
-                            <div>
-                                <label for="lab_ua" class="block text-sm font-medium text-gray-700">UA</label>
+                            <div class="lab-field-card">
+                                <label for="lab_ua" class="lab-field-label">UA</label>
                                 <div class="lab-input-group">
                                     <input type="number" id="lab_ua" name="lab_ua" data-lab="ua" class="lab-input lab-field-input" step="any">
                                     <span id="lab_ua_status" class="lab-status-indicator"></span>
                                 </div>
                             </div>
-                            <div>
-                                <label for="lab_crcl" class="block text-sm font-medium text-gray-700">CrCl</label>
+                            <div class="lab-field-card">
+                                <label for="lab_crcl" class="lab-field-label">CrCl</label>
                                 <div class="lab-input-group">
                                     <input type="number" id="lab_crcl" name="lab_crcl" data-lab="crcl" class="lab-input lab-field-input" step="any">
                                     <span id="lab_crcl_status" class="lab-status-indicator"></span>
                                 </div>
                             </div>
-                            <div>
-                                <label for="lab_egfr" class="block text-sm font-medium text-gray-700">eGFR</label>
+                            <div class="lab-field-card">
+                                <label for="lab_egfr" class="lab-field-label">eGFR</label>
                                 <div class="lab-input-group">
                                     <input type="number" id="lab_egfr" name="lab_egfr" data-lab="egfr" class="lab-input lab-field-input" step="any">
                                     <span id="lab_egfr_status" class="lab-status-indicator"></span>
@@ -2519,44 +2672,44 @@
                             </div>
                         </div>
 
-                        <!-- c) وظائف الكبد -->
+                        <!-- c) 🫀 وظائف الكبد -->
                         <h4 class="lab-subsection-title">c) وظائف الكبد</h4>
                         <div class="lab-grid">
-                            <div>
-                                <label for="lab_alt" class="block text-sm font-medium text-gray-700">ALT</label>
+                            <div class="lab-field-card">
+                                <label for="lab_alt" class="lab-field-label">ALT</label>
                                 <div class="lab-input-group">
                                     <input type="number" id="lab_alt" name="lab_alt" data-lab="alt" class="lab-input lab-field-input" step="any">
                                     <span id="lab_alt_status" class="lab-status-indicator"></span>
                                 </div>
                             </div>
-                            <div>
-                                <label for="lab_ast" class="block text-sm font-medium text-gray-700">AST</label>
+                            <div class="lab-field-card">
+                                <label for="lab_ast" class="lab-field-label">AST</label>
                                 <div class="lab-input-group">
                                     <input type="number" id="lab_ast" name="lab_ast" data-lab="ast" class="lab-input lab-field-input" step="any">
                                     <span id="lab_ast_status" class="lab-status-indicator"></span>
                                 </div>
                             </div>
                             <!-- T.Bilirubin -->
-                            <div>
-                                <label for="lab_bili_t" class="block text-sm font-medium text-gray-700">T.Bilirubin</label>
-                                <div class="lab-input-group">
-                                    <input type="number" id="lab_bili_t" name="lab_bili_t" data-lab="bili_t" class="lab-input lab-field-input" step="any">
-                                    <span class="font-bold">D:</span>
+                            <div class="lab-field-card" style="grid-column: span 2;">
+                                <label class="lab-field-label" for="lab_bili_t">T.Bilirubin / Direct / Indirect</label>
+                                <div class="lab-input-group" style="flex-wrap:wrap;gap:4px;">
+                                    <input type="number" id="lab_bili_t" name="lab_bili_t" data-lab="bili_t" class="lab-input lab-field-input" step="any" placeholder="Total" style="max-width:80px;">
+                                    <span style="font-size:0.7rem;font-weight:700;color:#6b7280;">D:</span>
                                     <input type="number" id="lab_bili_d" name="lab_bili_d" placeholder="Direct" class="lab-input lab-input-small" step="any">
-                                    <span class="font-bold">I:</span>
+                                    <span style="font-size:0.7rem;font-weight:700;color:#6b7280;">I:</span>
                                     <input type="number" id="lab_bili_i" name="lab_bili_i" placeholder="Indirect" class="lab-input lab-input-small" step="any">
                                     <span id="lab_bili_t_status" class="lab-status-indicator"></span>
                                 </div>
                             </div>
-                            <div>
-                                <label for="lab_albumin" class="block text-sm font-medium text-gray-700">Albumin</label>
+                            <div class="lab-field-card">
+                                <label for="lab_albumin" class="lab-field-label">Albumin</label>
                                 <div class="lab-input-group">
                                     <input type="number" id="lab_albumin" name="lab_albumin" data-lab="albumin" class="lab-input lab-field-input" step="any">
                                     <span id="lab_albumin_status" class="lab-status-indicator"></span>
                                 </div>
                             </div>
-                            <div>
-                                <label for="lab_crp" class="block text-sm font-medium text-gray-700">CRP</label>
+                            <div class="lab-field-card">
+                                <label for="lab_crp" class="lab-field-label">CRP</label>
                                 <div class="lab-input-group">
                                     <input type="number" id="lab_crp" name="lab_crp" data-lab="crp" class="lab-input lab-field-input" step="any">
                                     <span id="lab_crp_status" class="lab-status-indicator"></span>
@@ -2564,32 +2717,32 @@
                             </div>
                         </div>
 
-                        <!-- d) فيتامينات -->
+                        <!-- d) 💊 فيتامينات -->
                         <h4 class="lab-subsection-title">d) فيتامينات</h4>
                         <div class="lab-grid">
-                            <div>
-                                <label for="lab_vit_b6" class="block text-sm font-medium text-gray-700">V.B6</label>
+                            <div class="lab-field-card">
+                                <label for="lab_vit_b6" class="lab-field-label">V.B6</label>
                                 <div class="lab-input-group">
                                     <input type="number" id="lab_vit_b6" name="lab_vit_b6" data-lab="vit_b6" class="lab-input lab-field-input" step="any">
                                     <span id="lab_vit_b6_status" class="lab-status-indicator"></span>
                                 </div>
                             </div>
-                            <div>
-                                <label for="lab_vit_b9" class="block text-sm font-medium text-gray-700">B9 (الفوليك)</label>
+                            <div class="lab-field-card">
+                                <label for="lab_vit_b9" class="lab-field-label">B9 (الفوليك)</label>
                                 <div class="lab-input-group">
                                     <input type="number" id="lab_vit_b9" name="lab_vit_b9" data-lab="vit_b9" class="lab-input lab-field-input" step="any">
                                     <span id="lab_vit_b9_status" class="lab-status-indicator"></span>
                                 </div>
                             </div>
-                            <div>
-                                <label for="lab_vit_b12" class="block text-sm font-medium text-gray-700">V.B12</label>
+                            <div class="lab-field-card">
+                                <label for="lab_vit_b12" class="lab-field-label">V.B12</label>
                                 <div class="lab-input-group">
                                     <input type="number" id="lab_vit_b12" name="lab_vit_b12" data-lab="vit_b12" class="lab-input lab-field-input" step="any">
                                     <span id="lab_vit_b12_status" class="lab-status-indicator"></span>
                                 </div>
                             </div>
-                            <div>
-                                <label for="lab_vit_d3" class="block text-sm font-medium text-gray-700">V.D3</label>
+                            <div class="lab-field-card">
+                                <label for="lab_vit_d3" class="lab-field-label">V.D3</label>
                                 <div class="lab-input-group">
                                     <input type="number" id="lab_vit_d3" name="lab_vit_d3" data-lab="vit_d3" class="lab-input lab-field-input" step="any">
                                     <span id="lab_vit_d3_status" class="lab-status-indicator"></span>
@@ -2597,46 +2750,46 @@
                             </div>
                         </div>
 
-                        <!-- e) الشوارد -->
+                        <!-- e) ⚡ الشوارد -->
                         <h4 class="lab-subsection-title">e) الشوارد</h4>
                         <div class="lab-grid">
-                            <div>
-                                <label for="lab_k" class="block text-sm font-medium text-gray-700">K</label>
+                            <div class="lab-field-card">
+                                <label for="lab_k" class="lab-field-label">K</label>
                                 <div class="lab-input-group">
                                     <input type="number" id="lab_k" name="lab_k" data-lab="k" class="lab-input lab-field-input" step="any">
                                     <span id="lab_k_status" class="lab-status-indicator"></span>
                                 </div>
                             </div>
-                            <div>
-                                <label for="lab_na" class="block text-sm font-medium text-gray-700">Na</label>
+                            <div class="lab-field-card">
+                                <label for="lab_na" class="lab-field-label">Na</label>
                                 <div class="lab-input-group">
                                     <input type="number" id="lab_na" name="lab_na" data-lab="na" class="lab-input lab-field-input" step="any">
                                     <span id="lab_na_status" class="lab-status-indicator"></span>
                                 </div>
                             </div>
-                            <div>
-                                <label for="lab_cl" class="block text-sm font-medium text-gray-700">Cl</label>
+                            <div class="lab-field-card">
+                                <label for="lab_cl" class="lab-field-label">Cl</label>
                                 <div class="lab-input-group">
                                     <input type="number" id="lab_cl" name="lab_cl" data-lab="cl" class="lab-input lab-field-input" step="any">
                                     <span id="lab_cl_status" class="lab-status-indicator"></span>
                                 </div>
                             </div>
-                            <div>
-                                <label for="lab_mg" class="block text-sm font-medium text-gray-700">Mg</label>
+                            <div class="lab-field-card">
+                                <label for="lab_mg" class="lab-field-label">Mg</label>
                                 <div class="lab-input-group">
                                     <input type="number" id="lab_mg" name="lab_mg" data-lab="mg" class="lab-input lab-field-input" step="any">
                                     <span id="lab_mg_status" class="lab-status-indicator"></span>
                                 </div>
                             </div>
-                            <div>
-                                <label for="lab_p" class="block text-sm font-medium text-gray-700">P</label>
+                            <div class="lab-field-card">
+                                <label for="lab_p" class="lab-field-label">P</label>
                                 <div class="lab-input-group">
                                     <input type="number" id="lab_p" name="lab_p" data-lab="p" class="lab-input lab-field-input" step="any">
                                     <span id="lab_p_status" class="lab-status-indicator"></span>
                                 </div>
                             </div>
-                            <div>
-                                <label for="lab_ca" class="block text-sm font-medium text-gray-700">Ca</label>
+                            <div class="lab-field-card">
+                                <label for="lab_ca" class="lab-field-label">Ca</label>
                                 <div class="lab-input-group">
                                     <input type="number" id="lab_ca" name="lab_ca" data-lab="ca" class="lab-input lab-field-input" step="any">
                                     <span id="lab_ca_status" class="lab-status-indicator"></span>
@@ -2644,53 +2797,53 @@
                             </div>
                         </div>
 
-                        <!-- f) الهرمونات -->
+                        <!-- f) 🔬 الهرمونات -->
                         <h4 class="lab-subsection-title">f) الهرمونات</h4>
                         <div class="lab-grid">
-                            <div>
-                                <label for="lab_tsh" class="block text-sm font-medium text-gray-700">TSH</label>
+                            <div class="lab-field-card">
+                                <label for="lab_tsh" class="lab-field-label">TSH</label>
                                 <div class="lab-input-group">
                                     <input type="number" id="lab_tsh" name="lab_tsh" data-lab="tsh" class="lab-input lab-field-input" step="any">
                                     <span id="lab_tsh_status" class="lab-status-indicator"></span>
                                 </div>
                             </div>
-                            <div>
-                                <label for="lab_t3" class="block text-sm font-medium text-gray-700">T3</label>
+                            <div class="lab-field-card">
+                                <label for="lab_t3" class="lab-field-label">T3</label>
                                 <div class="lab-input-group">
                                     <input type="number" id="lab_t3" name="lab_t3" data-lab="t3" class="lab-input lab-field-input" step="any">
                                     <span id="lab_t3_status" class="lab-status-indicator"></span>
                                 </div>
                             </div>
-                            <div>
-                                <label for="lab_t4" class="block text-sm font-medium text-gray-700">T4</label>
+                            <div class="lab-field-card">
+                                <label for="lab_t4" class="lab-field-label">T4</label>
                                 <div class="lab-input-group">
                                     <input type="number" id="lab_t4" name="lab_t4" data-lab="t4" class="lab-input lab-field-input" step="any">
                                     <span id="lab_t4_status" class="lab-status-indicator"></span>
                                 </div>
                             </div>
-                            <div>
-                                <label for="lab_fsh" class="block text-sm font-medium text-gray-700">FSH</label>
+                            <div class="lab-field-card">
+                                <label for="lab_fsh" class="lab-field-label">FSH</label>
                                 <div class="lab-input-group">
                                     <input type="number" id="lab_fsh" name="lab_fsh" data-lab="fsh" class="lab-input lab-field-input" step="any">
                                     <span id="lab_fsh_status" class="lab-status-indicator"></span>
                                 </div>
                             </div>
-                            <div>
-                                <label for="lab_lh" class="block text-sm font-medium text-gray-700">LH</label>
+                            <div class="lab-field-card">
+                                <label for="lab_lh" class="lab-field-label">LH</label>
                                 <div class="lab-input-group">
                                     <input type="number" id="lab_lh" name="lab_lh" data-lab="lh" class="lab-input lab-field-input" step="any">
                                     <span id="lab_lh_status" class="lab-status-indicator"></span>
                                 </div>
                             </div>
-                            <div>
-                                <label for="lab_testo" class="block text-sm font-medium text-gray-700">Testosterone</label>
+                            <div class="lab-field-card">
+                                <label for="lab_testo" class="lab-field-label">Testosterone</label>
                                 <div class="lab-input-group">
                                     <input type="number" id="lab_testo" name="lab_testo" data-lab="testo" class="lab-input lab-field-input" step="any">
                                     <span id="lab_testo_status" class="lab-status-indicator"></span>
                                 </div>
                             </div>
-                            <div>
-                                <label for="lab_pth" class="block text-sm font-medium text-gray-700">PTH</label>
+                            <div class="lab-field-card">
+                                <label for="lab_pth" class="lab-field-label">PTH</label>
                                 <div class="lab-input-group">
                                     <input type="number" id="lab_pth" name="lab_pth" data-lab="pth" class="lab-input lab-field-input" step="any">
                                     <span id="lab_pth_status" class="lab-status-indicator"></span>
@@ -2701,35 +2854,35 @@
 
                     <!-- خمائر القلب -->
                     <div class="lab-section">
-                        <h3 class="lab-section-title">خمائر القلب (Cardiac Enzymes)</h3>
+                        <h3 class="lab-section-title">❤️ خمائر القلب (Cardiac Enzymes)</h3>
                         <div class="lab-grid">
                             <!-- Troponin -->
-                            <div>
-                                <label for="lab_troponin" class="block text-sm font-medium text-gray-700">Troponin</label>
+                            <div class="lab-field-card">
+                                <label for="lab_troponin" class="lab-field-label">Troponin</label>
                                 <div class="lab-input-group">
                                     <input type="number" id="lab_troponin" name="lab_troponin" data-lab="troponin" class="lab-input lab-field-input" step="any">
                                     <span id="lab_troponin_status" class="lab-status-indicator"></span>
                                 </div>
                             </div>
                             <!-- CK -->
-                            <div>
-                                <label for="lab_ck" class="block text-sm font-medium text-gray-700">CK</label>
+                            <div class="lab-field-card">
+                                <label for="lab_ck" class="lab-field-label">CK</label>
                                 <div class="lab-input-group">
                                     <input type="number" id="lab_ck" name="lab_ck" data-lab="ck" class="lab-input lab-field-input" step="any">
                                     <span id="lab_ck_status" class="lab-status-indicator"></span>
                                 </div>
                             </div>
                             <!-- CK-MB -->
-                            <div>
-                                <label for="lab_ckmb" class="block text-sm font-medium text-gray-700">CK-MB</label>
+                            <div class="lab-field-card">
+                                <label for="lab_ckmb" class="lab-field-label">CK-MB</label>
                                 <div class="lab-input-group">
                                     <input type="number" id="lab_ckmb" name="lab_ckmb" data-lab="ckmb" class="lab-input lab-field-input" step="any">
                                     <span id="lab_ckmb_status" class="lab-status-indicator"></span>
                                 </div>
                             </div>
                             <!-- Myoglobin -->
-                            <div>
-                                <label for="lab_myoglobin" class="block text-sm font-medium text-gray-700">Myoglobin</label>
+                            <div class="lab-field-card">
+                                <label for="lab_myoglobin" class="lab-field-label">Myoglobin</label>
                                 <div class="lab-input-group">
                                     <input type="number" id="lab_myoglobin" name="lab_myoglobin" data-lab="myoglobin" class="lab-input lab-field-input" step="any">
                                     <span id="lab_myoglobin_status" class="lab-status-indicator"></span>
@@ -2740,19 +2893,19 @@
 
                     <!-- C. تحليل البول والراسب -->
                     <div class="lab-section">
-                        <h3 class="lab-section-title">C. تحليل البول والراسب</h3>
+                        <h3 class="lab-section-title">🔬 C. تحليل البول والراسب</h3>
                         <div class="lab-grid">
                             <!-- الكثافة -->
-                            <div>
-                                <label for="lab_urine_density" class="block text-sm font-medium text-gray-700">الكثافة (Density)</label>
+                            <div class="lab-field-card">
+                                <label for="lab_urine_density" class="lab-field-label">الكثافة (Density)</label>
                                 <div class="lab-input-group">
                                     <input type="number" id="lab_urine_density" name="lab_urine_density" data-lab="urine_density" class="lab-input lab-field-input" step="any" placeholder="1.000">
                                     <span id="lab_urine_density_status" class="lab-status-indicator"></span>
                                 </div>
                             </div>
                             <!-- جراثيم -->
-                            <div>
-                                <label for="lab_urine_bacteria" class="block text-sm font-medium text-gray-700">جراثيم (Bacteria)</label>
+                            <div class="lab-field-card">
+                                <label for="lab_urine_bacteria" class="lab-field-label">جراثيم (Bacteria)</label>
                                 <div class="lab-input-group">
                                     <select id="lab_urine_bacteria" name="lab_urine_bacteria" class="lab-input" style="flex:1;">
                                         <option value="">—</option>
@@ -2764,8 +2917,8 @@
                                 </div>
                             </div>
                             <!-- بروتين -->
-                            <div>
-                                <label for="lab_urine_protein" class="block text-sm font-medium text-gray-700">بروتين (Protein)</label>
+                            <div class="lab-field-card">
+                                <label for="lab_urine_protein" class="lab-field-label">بروتين (Protein)</label>
                                 <div class="lab-input-group">
                                     <select id="lab_urine_protein" name="lab_urine_protein" class="lab-input" style="flex:1;">
                                         <option value="">—</option>
@@ -2777,24 +2930,24 @@
                                 </div>
                             </div>
                             <!-- كريات حمراء -->
-                            <div>
-                                <label for="lab_urine_rbc" class="block text-sm font-medium text-gray-700">كريات حمراء (RBC/HPF)</label>
+                            <div class="lab-field-card">
+                                <label for="lab_urine_rbc" class="lab-field-label">كريات حمراء (RBC/HPF)</label>
                                 <div class="lab-input-group">
                                     <input type="number" id="lab_urine_rbc" name="lab_urine_rbc" data-lab="urine_rbc" class="lab-input lab-field-input" step="any" min="0">
                                     <span id="lab_urine_rbc_status" class="lab-status-indicator"></span>
                                 </div>
                             </div>
                             <!-- كريات بيضاء -->
-                            <div>
-                                <label for="lab_urine_wbc" class="block text-sm font-medium text-gray-700">كريات بيضاء (WBC/HPF)</label>
+                            <div class="lab-field-card">
+                                <label for="lab_urine_wbc" class="lab-field-label">كريات بيضاء (WBC/HPF)</label>
                                 <div class="lab-input-group">
                                     <input type="number" id="lab_urine_wbc" name="lab_urine_wbc" data-lab="urine_wbc" class="lab-input lab-field-input" step="any" min="0">
                                     <span id="lab_urine_wbc_status" class="lab-status-indicator"></span>
                                 </div>
                             </div>
                             <!-- أوكزالات -->
-                            <div>
-                                <label for="lab_urine_oxalate" class="block text-sm font-medium text-gray-700">أوكزالات (Oxalate)</label>
+                            <div class="lab-field-card">
+                                <label for="lab_urine_oxalate" class="lab-field-label">أوكزالات (Oxalate)</label>
                                 <div class="lab-input-group">
                                     <select id="lab_urine_oxalate" name="lab_urine_oxalate" class="lab-input" style="flex:1;">
                                         <option value="">—</option>
@@ -2808,7 +2961,7 @@
                         </div>
                         <!-- ملاحظات إضافية -->
                         <div style="margin-top:10px;">
-                            <label for="lab_urine_notes" class="block text-sm font-medium text-gray-700">ملاحظات إضافية</label>
+                            <label for="lab_urine_notes" class="lab-field-label">ملاحظات إضافية</label>
                             <textarea id="lab_urine_notes" name="lab_urine_notes" rows="2" class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-2" placeholder="أي ملاحظات إضافية على تحليل البول..."></textarea>
                         </div>
                         <!-- الحقل المخفي للتوافقية مع البيانات القديمة -->
@@ -2817,7 +2970,7 @@
                     
                     <!-- (جديد B.d) D. الإجراءات التشخيصية -->
                     <div class="lab-section">
-                        <h3 class="lab-section-title">D. الإجراءات التشخيصية</h3>
+                        <h3 class="lab-section-title">📷 D. الإجراءات التشخيصية</h3>
                         <div class="space-y-6">
                             
                             <!-- X.Ray -->
@@ -2825,7 +2978,7 @@
                                 <h4 class="text-md font-semibold text-gray-700 mb-2">X.Ray</h4>
                                 <div class="diagnostic-item">
                                     <div class="image-upload-container">
-                                        <label for="diag-xray-input" class="block text-sm font-medium text-gray-700">تحميل صورة الأشعة</label>
+                                        <label for="diag-xray-input" class="lab-field-label">تحميل صورة الأشعة</label>
                                         <input type="file" id="diag-xray-input" name="diag_xray_input" accept="image/*" class="image-upload-input" data-preview="diag-xray-preview" data-storage="diag_xray_img" data-orientation="horizontal">
                                         <img id="diag-xray-preview" class="image-preview" alt="X.Ray Image">
                                     </div>
@@ -2841,7 +2994,7 @@
                                 <h4 class="text-md font-semibold text-gray-700 mb-2">Ultra Sound “Eco”</h4>
                                 <div class="diagnostic-item">
                                     <div class="image-upload-container">
-                                        <label for="diag-us-input" class="block text-sm font-medium text-gray-700">تحميل صورة الإيكو</label>
+                                        <label for="diag-us-input" class="lab-field-label">تحميل صورة الإيكو</label>
                                         <input type="file" id="diag-us-input" name="diag_us_input" accept="image/*" class="image-upload-input" data-preview="diag-us-preview" data-storage="diag_us_img" data-orientation="horizontal">
                                         <img id="diag-us-preview" class="image-preview" alt="Ultra Sound Image">
                                     </div>
@@ -2857,7 +3010,7 @@
                                 <h4 class="text-md font-semibold text-gray-700 mb-2">CT</h4>
                                 <div class="diagnostic-item">
                                     <div class="image-upload-container">
-                                        <label for="diag-ct-input" class="block text-sm font-medium text-gray-700">تحميل صورة CT</label>
+                                        <label for="diag-ct-input" class="lab-field-label">تحميل صورة CT</label>
                                         <input type="file" id="diag-ct-input" name="diag_ct_input" accept="image/*" class="image-upload-input" data-preview="diag-ct-preview" data-storage="diag_ct_img" data-orientation="horizontal">
                                         <img id="diag-ct-preview" class="image-preview" alt="CT Image">
                                     </div>
@@ -2873,7 +3026,7 @@
                                 <h4 class="text-md font-semibold text-gray-700 mb-2">MRI</h4>
                                 <div class="diagnostic-item">
                                     <div class="image-upload-container">
-                                        <label for="diag-mri-input" class="block text-sm font-medium text-gray-700">تحميل صورة MRI</label>
+                                        <label for="diag-mri-input" class="lab-field-label">تحميل صورة MRI</label>
                                         <input type="file" id="diag-mri-input" name="diag_mri_input" accept="image/*" class="image-upload-input" data-preview="diag-mri-preview" data-storage="diag_mri_img" data-orientation="horizontal">
                                         <img id="diag-mri-preview" class="image-preview" alt="MRI Image">
                                     </div>
@@ -2892,7 +3045,7 @@
                                 </h4>
                                 <div class="diagnostic-item">
                                     <div class="image-upload-container">
-                                        <label for="diag-ecg-input" class="block text-sm font-medium text-gray-700">تحميل صورة تخطيط القلب</label>
+                                        <label for="diag-ecg-input" class="lab-field-label">تحميل صورة تخطيط القلب</label>
                                         <input type="file" id="diag-ecg-input" name="diag_ecg_input" accept="image/*" class="image-upload-input" data-preview="diag-ecg-preview" data-storage="diag_ecg_img" data-orientation="horizontal">
                                         <img id="diag-ecg-preview" class="image-preview" alt="ECG Image">
                                     </div>
@@ -2912,15 +3065,15 @@
                 <div id="patient-tab-5" class="patient-tab-content hidden space-y-4">
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div>
-                            <label for="stress-level" class="block text-sm font-medium text-gray-700">مستوى الإجهاد/التوتر</label>
+                            <label for="stress-level" class="lab-field-label">مستوى الإجهاد/التوتر</label>
                             <input type="text" id="stress-level" name="stress_level" class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-2">
                         </div>
                         <div>
-                            <label for="sleep-quality" class="block text-sm font-medium text-gray-700">جودة النوم</label>
+                            <label for="sleep-quality" class="lab-field-label">جودة النوم</label>
                             <input type="text" id="sleep-quality" name="sleep_quality" class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-2">
                         </div>
                         <div>
-                            <label for="activity-level" class="block text-sm font-medium text-gray-700">معدل النشاط <span class="text-red-500">*</span></label>
+                            <label for="activity-level" class="lab-field-label">معدل النشاط <span class="text-red-500">*</span></label>
                             <select id="activity-level" name="activity_level" class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-2" required>
                                 <option value="" disabled selected>اختر...</option>
                                 <option value="1.2">خامل (لا يوجد تمارين)</option>
@@ -2933,20 +3086,20 @@
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <label for="meals-per-day" class="block text-sm font-medium text-gray-700">متوسط عدد الوجبات اليومية</label>
+                            <label for="meals-per-day" class="lab-field-label">متوسط عدد الوجبات اليومية</label>
                             <input type="number" id="meals-per-day" name="meals_per_day" class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-2">
                         </div>
                         <div>
-                            <label for="fluid-intake" class="block text-sm font-medium text-gray-700">متوسط كمية السوائل اليومي (لتر)</label>
+                            <label for="fluid-intake" class="lab-field-label">متوسط كمية السوائل اليومي (لتر)</label>
                             <input type="number" id="fluid-intake" name="fluid_intake" class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-2" step="any">
                         </div>
                     </div>
                     <div>
-                        <label for="protein-sources" class="block text-sm font-medium text-gray-700">مصادر البروتين المفضلة</label>
+                        <label for="protein-sources" class="lab-field-label">مصادر البروتين المفضلة</label>
                         <textarea id="protein-sources" name="protein_sources" rows="2" class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-2"></textarea>
                     </div>
                     <div>
-                        <label for="carb-sources" class="block text-sm font-medium text-gray-700">مصادر الكربوهيدرات المفضلة</label>
+                        <label for="carb-sources" class="lab-field-label">مصادر الكربوهيدرات المفضلة</label>
                         <textarea id="carb-sources" name="carb_sources" rows="2" class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-2"></textarea>
                     </div>
 
@@ -2956,7 +3109,7 @@
                         <div class="inbody-section">
                             <!-- جهة الصورة -->
                             <div class="image-upload-container">
-                                <label for="inbody-report-input" class="block text-sm font-medium text-gray-700">تحميل صورة تقرير Inbody</label>
+                                <label for="inbody-report-input" class="lab-field-label">تحميل صورة تقرير Inbody</label>
                                 <input type="file" id="inbody-report-input" name="inbody_report_input" accept="image/*" class="image-upload-input" data-preview="inbody-report-preview" data-storage="inbody_report_img" data-orientation="horizontal">
                                 <img id="inbody-report-preview" class="image-preview" alt="Inbody Report Image">
                                 <!-- زر OCR لـ InBody -->
@@ -2969,49 +3122,49 @@
                             <!-- جهة البيانات -->
                             <div class="inbody-metrics-grid">
                                 <div>
-                                    <label for="inbody_bmi" class="block text-sm font-medium text-gray-700">BMI</label>
+                                    <label for="inbody_bmi" class="lab-field-label">BMI</label>
                                     <div class="lab-input-group">
                                         <input type="number" id="inbody_bmi" name="inbody_bmi" data-inbody="bmi" class="lab-input inbody-input" step="any">
                                         <span id="inbody_bmi_status" class="lab-status-indicator"></span>
                                     </div>
                                 </div>
                                 <div>
-                                    <label for="inbody_tbf" class="block text-sm font-medium text-gray-700">TBF %</label>
+                                    <label for="inbody_tbf" class="lab-field-label">TBF %</label>
                                     <div class="lab-input-group">
                                         <input type="number" id="inbody_tbf" name="inbody_tbf" data-inbody="tbf" class="lab-input inbody-input" step="any">
                                         <span id="inbody_tbf_status" class="lab-status-indicator"></span>
                                     </div>
                                 </div>
                                 <div>
-                                    <label for="inbody_vfi" class="block text-sm font-medium text-gray-700">VFI</label>
+                                    <label for="inbody_vfi" class="lab-field-label">VFI</label>
                                     <div class="lab-input-group">
                                         <input type="number" id="inbody_vfi" name="inbody_vfi" data-inbody="vfi" class="lab-input inbody-input" step="any">
                                         <span id="inbody_vfi_status" class="lab-status-indicator"></span>
                                     </div>
                                 </div>
                                 <div>
-                                    <label for="inbody_tbw" class="block text-sm font-medium text-gray-700">TBW %</label>
+                                    <label for="inbody_tbw" class="lab-field-label">TBW %</label>
                                     <div class="lab-input-group">
                                         <input type="number" id="inbody_tbw" name="inbody_tbw" data-inbody="tbw" class="lab-input inbody-input" step="any">
                                         <span id="inbody_tbw_status" class="lab-status-indicator"></span>
                                     </div>
                                 </div>
                                 <div>
-                                    <label for="inbody_sm" class="block text-sm font-medium text-gray-700">SM %</label>
+                                    <label for="inbody_sm" class="lab-field-label">SM %</label>
                                     <div class="lab-input-group">
                                         <input type="number" id="inbody_sm" name="inbody_sm" data-inbody="sm" class="lab-input inbody-input" step="any">
                                         <span id="inbody_sm_status" class="lab-status-indicator"></span>
                                     </div>
                                 </div>
                                 <div>
-                                    <label for="inbody_bmc" class="block text-sm font-medium text-gray-700">BMC (kg)</label>
+                                    <label for="inbody_bmc" class="lab-field-label">BMC (kg)</label>
                                     <div class="lab-input-group">
                                         <input type="number" id="inbody_bmc" name="inbody_bmc" data-inbody="bmc" class="lab-input inbody-input" step="any">
                                         <span id="inbody_bmc_status" class="lab-status-indicator"></span>
                                     </div>
                                 </div>
                                 <div>
-                                    <label for="inbody_bmr" class="block text-sm font-medium text-gray-700">BMR</label>
+                                    <label for="inbody_bmr" class="lab-field-label">BMR</label>
                                     <div class="lab-input-group">
                                         <input type="number" id="inbody_bmr" name="inbody_bmr" data-inbody="bmr" class="lab-input inbody-input" step="any">
                                         <span id="inbody_bmr_status" class="lab-status-indicator"></span>
@@ -3142,14 +3295,14 @@
                     </div>
                     <!-- خمائر القلب -->
                     <div class="lab-section">
-                        <h3 class="lab-section-title">خمائر القلب (Cardiac Enzymes)</h3>
+                        <h3 class="lab-section-title">❤️ خمائر القلب (Cardiac Enzymes)</h3>
                         <div id="rates-labs-cardiac" class="rates-grid">
                             <!-- سيتم ملؤها بـ JS -->
                         </div>
                     </div>
                     <!-- تحليل البول -->
                     <div class="lab-section">
-                        <h3 class="lab-section-title">C. تحليل البول والراسب</h3>
+                        <h3 class="lab-section-title">🔬 C. تحليل البول والراسب</h3>
                         <div id="rates-labs-urine" class="rates-grid">
                             <!-- سيتم ملؤها بـ JS -->
                         </div>
@@ -8892,7 +9045,7 @@
             
             if(html === '') return '';
             return `<div class="lab-section">
-                        <h3 class="lab-section-title">D. الإجراءات التشخيصية</h3>
+                        <h3 class="lab-section-title">📷 D. الإجراءات التشخيصية</h3>
                         ${html}
                     </div>`;
         };
@@ -9166,7 +9319,7 @@
                 <!-- خمائر القلب -->
                 ${(l.troponin || l.ck || l.ckmb || l.myoglobin) ? `
                 <div class="lab-section">
-                    <h3 class="lab-section-title">خمائر القلب (Cardiac Enzymes)</h3>
+                    <h3 class="lab-section-title">❤️ خمائر القلب (Cardiac Enzymes)</h3>
                     <div class="lab-grid">
                         ${l.troponin ? renderLabField('Troponin', l.troponin, 'troponin', normalRanges) : ''}
                         ${l.ck ? renderLabField('CK', l.ck, 'ck', normalRanges) : ''}
@@ -9177,7 +9330,7 @@
                 
                 <!-- C. تحليل البول والراسب -->
                 <div class="lab-section">
-                    <h3 class="lab-section-title">C. تحليل البول والراسب</h3>
+                    <h3 class="lab-section-title">🔬 C. تحليل البول والراسب</h3>
                     <div class="lab-grid">
                         ${l.urine_density ? renderLabField('الكثافة', l.urine_density, 'urine_density', normalRanges) : ''}
                         ${l.urine_bacteria ? renderField('جراثيم', l.urine_bacteria) : ''}
@@ -9253,15 +9406,15 @@
                             <h4 class="text-lg font-semibold mb-3">2. توزيع المغذيات الكبرى (بناءً على المصدر المحدد)</h4>
                             <div class="grid grid-cols-3 gap-4 mb-3">
                                 <div>
-                                    <label for="prot-perc" class="block text-sm font-medium text-gray-700">بروتين (%)</label>
+                                    <label for="prot-perc" class="lab-field-label">بروتين (%)</label>
                                     <input type="number" id="prot-perc" class="macro-perc-input mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-2" value="30">
                                 </div>
                                 <div>
-                                    <label for="carb-perc" class="block text-sm font-medium text-gray-700">كربوهيدرات (%)</label>
+                                    <label for="carb-perc" class="lab-field-label">كربوهيدرات (%)</label>
                                     <input type="number" id="carb-perc" class="macro-perc-input mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-2" value="40">
                                 </div>
                                 <div>
-                                    <label for="fat-perc" class="block text-sm font-medium text-gray-700">دهون (%)</label>
+                                    <label for="fat-perc" class="lab-field-label">دهون (%)</label>
                                     <input type="number" id="fat-perc" class="macro-perc-input mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-2" value="30">
                                 </div>
                             </div>
