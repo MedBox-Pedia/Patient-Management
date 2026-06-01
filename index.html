@@ -566,6 +566,194 @@
             margin-top: 10px;
         }
         
+
+        /* ===== أنميشن القائمة الجانبية العصرية ===== */
+        #sidebar {
+            transition: transform 0.4s cubic-bezier(0.32, 0.72, 0, 1);
+        }
+        #sidebar.sidebar-open {
+            transform: translateX(0) !important;
+        }
+        #sidebar-backdrop {
+            cursor: pointer;
+        }
+        #sidebar-backdrop.sidebar-open {
+            opacity: 1 !important;
+        }
+        /* هيدر القائمة الجانبية */
+        #sidebar-header-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 18px 12px;
+            background: linear-gradient(135deg, #0790AC 0%, #056a80 100%);
+            color: white;
+            flex-shrink: 0;
+            position: sticky;
+            top: 0;
+            z-index: 2;
+        }
+        #sidebar-header-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        #sidebar-close-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: none;
+            background: rgba(255,255,255,0.18);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.2s;
+            flex-shrink: 0;
+        }
+        #sidebar-close-btn:hover {
+            background: rgba(255,255,255,0.32);
+            transform: rotate(90deg);
+        }
+        /* تحسين مظهر أزرار القائمة الجانبية */
+        #sidebar-settings-view button, #sidebar-tools-view button {
+            border-radius: 12px !important;
+            transition: background 0.18s, color 0.18s, box-shadow 0.18s !important;
+        }
+        #sidebar-settings-view button:hover {
+            background: linear-gradient(135deg, #e6f4f7 0%, #f0fafc 100%) !important;
+            color: #0790AC !important;
+            box-shadow: 0 2px 8px rgba(7,144,172,0.1) !important;
+        }
+        /* شريط تمييز المقبض المتحرك */
+        #sidebar::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            right: 100%;
+            transform: translateY(-50%);
+            width: 4px;
+            height: 60px;
+            background: linear-gradient(180deg, transparent, #0790AC, transparent);
+            border-radius: 0 4px 4px 0;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        #sidebar.sidebar-open::before {
+            opacity: 0; /* مخفي عند الفتح */
+        }
+        /* تأثير shimmer على بطاقات المرضى عند الفتح */
+        #sidebar.sidebar-open #patient-list-container .patient-card {
+            animation: slideInCard 0.35s cubic-bezier(0.32,0.72,0,1) both;
+        }
+        @keyframes slideInCard {
+            from { opacity: 0; transform: translateX(20px); }
+            to   { opacity: 1; transform: translateX(0); }
+        }
+        #sidebar.sidebar-open #patient-list-container .patient-card:nth-child(1) { animation-delay: 0.04s; }
+        #sidebar.sidebar-open #patient-list-container .patient-card:nth-child(2) { animation-delay: 0.08s; }
+        #sidebar.sidebar-open #patient-list-container .patient-card:nth-child(3) { animation-delay: 0.12s; }
+        #sidebar.sidebar-open #patient-list-container .patient-card:nth-child(4) { animation-delay: 0.16s; }
+        #sidebar.sidebar-open #patient-list-container .patient-card:nth-child(5) { animation-delay: 0.20s; }
+
+
+
+        /* ===== OCR Modal - تحسينات الموبايل ===== */
+        @media (max-width: 600px) {
+            /* تصغير هيدر نافذة OCR */
+            #ocr-lab-modal > div > div:first-child,
+            #inbody-ocr-modal > div > div:first-child {
+                padding: 12px 14px !important;
+            }
+            #ocr-lab-modal > div > div:first-child div[style*="font-size:1.05rem"],
+            #inbody-ocr-modal > div > div:first-child div[style*="font-size:1.05rem"] {
+                font-size: 0.88rem !important;
+            }
+            #ocr-lab-modal > div > div:first-child div[style*="font-size:0.82rem"],
+            #inbody-ocr-modal > div > div:first-child div[style*="font-size:0.82rem"] {
+                font-size: 0.72rem !important;
+            }
+            /* تصغير حجم المودال ليلائم الشاشة */
+            #ocr-lab-modal > div,
+            #inbody-ocr-modal > div {
+                border-radius: 14px !important;
+                max-height: 96vh !important;
+            }
+            /* ضغط الـ body padding */
+            #ocr-lab-modal > div > div[style*="padding:16px 24px"],
+            #ocr-lab-modal > div > div[style*="padding:14px 24px"],
+            #inbody-ocr-modal > div > div[style*="padding:16px 24px"],
+            #inbody-ocr-modal > div > div[style*="padding:14px 24px"] {
+                padding: 10px 12px !important;
+            }
+            /* footer أزرار على الموبايل */
+            #ocr-lab-modal > div > div:last-child,
+            #inbody-ocr-modal > div > div:last-child {
+                flex-direction: column !important;
+                align-items: stretch !important;
+                gap: 8px !important;
+                padding: 10px 12px !important;
+            }
+            #ocr-lab-modal > div > div:last-child > div,
+            #inbody-ocr-modal > div > div:last-child > div {
+                display: flex !important;
+                flex-wrap: wrap !important;
+                gap: 6px !important;
+                justify-content: stretch !important;
+            }
+            #ocr-lab-modal > div > div:last-child > div button,
+            #inbody-ocr-modal > div > div:last-child > div button {
+                flex: 1 !important;
+                min-width: 0 !important;
+                padding: 8px 10px !important;
+                font-size: 0.78rem !important;
+            }
+        }
+
+        /* ===== تخطيط OCR على الموبايل ===== */
+        .ocr-result-layout {
+            display: flex;
+            gap: 16px;
+            align-items: flex-start;
+        }
+        .ocr-side-image-col {
+            flex: 0 0 auto;
+            width: 220px;
+            min-width: 160px;
+            max-width: 260px;
+        }
+        .ocr-result-col {
+            flex: 1;
+            min-width: 0;
+        }
+        /* على الموبايل: عمود واحد، الصورة أولاً بحجم مضغوط */
+        @media (max-width: 600px) {
+            .ocr-result-layout {
+                flex-direction: column;
+                gap: 12px;
+            }
+            .ocr-side-image-col {
+                width: 100% !important;
+                max-width: 100% !important;
+                min-width: 0 !important;
+                position: static !important;
+            }
+            .ocr-side-image-col img {
+                max-height: 180px;
+                object-fit: contain;
+                width: auto !important;
+                margin: 0 auto;
+                display: block;
+            }
+            .ocr-result-col {
+                width: 100%;
+            }
+        }
+
         /* تصميم حقول الإدخال عند الخطأ */
         /* (إصلاح 2) تعديل ليكون أكثر وضوحاً */
         input:invalid, select:invalid, textarea:invalid,
@@ -2324,7 +2512,26 @@
           - أصبحت تظهر من اليمين (بسبب right-0 و translate-x-full)
           - (تعديل 3) تمت إضافة translate-x-full لتكون مخفية افتراضياً
         -->
-        <aside id="sidebar" class="w-64 md:w-72 bg-white shadow-lg flex-shrink-0 transform transition-transform duration-300 ease-in-out z-20 overflow-y-auto flex flex-col h-full absolute top-0 right-0 translate-x-full">
+        <!-- Sidebar Backdrop -->
+        <div id="sidebar-backdrop" onclick="toggleSidebar()" style="display:none;position:fixed;inset:0;z-index:19;background:rgba(15,23,42,0.45);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);opacity:0;transition:opacity 0.35s cubic-bezier(0.4,0,0.2,1);"></div>
+        
+        <aside id="sidebar" class="w-72 md:w-80 flex-shrink-0 z-20 flex flex-col h-full absolute top-0 right-0" style="transform:translateX(100%);will-change:transform;overflow:hidden;">
+        <!-- Sidebar inner scroll -->
+        <div style="position:relative;height:100%;display:flex;flex-direction:column;overflow-y:auto;overflow-x:hidden;background:linear-gradient(165deg,#f0fafc 0%,#ffffff 40%,#f8fdff 100%);border-left:1.5px solid rgba(7,144,172,0.12);box-shadow:-8px 0 40px rgba(7,144,172,0.18),-2px 0 12px rgba(0,0,0,0.08);">
+        <!-- هيدر القائمة الجانبية -->
+        <div id="sidebar-header-bar">
+            <div id="sidebar-header-title">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25z" />
+                </svg>
+                MedBox-Pedia
+            </div>
+            <button id="sidebar-close-btn" onclick="toggleSidebar()" title="إغلاق القائمة">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
             
             <!-- قسم البحث -->
             <div id="sidebar-tools-view" class="p-4 space-y-3 flex-shrink-0">
@@ -2424,6 +2631,7 @@
             
             <!-- (تعديل 2) تم نقل هذا القسم إلى الأعلى -->
             
+        </div><!-- end sidebar inner -->
         </aside>
 
         <!-- 3. لوحة العرض الرئيسية -->
@@ -6262,21 +6470,37 @@
 
     // --- دوال الواجهة الرئيسية ---
 
-    // (تعديل 3: تم تعديل الدالة لتعمل بحركة أفقية)
+    // ===== أنميشن القائمة الجانبية العصرية =====
     function toggleSidebar() {
         isSidebarOpen = !isSidebarOpen;
-        
+        const backdrop = document.getElementById('sidebar-backdrop');
+
         if (isSidebarOpen) {
-            sidebar.classList.remove('translate-x-full'); // إظهار من اليمين
+            // فتح القائمة
+            if (backdrop) {
+                backdrop.style.display = 'block';
+                requestAnimationFrame(() => {
+                    backdrop.classList.add('sidebar-open');
+                });
+            }
+            sidebar.classList.add('sidebar-open');
+            document.body.style.overflow = 'hidden'; // منع التمرير خلف القائمة على الموبايل
         } else {
-            sidebar.classList.add('translate-x-full'); // إخفاء إلى اليمين
+            // إغلاق القائمة
+            sidebar.classList.remove('sidebar-open');
+            if (backdrop) {
+                backdrop.classList.remove('sidebar-open');
+                setTimeout(() => {
+                    if (!isSidebarOpen) backdrop.style.display = 'none';
+                }, 380);
+            }
+            document.body.style.overflow = '';
         }
     }
-    
-    // (جديد 5) دالة لفتح القائمة الجانبية (إذا كانت مغلقة)
+
     function openSidebar() {
         if (!isSidebarOpen) {
-            toggleSidebar(); // هذا سيقوم بفتحها وتعيين isSidebarOpen = true
+            toggleSidebar();
         }
     }
 
@@ -6584,7 +6808,7 @@
                 + '<h3 style="font-size:1.15rem;font-weight:700;color:#1f2937;margin-bottom:8px;">لا توجد بيانات سابقة</h3>'
                 + '<p style="color:#6b7280;font-size:0.92rem;margin-bottom:24px;line-height:1.7;">لم يتم العثور على أي نسخة محفوظة في Google Drive.<br>سيتم إنشاء حساب ادمن جديد للبدء.</p>'
                 + '<button onclick="document.getElementById(\'no-cloud-data-modal\').remove();'
-                + '(function(){if(typeof renderAccountsManagementPage===\'function\'){var sb=document.getElementById(\'sidebar\');if(sb)sb.classList.add(\'translate-x-full\');renderAccountsManagementPage();}if(typeof showCreateAdminForm===\'function\')showCreateAdminForm();})()"'
+                + '(function(){if(typeof renderAccountsManagementPage===\'function\'){var sb=document.getElementById(\'sidebar\');if(sb){sb.classList.remove(\'sidebar-open\');var bd2=document.getElementById(\'sidebar-backdrop\');if(bd2){bd2.classList.remove(\'sidebar-open\');bd2.style.display=\'none\';}isSidebarOpen=false;document.body.style.overflow=\'\';}renderAccountsManagementPage();}if(typeof showCreateAdminForm===\'function\')showCreateAdminForm();})()"'
                 + ' style="background:#0790AC;color:#fff;border:none;border-radius:10px;padding:12px 36px;font-family:Cairo,sans-serif;font-size:1rem;font-weight:700;cursor:pointer;width:100%;">إنشاء حساب الادمن</button>'
                 + '</div>';
             document.body.appendChild(noDataModal);
@@ -6656,7 +6880,7 @@
         // الذهاب لقسم إدارة الحسابات أولاً
         if (typeof renderAccountsManagementPage === 'function') {
             const sidebar = document.getElementById('sidebar');
-            if (sidebar) sidebar.classList.add('translate-x-full');
+            if (sidebar) { sidebar.classList.remove('sidebar-open'); var bd=document.getElementById('sidebar-backdrop'); if(bd){bd.classList.remove('sidebar-open');bd.style.display='none';} isSidebarOpen=false; document.body.style.overflow=''; }
             renderAccountsManagementPage();
         }
         // إظهار نافذة المطالبة بإنشاء حساب ادمن
@@ -7382,8 +7606,14 @@
         updatePatientModalNav();
     }
 
+    function isNutritionEnabled() {
+        return localStorage.getItem('medbox_nutrition_enabled') === '1';
+    }
+
     function updatePatientModalNav() {
-        const isLastTab = (currentPatientModalTab === 5);
+        const nutritionEnabled = isNutritionEnabled();
+        const lastTab = nutritionEnabled ? 5 : 4;
+        const isLastTab = (currentPatientModalTab === lastTab);
         const isEditing = (currentEdit !== null);
 
         patientModalPrevBtn.classList.toggle('hidden', currentPatientModalTab === 1);
@@ -7608,8 +7838,13 @@
             return;
         }
         collectFormData(); // حفظ بيانات التبويب الحالي
-        if (currentPatientModalTab < 5) {
-            navigateToPatientModalTab(currentPatientModalTab + 1);
+        const nutritionEnabled = isNutritionEnabled();
+        const lastTab = nutritionEnabled ? 5 : 4;
+        if (currentPatientModalTab < lastTab) {
+            let nextTab = currentPatientModalTab + 1;
+            // إذا كان البرنامج الغذائي غير مفعّل نتخطى تبويب 5
+            if (!nutritionEnabled && nextTab === 5) return;
+            navigateToPatientModalTab(nextTab);
         }
     }
 
@@ -15395,7 +15630,7 @@ async function showCloudLoadPrompt() {
                     if (!accs || accs.length === 0) {
                         if (typeof renderAccountsManagementPage === 'function') {
                             var sb = document.getElementById('sidebar');
-                            if (sb) sb.classList.add('translate-x-full');
+                            if (sb) { sb.classList.remove('sidebar-open'); var bdx=document.getElementById('sidebar-backdrop'); if(bdx){bdx.classList.remove('sidebar-open');bdx.style.display='none';} if(typeof isSidebarOpen!=='undefined') isSidebarOpen=false; document.body.style.overflow=''; }
                             renderAccountsManagementPage();
                         }
                         if (typeof showCreateAdminForm === 'function') showCreateAdminForm();
@@ -15502,7 +15737,7 @@ async function loadFromDrivePromptSilent(accountName) {
         if (!fileId) {
             if (typeof renderAccountsManagementPage === 'function') {
                 const sidebar = document.getElementById('sidebar');
-                if (sidebar) sidebar.classList.add('translate-x-full');
+                if (sidebar) { sidebar.classList.remove('sidebar-open'); var bd=document.getElementById('sidebar-backdrop'); if(bd){bd.classList.remove('sidebar-open');bd.style.display='none';} isSidebarOpen=false; document.body.style.overflow=''; }
                 renderAccountsManagementPage();
             }
             if (typeof showCreateAdminForm === 'function') showCreateAdminForm();
@@ -15583,7 +15818,7 @@ async function loadFromDrivePromptSilent(accountName) {
         if (typeof showToast === 'function') showToast('فشل استعادة البيانات: ' + e.message, 'error');
         if (typeof renderAccountsManagementPage === 'function') {
             const sidebar = document.getElementById('sidebar');
-            if (sidebar) sidebar.classList.add('translate-x-full');
+            if (sidebar) { sidebar.classList.remove('sidebar-open'); var bd=document.getElementById('sidebar-backdrop'); if(bd){bd.classList.remove('sidebar-open');bd.style.display='none';} isSidebarOpen=false; document.body.style.overflow=''; }
             renderAccountsManagementPage();
         }
         if (typeof showCreateAdminForm === 'function') showCreateAdminForm();
@@ -17130,10 +17365,10 @@ window._loadGeminiKeyFromDrive = async function() {
             <!-- Result preview: image + table side by side -->
             <div id="ocr-result-section" style="display:none;">
                 <!-- layout wrapper: على الشاشات الكبيرة جنباً إلى جنب، وعلى الصغيرة مكدّسان -->
-                <div style="display:flex;gap:16px;align-items:flex-start;flex-wrap:wrap;">
+                <div class="ocr-result-layout">
 
                     <!-- الصورة المرجعية -->
-                    <div id="ocr-side-image-wrap" style="flex:0 0 auto;width:220px;min-width:160px;max-width:260px;background:#f8fafc;border:1.5px solid #b3dde7;border-radius:12px;overflow:hidden;position:sticky;top:8px;">
+                    <div id="ocr-side-image-wrap" class="ocr-side-image-col" style="background:#f8fafc;border:1.5px solid #b3dde7;border-radius:12px;overflow:hidden;position:sticky;top:8px;">
                         <div style="padding:8px 12px;background:#0790AC;color:#fff;font-size:0.78rem;font-weight:700;display:flex;align-items:center;gap:6px;">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
                             صورة التحليل الأصلية
@@ -17147,7 +17382,7 @@ window._loadGeminiKeyFromDrive = async function() {
                     </div>
 
                     <!-- جدول النتائج -->
-                    <div style="flex:1;min-width:260px;">
+                    <div class="ocr-result-col">
                         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:8px;">
                             <h3 id="ocr-result-title" style="font-size:0.95rem;font-weight:700;color:#374151;margin:0;">✅ النتائج المستخرجة</h3>
                             <div style="display:flex;align-items:center;gap:8px;">
@@ -17294,9 +17529,9 @@ window._loadGeminiKeyFromDrive = async function() {
 
             <!-- Results -->
             <div id="inbody-ocr-result-section" style="display:none;">
-                <div style="display:flex;gap:14px;align-items:flex-start;">
+                <div class="ocr-result-layout">
                     <!-- Side image -->
-                    <div id="inbody-ocr-side-image-wrap" style="flex:0 0 auto;width:180px;min-width:140px;background:#f8fafc;border:1.5px solid #b3dde7;border-radius:12px;overflow:hidden;position:sticky;top:8px;">
+                    <div id="inbody-ocr-side-image-wrap" class="ocr-side-image-col" style="background:#f8fafc;border:1.5px solid #b3dde7;border-radius:12px;overflow:hidden;position:sticky;top:8px;">
                         <div style="padding:8px 10px;border-bottom:1px solid #e6f4f7;font-size:0.72rem;font-weight:700;color:#0790AC;text-align:center;">صورة التقرير</div>
                         <div style="padding:8px;">
                             <img id="inbody-ocr-side-img" src="" style="width:100%;border-radius:8px;cursor:zoom-in;" alt="صورة التقرير"
@@ -17304,7 +17539,7 @@ window._loadGeminiKeyFromDrive = async function() {
                         </div>
                     </div>
                     <!-- Results table -->
-                    <div style="flex:1;min-width:0;">
+                    <div class="ocr-result-col">
                         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;gap:8px;flex-wrap:wrap;">
                             <h3 style="font-size:0.95rem;font-weight:700;color:#374151;margin:0;">✅ قيم InBody المستخرجة</h3>
                             <span style="font-size:0.78rem;color:#6b7280;background:#f3f4f6;padding:3px 10px;border-radius:20px;" id="inbody-ocr-matched-count"></span>
