@@ -3356,6 +3356,30 @@
                                     <span id="lab_esr_status" class="lab-status-indicator"></span>
                                 </div>
                             </div>
+                            <!-- Serum Iron (FR) -->
+                            <div class="lab-field-card">
+                                <label class="lab-field-label" for="lab_serum_iron">Serum Iron — FR (µg/dL)</label>
+                                <div class="lab-input-group">
+                                    <input type="number" id="lab_serum_iron" name="lab_serum_iron" data-lab="serum_iron" class="lab-input lab-field-input" step="any" placeholder="µg/dL">
+                                    <span id="lab_serum_iron_status" class="lab-status-indicator"></span>
+                                </div>
+                            </div>
+                            <!-- TIBC -->
+                            <div class="lab-field-card">
+                                <label class="lab-field-label" for="lab_tibc">TIBC (µg/dL)</label>
+                                <div class="lab-input-group">
+                                    <input type="number" id="lab_tibc" name="lab_tibc" data-lab="tibc" class="lab-input lab-field-input" step="any" placeholder="µg/dL">
+                                    <span id="lab_tibc_status" class="lab-status-indicator"></span>
+                                </div>
+                            </div>
+                            <!-- Ferritin -->
+                            <div class="lab-field-card">
+                                <label class="lab-field-label" for="lab_ferritin">Ferritin (ng/mL)</label>
+                                <div class="lab-input-group">
+                                    <input type="number" id="lab_ferritin" name="lab_ferritin" data-lab="ferritin" class="lab-input lab-field-input" step="any" placeholder="ng/mL">
+                                    <span id="lab_ferritin_status" class="lab-status-indicator"></span>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -4940,6 +4964,10 @@
             <label class="lab-req-item"><input type="checkbox" class="lab-req-checkbox" value="HT (Hematocrit)"> <span class="text-sm text-gray-800">HT — الهيماتوكريت</span></label>
             <label class="lab-req-item"><input type="checkbox" class="lab-req-checkbox" value="Platelets"> <span class="text-sm text-gray-800">Platelets — الصفيحات الدموية</span></label>
             <label class="lab-req-item"><input type="checkbox" class="lab-req-checkbox" value="ESR"> <span class="text-sm text-gray-800">ESR — سرعة ترسب الدم</span></label>
+            <div class="pr-2 text-xs font-semibold text-gray-500 mb-1 mt-2">• دراسات الحديد</div>
+            <label class="lab-req-item"><input type="checkbox" class="lab-req-checkbox" value="Serum Iron (FR)"> <span class="text-sm text-gray-800">Serum Iron (FR) — حديد المصل</span></label>
+            <label class="lab-req-item"><input type="checkbox" class="lab-req-checkbox" value="TIBC (Total Iron Binding Capacity)"> <span class="text-sm text-gray-800">TIBC — الطاقة الكلية لارتباط الحديد</span></label>
+            <label class="lab-req-item"><input type="checkbox" class="lab-req-checkbox" value="Ferritin"> <span class="text-sm text-gray-800">Ferritin — الفيريتين (مخازن الحديد)</span></label>
 
             <!-- B. التحاليل الكيميائية -->
             <div class="lab-req-section-title">🧪 B. التحاليل الكيميائية (Biochemistry)</div>
@@ -5370,6 +5398,9 @@
         ht: { low: 40, high: 52 }, // (%) - Male
         platelets: { low: 150, high: 450 }, // (x10^9/L)
         esr: { low: 0, high: 20 }, // (mm/hr)
+        serum_iron: { low: 60, high: 170 }, // (µg/dL)
+        tibc: { low: 250, high: 370 }, // (µg/dL)
+        ferritin: { low: 12, high: 300 }, // (ng/mL)
         glucose_fast: { low: 70, high: 100 }, // (mg/dL)
         glucose_random: { low: 70, high: 140 }, // (mg/dL)
         homa_ir: { low: 0, high: 2.5 },
@@ -7171,6 +7202,9 @@
             ${createRangeInput('ht', 'HT', ranges)}
             ${createRangeInput('platelets', 'Platelets', ranges)}
             ${createRangeInput('esr', 'ESR', ranges)}
+            ${createRangeInput('serum_iron', 'Serum Iron (FR)', ranges)}
+            ${createRangeInput('tibc', 'TIBC', ranges)}
+            ${createRangeInput('ferritin', 'Ferritin', ranges)}
         `;
         document.getElementById('rates-labs-sugar').innerHTML = `
             ${createRangeInput('glucose_fast', 'سكر صيامي', ranges)}
@@ -10981,6 +11015,9 @@
                         ${renderLabField('HT', l.ht, 'ht', normalRanges)}
                         ${renderLabField('Platelets', l.platelets, 'platelets', normalRanges)}
                         ${renderLabField('ESR', l.esr, 'esr', normalRanges)}
+                        ${l.serum_iron ? renderLabField('Serum Iron (FR)', l.serum_iron, 'serum_iron', normalRanges) : ''}
+                        ${l.tibc ? renderLabField('TIBC', l.tibc, 'tibc', normalRanges) : ''}
+                        ${l.ferritin ? renderLabField('Ferritin', l.ferritin, 'ferritin', normalRanges) : ''}
                     </div>
                 </div>
 
@@ -17963,6 +18000,9 @@ window._loadGeminiKeyFromDrive = async function() {
         { keys: ['rdw','red cell distribution width'],                       id: 'lab_rdw',          label: 'RDW',                  unit: '%' },
         { keys: ['platelets','صفيحات','plt','platelet count'],        id: 'lab_platelets',    label: 'Platelets (صفيحات)',   unit: '×10³/µL' },
         { keys: ['esr','erythrocyte sedimentation','ترسب الكريات','sedimentation rate'],                id: 'lab_esr',          label: 'ESR (ترسب الكريات)',   unit: 'mm/hr' },
+        { keys: ['serum iron','iron','fr','حديد المصل','حديد مصل','serum fe','fe serum'],              id: 'lab_serum_iron',   label: 'Serum Iron (FR)',      unit: 'µg/dL' },
+        { keys: ['tibc','total iron binding','طاقة ارتباط الحديد','iron binding capacity'],            id: 'lab_tibc',         label: 'TIBC',                 unit: 'µg/dL' },
+        { keys: ['ferritin','فيريتين','فريتين','serum ferritin'],                                      id: 'lab_ferritin',     label: 'Ferritin (فيريتين)',   unit: 'ng/mL' },
         { keys: ['glucose fasting','سكر صيامي','fasting glucose','fbs','سكر الصيام','fasting blood sugar'], id: 'lab_glucose_fast', label: 'سكر صيامي', unit: 'mg/dL' },
         { keys: ['glucose random','سكر عشوائي','random glucose','rbs','random blood sugar'],      id: 'lab_glucose_random', label: 'سكر عشوائي', unit: 'mg/dL' },
         { keys: ['homa','homa-ir','insulin resistance','مقاومة انسولين'],   id: 'lab_homa_ir',      label: 'HOMA-IR',              unit: '' },
