@@ -569,16 +569,18 @@
 
         /* ===== أنميشن القائمة الجانبية العصرية ===== */
         #sidebar {
-            transition: transform 0.4s cubic-bezier(0.32, 0.72, 0, 1);
+            transition: transform 0.4s cubic-bezier(0.32, 0.72, 0, 1), margin-right 0.4s cubic-bezier(0.32, 0.72, 0, 1);
         }
         #sidebar.sidebar-open {
             transform: translateX(0) !important;
+            margin-right: 0 !important;
         }
         #sidebar-backdrop {
-            cursor: pointer;
+            cursor: default;
+            pointer-events: none !important;
         }
         #sidebar-backdrop.sidebar-open {
-            opacity: 1 !important;
+            opacity: 0 !important;
         }
         /* هيدر القائمة الجانبية */
         #sidebar-header-bar {
@@ -2778,10 +2780,10 @@
           - أصبحت تظهر من اليمين (بسبب right-0 و translate-x-full)
           - (تعديل 3) تمت إضافة translate-x-full لتكون مخفية افتراضياً
         -->
-        <!-- Sidebar Backdrop -->
-        <div id="sidebar-backdrop" onclick="toggleSidebar()" style="display:none;position:fixed;inset:0;z-index:19;background:rgba(15,23,42,0.45);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);opacity:0;transition:opacity 0.35s cubic-bezier(0.4,0,0.2,1);"></div>
+        <!-- Sidebar Backdrop (hidden - sidebar is now inline, not floating) -->
+        <div id="sidebar-backdrop" onclick="toggleSidebar()" style="display:none;position:fixed;inset:0;z-index:19;background:transparent;opacity:0;transition:opacity 0.35s cubic-bezier(0.4,0,0.2,1);pointer-events:none;"></div>
         
-        <aside id="sidebar" class="w-72 md:w-80 flex-shrink-0 z-20 flex flex-col h-full absolute top-0 right-0" style="transform:translateX(100%);will-change:transform;overflow:hidden;">
+        <aside id="sidebar" class="w-72 md:w-80 flex-shrink-0 z-20 flex flex-col h-full relative" style="transform:translateX(100%);will-change:transform;overflow:hidden;margin-right:-18rem;transition:transform 0.4s cubic-bezier(0.32,0.72,0,1),margin-right 0.4s cubic-bezier(0.32,0.72,0,1);">
         <!-- Sidebar inner scroll -->
         <div style="position:relative;height:100%;display:flex;flex-direction:column;overflow-y:auto;overflow-x:hidden;background:linear-gradient(165deg,#f0fafc 0%,#ffffff 40%,#f8fdff 100%);border-left:1.5px solid rgba(7,144,172,0.12);box-shadow:-8px 0 40px rgba(7,144,172,0.18),-2px 0 12px rgba(0,0,0,0.08);">
         <!-- هيدر القائمة الجانبية -->
@@ -6790,13 +6792,8 @@
 
         // (إصلاح 5) ربط حدث إخفاء القائمة الجانبية عند النقر على المحتوى
         // (تعديل 5) سيتم إغلاق القائمة فقط إذا لم يكن النقر على زر يفتحها
-        mainContent.addEventListener('click', (e) => {
-            // تحقق مما إذا كان النقر داخل المحتوى وليس على زر في الشريط العلوي
-            // وليس داخل القائمة الجانبية نفسها (لتجنب إغلاقها عند التفاعل مع عناصرها)
-            if (isSidebarOpen && !e.target.closest('#top-bar') && !e.target.closest('#sidebar')) {
-                toggleSidebar();
-            }
-        });
+        // (تعديل) القائمة الجانبية أصبحت جنباً إلى جنب، لذا لا تُغلق عند النقر على المحتوى
+        // mainContent.addEventListener('click', ...) - تم تعطيله
 
         // --- (جديد) ربط أحداث نافذة القيم الطبيعية ---
         if (manageLimitsBtn) manageLimitsBtn.addEventListener('click', () => { closeSidebarOnMobile(); openRatesModal(); });
@@ -6816,27 +6813,13 @@
     // ===== أنميشن القائمة الجانبية العصرية =====
     function toggleSidebar() {
         isSidebarOpen = !isSidebarOpen;
-        const backdrop = document.getElementById('sidebar-backdrop');
 
         if (isSidebarOpen) {
-            // فتح القائمة
-            if (backdrop) {
-                backdrop.style.display = 'block';
-                requestAnimationFrame(() => {
-                    backdrop.classList.add('sidebar-open');
-                });
-            }
+            // فتح القائمة جنباً إلى جنب مع المحتوى الرئيسي
             sidebar.classList.add('sidebar-open');
-            document.body.style.overflow = 'hidden'; // منع التمرير خلف القائمة على الموبايل
         } else {
             // إغلاق القائمة
             sidebar.classList.remove('sidebar-open');
-            if (backdrop) {
-                backdrop.classList.remove('sidebar-open');
-                setTimeout(() => {
-                    if (!isSidebarOpen) backdrop.style.display = 'none';
-                }, 380);
-            }
             document.body.style.overflow = '';
         }
     }
