@@ -6875,13 +6875,8 @@
             var patientEl = toggleBtn.closest('.bg-gray-50');
             if (!patientEl) return false;
 
-            // التمرير إليه
+            // التمرير إليه فقط بدون وميض
             patientEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
-
-            // إزالة أي تأثير سابق ثم إعادة تشغيل الأنيماشن
-            patientEl.classList.remove('patient-sidebar-highlight');
-            void patientEl.offsetWidth;
-            patientEl.classList.add('patient-sidebar-highlight');
 
             // توسيع قائمة زياراته إن كانت مخفية
             var visitsList = patientEl.querySelector('.visits-list');
@@ -6891,9 +6886,6 @@
                 if (icon) icon.classList.add('rotate-180');
             }
 
-            setTimeout(function() {
-                patientEl.classList.remove('patient-sidebar-highlight');
-            }, 2400);
             return true;
         }
 
@@ -9413,7 +9405,8 @@
                 }
                 // عرض ملخص المريض في لوحة العرض عند النقر على اسمه
                 displayPatientSummary(patientId);
-                // لا نغلق القائمة الجانبية هنا حتى يتمكن المستخدم من رؤية قائمة الزيارات والضغط عليها
+                // إغلاق القائمة الجانبية عند الضغط على اسم المريض منها
+                closeSidebar();
             });
         });
         
