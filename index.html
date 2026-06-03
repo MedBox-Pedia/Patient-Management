@@ -576,11 +576,33 @@
             margin-right: 0 !important;
         }
         #sidebar-backdrop {
-            cursor: default;
-            pointer-events: none !important;
+            cursor: pointer;
         }
         #sidebar-backdrop.sidebar-open {
-            opacity: 0 !important;
+            opacity: 1 !important;
+        }
+        /* موبايل: القائمة تطفو فوق المحتوى */
+        @media (max-width: 1023px) {
+            #sidebar {
+                position: fixed !important;
+                top: 0 !important;
+                right: 0 !important;
+                height: 100% !important;
+                margin-right: 0 !important;
+                z-index: 200 !important;
+            }
+            #sidebar-backdrop {
+                pointer-events: auto !important;
+            }
+        }
+        /* شاشات كبيرة: القائمة تدفع المحتوى جنباً إلى جنب */
+        @media (min-width: 1024px) {
+            #sidebar-backdrop {
+                pointer-events: none !important;
+                background: transparent !important;
+                opacity: 0 !important;
+                display: none !important;
+            }
         }
         /* هيدر القائمة الجانبية */
         #sidebar-header-bar {
@@ -2780,8 +2802,8 @@
           - أصبحت تظهر من اليمين (بسبب right-0 و translate-x-full)
           - (تعديل 3) تمت إضافة translate-x-full لتكون مخفية افتراضياً
         -->
-        <!-- Sidebar Backdrop (hidden - sidebar is now inline, not floating) -->
-        <div id="sidebar-backdrop" onclick="toggleSidebar()" style="display:none;position:fixed;inset:0;z-index:19;background:transparent;opacity:0;transition:opacity 0.35s cubic-bezier(0.4,0,0.2,1);pointer-events:none;"></div>
+        <!-- Sidebar Backdrop: يظهر فقط على الموبايل -->
+        <div id="sidebar-backdrop" onclick="toggleSidebar()" style="display:none;position:fixed;inset:0;z-index:199;background:rgba(15,23,42,0.45);opacity:0;transition:opacity 0.35s cubic-bezier(0.4,0,0.2,1);"></div>
         
         <aside id="sidebar" class="w-72 md:w-80 flex-shrink-0 z-20 flex flex-col h-full relative" style="transform:translateX(100%);will-change:transform;overflow:hidden;margin-right:-18rem;transition:transform 0.4s cubic-bezier(0.32,0.72,0,1),margin-right 0.4s cubic-bezier(0.32,0.72,0,1);">
         <!-- Sidebar inner scroll -->
@@ -6813,13 +6835,29 @@
     // ===== أنميشن القائمة الجانبية العصرية =====
     function toggleSidebar() {
         isSidebarOpen = !isSidebarOpen;
+        var isMobile = window.innerWidth < 1024;
+        var backdrop = document.getElementById('sidebar-backdrop');
 
         if (isSidebarOpen) {
-            // فتح القائمة جنباً إلى جنب مع المحتوى الرئيسي
             sidebar.classList.add('sidebar-open');
+            if (isMobile) {
+                // موبايل: backdrop مرئي + منع التمرير
+                if (backdrop) {
+                    backdrop.style.display = 'block';
+                    requestAnimationFrame(function() {
+                        backdrop.classList.add('sidebar-open');
+                    });
+                }
+                document.body.style.overflow = 'hidden';
+            }
         } else {
-            // إغلاق القائمة
             sidebar.classList.remove('sidebar-open');
+            if (backdrop) {
+                backdrop.classList.remove('sidebar-open');
+                setTimeout(function() {
+                    if (!isSidebarOpen) backdrop.style.display = 'none';
+                }, 380);
+            }
             document.body.style.overflow = '';
         }
     }
@@ -6829,6 +6867,24 @@
             toggleSidebar();
         }
     }
+
+    // عند تغيير حجم الشاشة: تصحيح حالة القائمة والـ backdrop
+    window.addEventListener('resize', function() {
+        var isNowMobile = window.innerWidth < 1024;
+        var backdrop = document.getElementById('sidebar-backdrop');
+        if (!isNowMobile && backdrop) {
+            // على الشاشات الكبيرة: إخفاء الـ backdrop دائماً واستعادة التمرير
+            backdrop.classList.remove('sidebar-open');
+            backdrop.style.display = 'none';
+            document.body.style.overflow = '';
+        }
+        if (isNowMobile && isSidebarOpen && backdrop) {
+            // انتقل من سطح مكتب إلى موبايل والقائمة مفتوحة: أظهر الـ backdrop
+            backdrop.style.display = 'block';
+            requestAnimationFrame(function() { backdrop.classList.add('sidebar-open'); });
+            document.body.style.overflow = 'hidden';
+        }
+    });
 
     function closeSidebar() {
         if (isSidebarOpen) {
@@ -9414,11 +9470,12 @@
             });
         });
 
-        // الضغط على اسم المريض: عرض ملخصه
+        // الضغط على اسم المريض: عرض ملخصه + إغلاق القائمة على الموبايل
         document.querySelectorAll('.patient-item-name').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 const patientId = btn.dataset.id;
                 displayPatientSummary(patientId);
+                closeSidebarOnMobile();
             });
         });
         
@@ -9427,6 +9484,7 @@
                 const patientId = btn.dataset.id;
                 const visitIndex = btn.dataset.vindex;
                 displayPatientVisitData(patientId, visitIndex);
+                closeSidebarOnMobile();
             });
         });
         
@@ -9524,6 +9582,9 @@
         if (!patient) return;
         const visit = patient.visits[visitIndex];
         if (!visit) return;
+
+        // إغلاق القائمة على الموبايل عند عرض الزيارة
+        closeSidebarOnMobile();
 
         // حفظ المريض والزيارة الحالية للطباعة
         currentViewPatient = patient;
