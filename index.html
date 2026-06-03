@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MedBox-Pedia v 2-2-10</title>
+    <title>MedBox-Pedia v 3-1-1</title>
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -3025,7 +3025,7 @@ window.addEventListener('resize', setTopbarHeight);
                         <img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" id="dash-logo-img" alt="MedBox Logo" style="width:52px;height:52px;object-fit:contain;border-radius:10px;background:rgba(255,255,255,0.15);padding:4px;flex-shrink:0;">
                         <div style="flex:1;min-width:0;">
                             <h2 style="color:#fff;font-size:1.2rem;font-weight:800;margin:0;letter-spacing:-0.3px;">MedBox – Pedia</h2>
-                            <p style="color:rgba(255,255,255,0.55);font-size:0.72rem;margin:1px 0 2px;letter-spacing:0.5px;font-family:'Courier New',monospace;font-weight:600;">V 2-2-7 | 29-5-26</p>
+                            <p style="color:rgba(255,255,255,0.55);font-size:0.72rem;margin:1px 0 2px;letter-spacing:0.5px;font-family:'Courier New',monospace;font-weight:600;">V 3-1-1 | 4-6-26</p>
                             <p style="color:rgba(255,255,255,0.82);font-size:0.82rem;margin:0;">وسيلة دعم شاملة للممارسين الصحيين</p>
                         </div>
                         <!-- بيانات العيادة مكان التاريخ في أقصى اليسار -->
@@ -4044,6 +4044,69 @@ window.addEventListener('resize', setTopbarHeight);
                                 <div class="lab-input-group">
                                     <input type="number" id="lab_myoglobin" name="lab_myoglobin" data-lab="myoglobin" class="lab-input lab-field-input" step="any">
                                     <span id="lab_myoglobin_status" class="lab-status-indicator"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 🫁 غازات الدم الشرياني (ABG) -->
+                    <div class="lab-section" style="border-color:#bae6fd; background:linear-gradient(135deg,#f0f9ff 0%,#e0f2fe 100%);">
+                        <h3 class="lab-section-title" style="color:#0369a1; border-bottom-color:#bae6fd;">🫁 غازات الدم الشرياني (ABG — Arterial Blood Gas)</h3>
+                        <div class="lab-grid">
+                            <!-- pH -->
+                            <div class="lab-field-card">
+                                <label for="lab_abg_ph" class="lab-field-label" style="color:#0369a1;">pH الدم الشرياني</label>
+                                <div class="lab-input-group">
+                                    <input type="number" id="lab_abg_ph" name="lab_abg_ph" data-lab="abg_ph" class="lab-input lab-field-input" step="0.01" placeholder="7.35–7.45">
+                                    <span id="lab_abg_ph_status" class="lab-status-indicator"></span>
+                                </div>
+                            </div>
+                            <!-- PaO2 -->
+                            <div class="lab-field-card">
+                                <label for="lab_abg_pao2" class="lab-field-label" style="color:#0369a1;">PaO₂ (mmHg)</label>
+                                <div class="lab-input-group">
+                                    <input type="number" id="lab_abg_pao2" name="lab_abg_pao2" data-lab="abg_pao2" class="lab-input lab-field-input" step="any" placeholder="80–100">
+                                    <span id="lab_abg_pao2_status" class="lab-status-indicator"></span>
+                                </div>
+                            </div>
+                            <!-- PaCO2 -->
+                            <div class="lab-field-card">
+                                <label for="lab_abg_paco2" class="lab-field-label" style="color:#0369a1;">PaCO₂ (mmHg)</label>
+                                <div class="lab-input-group">
+                                    <input type="number" id="lab_abg_paco2" name="lab_abg_paco2" data-lab="abg_paco2" class="lab-input lab-field-input" step="any" placeholder="35–45">
+                                    <span id="lab_abg_paco2_status" class="lab-status-indicator"></span>
+                                </div>
+                            </div>
+                            <!-- HCO3 -->
+                            <div class="lab-field-card">
+                                <label for="lab_abg_hco3" class="lab-field-label" style="color:#0369a1;">HCO₃ (mEq/L)</label>
+                                <div class="lab-input-group">
+                                    <input type="number" id="lab_abg_hco3" name="lab_abg_hco3" data-lab="abg_hco3" class="lab-input lab-field-input" step="any" placeholder="22–26">
+                                    <span id="lab_abg_hco3_status" class="lab-status-indicator"></span>
+                                </div>
+                            </div>
+                            <!-- BE -->
+                            <div class="lab-field-card">
+                                <label for="lab_abg_be" class="lab-field-label" style="color:#0369a1;">BE — Base Excess (mEq/L)</label>
+                                <div class="lab-input-group">
+                                    <input type="number" id="lab_abg_be" name="lab_abg_be" data-lab="abg_be" class="lab-input lab-field-input" step="any" placeholder="-2 — +2">
+                                    <span id="lab_abg_be_status" class="lab-status-indicator"></span>
+                                </div>
+                            </div>
+                            <!-- SaO2 -->
+                            <div class="lab-field-card">
+                                <label for="lab_abg_sao2" class="lab-field-label" style="color:#0369a1;">SaO₂ (%)</label>
+                                <div class="lab-input-group">
+                                    <input type="number" id="lab_abg_sao2" name="lab_abg_sao2" data-lab="abg_sao2" class="lab-input lab-field-input" step="any" placeholder="95–100">
+                                    <span id="lab_abg_sao2_status" class="lab-status-indicator"></span>
+                                </div>
+                            </div>
+                            <!-- Lactate -->
+                            <div class="lab-field-card">
+                                <label for="lab_abg_lactate" class="lab-field-label" style="color:#0369a1;">Lactate (mmol/L)</label>
+                                <div class="lab-input-group">
+                                    <input type="number" id="lab_abg_lactate" name="lab_abg_lactate" data-lab="abg_lactate" class="lab-input lab-field-input" step="any" placeholder="0.5–2.0">
+                                    <span id="lab_abg_lactate_status" class="lab-status-indicator"></span>
                                 </div>
                             </div>
                         </div>
@@ -6402,11 +6465,11 @@ window.addEventListener('resize', setTopbarHeight);
                                     </div>
                                     <div>
                                         <p class="text-xs text-gray-500 font-semibold">رقم الإصدار</p>
-                                        <p class="text-2xl font-black text-purple-600 ltr" dir="ltr">V2.2.6</p>
+                                        <p class="text-2xl font-black text-purple-600 ltr" dir="ltr">V3.1.1</p>
                                     </div>
                                 </div>
                                 <div class="bg-white px-4 py-2 rounded-xl border border-gray-200">
-                                    <p class="text-xs text-gray-600 font-semibold">آخر تحديث: مايو 2026</p>
+                                    <p class="text-xs text-gray-600 font-semibold">آخر تحديث: يونيو 2026</p>
                                 </div>
                             </div>
                         </div>
@@ -11687,6 +11750,21 @@ window.addEventListener('resize', setTopbarHeight);
                         ${l.ck ? renderLabField('CK', l.ck, 'ck', normalRanges) : ''}
                         ${l.ckmb ? renderLabField('CK-MB', l.ckmb, 'ckmb', normalRanges) : ''}
                         ${l.myoglobin ? renderLabField('Myoglobin', l.myoglobin, 'myoglobin', normalRanges) : ''}
+                    </div>
+                </div>` : ''}
+
+                <!-- 🫁 غازات الدم الشرياني (ABG) -->
+                ${(l.abg_ph || l.abg_pao2 || l.abg_paco2 || l.abg_hco3 || l.abg_be || l.abg_sao2 || l.abg_lactate) ? `
+                <div class="lab-section" style="border-color:#bae6fd; background:linear-gradient(135deg,#f0f9ff 0%,#e0f2fe 100%);">
+                    <h3 class="lab-section-title" style="color:#0369a1; border-bottom-color:#bae6fd;">🫁 غازات الدم الشرياني (ABG)</h3>
+                    <div class="lab-grid">
+                        ${l.abg_ph     ? renderLabField('pH الشرياني',    l.abg_ph,      'abg_ph',      normalRanges) : ''}
+                        ${l.abg_pao2   ? renderLabField('PaO₂ (mmHg)',    l.abg_pao2,    'abg_pao2',    normalRanges) : ''}
+                        ${l.abg_paco2  ? renderLabField('PaCO₂ (mmHg)',   l.abg_paco2,   'abg_paco2',   normalRanges) : ''}
+                        ${l.abg_hco3   ? renderLabField('HCO₃ (mEq/L)',   l.abg_hco3,    'abg_hco3',    normalRanges) : ''}
+                        ${l.abg_be     ? renderLabField('BE (mEq/L)',      l.abg_be,      'abg_be',      normalRanges) : ''}
+                        ${l.abg_sao2   ? renderLabField('SaO₂ (%)',        l.abg_sao2,    'abg_sao2',    normalRanges) : ''}
+                        ${l.abg_lactate? renderLabField('Lactate (mmol/L)',l.abg_lactate, 'abg_lactate', normalRanges) : ''}
                     </div>
                 </div>` : ''}
 
