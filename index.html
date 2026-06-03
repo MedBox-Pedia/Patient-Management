@@ -6858,19 +6858,22 @@
         openSidebar();
 
         // الانتقال إلى عرض قائمة المرضى إن لزم
-        var patMgmtBtn = document.getElementById('patient-management-btn');
-        if (patMgmtBtn) {
-            var sidebarPatientView = document.getElementById('sidebar-patient-list-view');
-            if (sidebarPatientView && sidebarPatientView.classList.contains('hidden')) {
-                patMgmtBtn.click();
-            }
+        var sidebarPatientView = document.getElementById('sidebar-patient-list-view');
+        var sidebarToolsViewEl = document.getElementById('sidebar-tools-view');
+        var sidebarSettingsViewEl = document.getElementById('sidebar-settings-view');
+        if (sidebarPatientView && sidebarPatientView.classList.contains('hidden')) {
+            // إظهار عرض قائمة المرضى مباشرةً دون الحاجة للضغط على الزر
+            if (sidebarToolsViewEl) sidebarToolsViewEl.classList.remove('hidden');
+            sidebarPatientView.classList.remove('hidden');
+            if (sidebarSettingsViewEl) sidebarSettingsViewEl.classList.add('hidden');
         }
 
-        setTimeout(function() {
+        // دالة تنفيذ التمييز بعد ضمان وجود المريض في DOM
+        function _doHighlight() {
             var toggleBtn = document.querySelector('.patient-item-toggle[data-id="' + patientId + '"]');
-            if (!toggleBtn) return;
+            if (!toggleBtn) return false;
             var patientEl = toggleBtn.closest('.bg-gray-50');
-            if (!patientEl) return;
+            if (!patientEl) return false;
 
             // التمرير إليه
             patientEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -6891,7 +6894,35 @@
             setTimeout(function() {
                 patientEl.classList.remove('patient-sidebar-highlight');
             }, 2400);
-        }, 350);
+            return true;
+        }
+
+        setTimeout(function() {
+            // محاولة أولى: قد يكون المريض محملاً بالفعل
+            if (_doHighlight()) return;
+
+            // المريض غير موجود في DOM بسبب Lazy Loading
+            // نبحث عن اسمه لعمل renderPatientList بفلتر اسمه
+            var allPatients = (typeof appData !== 'undefined' && appData.patients) ? appData.patients : [];
+            var pat = null;
+            for (var i = 0; i < allPatients.length; i++) {
+                if (allPatients[i].id === patientId) { pat = allPatients[i]; break; }
+            }
+            if (!pat) return;
+
+            // رسم القائمة بفلتر اسم المريض لضمان ظهوره
+            renderPatientList(pat.name_ar);
+
+            setTimeout(function() {
+                if (_doHighlight()) {
+                    // إعادة عرض القائمة الكاملة بعد لحظة مع إبقاء التمييز
+                    setTimeout(function() {
+                        renderPatientList('');
+                        setTimeout(function() { _doHighlight(); }, 200);
+                    }, 1800);
+                }
+            }, 200);
+        }, 380);
     };
 
     function showToast(message, type = 'success', duration = 3000) {
@@ -9382,8 +9413,7 @@
                 }
                 // عرض ملخص المريض في لوحة العرض عند النقر على اسمه
                 displayPatientSummary(patientId);
-                // إغلاق القائمة الجانبية تلقائياً عند الضغط على اسم المريض
-                closeSidebar();
+                // لا نغلق القائمة الجانبية هنا حتى يتمكن المستخدم من رؤية قائمة الزيارات والضغط عليها
             });
         });
         
