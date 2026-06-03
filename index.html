@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MedBox-Pedia v 2-2-7</title>
+    <title>MedBox-Pedia v 2-2-8</title>
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -581,20 +581,18 @@
         #sidebar-backdrop.sidebar-open {
             opacity: 1 !important;
         }
-        /* موبايل: القائمة تطفو فوق المحتوى وتبدأ من أسفل التولبار */
+        /* موبايل: القائمة تطفو فوق المحتوى */
         @media (max-width: 1023px) {
             #sidebar {
                 position: fixed !important;
-                top: var(--topbar-h, 56px) !important;
+                top: 0 !important;
                 right: 0 !important;
-                height: calc(100% - var(--topbar-h, 56px)) !important;
+                height: 100% !important;
                 margin-right: 0 !important;
                 z-index: 200 !important;
             }
             #sidebar-backdrop {
                 pointer-events: auto !important;
-                top: var(--topbar-h, 56px) !important;
-                height: calc(100% - var(--topbar-h, 56px)) !important;
             }
         }
         /* شاشات كبيرة: القائمة تدفع المحتوى جنباً إلى جنب */
@@ -606,74 +604,26 @@
                 display: none !important;
             }
         }
-        /* شريط البحث والفرز والإغلاق (يحل محل هيدر اسم البرنامج) */
-        #sidebar-search-header {
+        /* هيدر القائمة الجانبية */
+        #sidebar-header-bar {
             display: flex;
             align-items: center;
-            gap: 8px;
-            padding: 10px 12px;
+            justify-content: space-between;
+            padding: 16px 18px 12px;
             background: linear-gradient(135deg, #0790AC 0%, #056a80 100%);
             color: white;
             flex-shrink: 0;
             position: sticky;
             top: 0;
             z-index: 2;
-            box-shadow: 0 2px 8px rgba(7,144,172,0.25);
         }
-        #sidebar-search-header input[type="search"] {
-            flex: 1;
-            min-width: 0;
-            padding: 6px 10px;
-            border: 1.5px solid rgba(255,255,255,0.35);
-            border-radius: 8px;
-            background: rgba(255,255,255,0.15);
+        #sidebar-header-title {
+            font-size: 1rem;
+            font-weight: 700;
             color: #fff;
-            font-family: 'Cairo', sans-serif;
-            font-size: 0.82rem;
-            outline: none;
-            transition: border-color 0.2s, background 0.2s;
-        }
-        #sidebar-search-header input[type="search"]::placeholder {
-            color: rgba(255,255,255,0.65);
-        }
-        #sidebar-search-header input[type="search"]:focus {
-            border-color: rgba(255,255,255,0.75);
-            background: rgba(255,255,255,0.22);
-        }
-        .sidebar-sort-wrap {
-            position: relative;
-            flex-shrink: 0;
-        }
-        #patient-sort-select {
-            appearance: none;
-            -webkit-appearance: none;
-            padding: 6px 26px 6px 8px;
-            border: 1.5px solid rgba(255,255,255,0.35);
-            border-radius: 8px;
-            font-family: 'Cairo', sans-serif;
-            font-size: 0.78rem;
-            color: #fff;
-            background: rgba(255,255,255,0.15);
-            cursor: pointer;
-            outline: none;
-            transition: border-color 0.2s;
-        }
-        #patient-sort-select option {
-            color: #374151;
-            background: #ffffff;
-        }
-        #patient-sort-select:focus {
-            border-color: rgba(255,255,255,0.75);
-        }
-        .sidebar-sort-arrow {
-            position: absolute;
-            left: 6px;
-            top: 50%;
-            transform: translateY(-50%);
-            pointer-events: none;
-            width: 13px;
-            height: 13px;
-            color: rgba(255,255,255,0.8);
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
         #sidebar-close-btn {
             width: 32px;
@@ -2627,17 +2577,6 @@
     </style>
 </head>
 <body class="text-gray-800 flex flex-col h-screen overflow-hidden" style="background:linear-gradient(135deg,#eaf6f9 0%,#f3f4f6 100%);">
-<script>
-// تعيين ارتفاع التولبار كمتغير CSS لاستخدامه في موضع القائمة الجانبية
-function setTopbarHeight() {
-    var tb = document.getElementById('top-bar');
-    if (tb) {
-        document.documentElement.style.setProperty('--topbar-h', tb.offsetHeight + 'px');
-    }
-}
-window.addEventListener('DOMContentLoaded', setTopbarHeight);
-window.addEventListener('resize', setTopbarHeight);
-</script>
 
     <!-- 1. الشريط العلوي (تم تعديله) -->
     <!-- 
@@ -2869,31 +2808,40 @@ window.addEventListener('resize', setTopbarHeight);
         <aside id="sidebar" class="w-72 md:w-80 flex-shrink-0 z-20 flex flex-col h-full relative" style="transform:translateX(100%);will-change:transform;overflow:hidden;margin-right:-18rem;transition:transform 0.4s cubic-bezier(0.32,0.72,0,1),margin-right 0.4s cubic-bezier(0.32,0.72,0,1);">
         <!-- Sidebar inner scroll -->
         <div style="position:relative;height:100%;display:flex;flex-direction:column;overflow-y:auto;overflow-x:hidden;background:linear-gradient(165deg,#f0fafc 0%,#ffffff 40%,#f8fdff 100%);border-left:1.5px solid rgba(7,144,172,0.12);box-shadow:-8px 0 40px rgba(7,144,172,0.18),-2px 0 12px rgba(0,0,0,0.08);">
-        <!-- شريط البحث + الفرز + الإغلاق (بلون البرنامج الرئيسي) -->
-        <div id="sidebar-search-header">
-            <!-- حقل البحث -->
-            <input type="search" id="patient-search-input" placeholder="بحث عن مريض...">
-            <!-- قائمة الفرز -->
-            <div class="sidebar-sort-wrap">
-                <select id="patient-sort-select" title="ترتيب المرضى">
-                    <option value="alpha">أ → ي</option>
-                    <option value="newest">الأحدث أولاً</option>
-                    <option value="oldest">الأقدم أولاً</option>
-                </select>
-                <svg class="sidebar-sort-arrow" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
+        <!-- هيدر القائمة الجانبية -->
+        <div id="sidebar-header-bar">
+            <div id="sidebar-header-title">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25z" />
                 </svg>
+                MedBox-Pedia
             </div>
-            <!-- زر الإغلاق -->
             <button id="sidebar-close-btn" onclick="toggleSidebar()" title="إغلاق القائمة">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
                 </svg>
             </button>
         </div>
-
-            <!-- حاوية البحث (مخفية - للحفاظ على JS) -->
-            <div id="sidebar-tools-view" class="flex-shrink-0" style="display:none!important;height:0;overflow:hidden;"></div>
+            
+            <!-- قسم البحث -->
+            <div id="sidebar-tools-view" class="p-4 space-y-3 flex-shrink-0">
+                <!-- البحث + الترتيب -->
+                <div class="flex items-center gap-2">
+                    <input type="search" id="patient-search-input" placeholder="ابحث عن مريض (الاسم أو الرقم الوطني)" class="flex-1 min-w-0 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[--color-primary]/50" style="font-size:0.85rem;">
+                    <div class="relative flex-shrink-0">
+                        <select id="patient-sort-select" title="ترتيب المرضى"
+                            style="appearance:none;-webkit-appearance:none;padding:7px 28px 7px 10px;border:1.5px solid #d1d5db;border-radius:8px;font-family:'Cairo',sans-serif;font-size:0.78rem;color:#374151;background:#f9fafb;cursor:pointer;outline:none;transition:border-color 0.18s;">
+                            <option value="alpha">أ → ي</option>
+                            <option value="newest">الأحدث أولاً</option>
+                            <option value="oldest">الأقدم أولاً</option>
+                        </select>
+                        <!-- أيقونة السهم -->
+                        <svg style="position:absolute;left:6px;top:50%;transform:translateY(-50%);pointer-events:none;width:14px;height:14px;color:#6b7280;" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
 
             <!-- قسم قائمة المرضى -->
             <div id="sidebar-patient-list-view" class="hidden p-4 space-y-2 flex-1 overflow-y-auto">
@@ -2990,7 +2938,7 @@ window.addEventListener('resize', setTopbarHeight);
                         <img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" id="dash-logo-img" alt="MedBox Logo" style="width:52px;height:52px;object-fit:contain;border-radius:10px;background:rgba(255,255,255,0.15);padding:4px;flex-shrink:0;">
                         <div style="flex:1;min-width:0;">
                             <h2 style="color:#fff;font-size:1.2rem;font-weight:800;margin:0;letter-spacing:-0.3px;">MedBox – Pedia</h2>
-                            <p style="color:rgba(255,255,255,0.55);font-size:0.72rem;margin:1px 0 2px;letter-spacing:0.5px;font-family:'Courier New',monospace;font-weight:600;">V 2-2-7 | 29-5-26</p>
+                            <p style="color:rgba(255,255,255,0.55);font-size:0.72rem;margin:1px 0 2px;letter-spacing:0.5px;font-family:'Courier New',monospace;font-weight:600;">V 2-2-8 | 29-5-26</p>
                             <p style="color:rgba(255,255,255,0.82);font-size:0.82rem;margin:0;">وسيلة دعم شاملة للممارسين الصحيين</p>
                         </div>
                         <!-- بيانات العيادة مكان التاريخ في أقصى اليسار -->
