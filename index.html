@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MedBox-Pedia v 2-2-7</title>
+    <title>MedBox-Pedia v 2-2-10</title>
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -2587,6 +2587,21 @@
         .notif-item-icon.appt { background: #dcfce7; }
         .notif-item-icon.followup { background: #fef3c7; }
         .notif-item-icon.system { background: #e0f2fe; }
+        /* أيقونات إشعارات النظام المدمجة مع Toast */
+        .notif-item-icon.system-error   { background: #fee2e2; }
+        .notif-item-icon.system-success { background: #dcfce7; }
+        /* شارة صغيرة بجانب عنوان الإشعار */
+        .notif-sys-badge {
+            display: inline-block;
+            font-size: 0.6rem;
+            font-weight: 700;
+            padding: 1px 6px;
+            border-radius: 20px;
+            margin-right: 5px;
+            vertical-align: middle;
+        }
+        .notif-sys-badge.badge-error   { background: #fee2e2; color: #dc2626; }
+        .notif-sys-badge.badge-success { background: #dcfce7; color: #16a34a; }
         .notif-item-body { flex: 1; min-width: 0; }
         .notif-item-title {
             font-size: 0.82rem;
@@ -5750,6 +5765,14 @@ window.addEventListener('resize', setTopbarHeight);
         urine_density: { low: 1.001, high: 1.030 },
         urine_rbc: { low: 0, high: 2 }, // (RBC/HPF)
         urine_wbc: { low: 0, high: 5 }, // (WBC/HPF)
+        // ===== غازات الدم الرياني (ABG — Arterial Blood Gas) =====
+        abg_ph:   { low: 7.35, high: 7.45 }, // pH الدم الشرياني
+        abg_pao2: { low: 80,   high: 100  }, // PaO₂ (mmHg)
+        abg_paco2:{ low: 35,   high: 45   }, // PaCO₂ (mmHg)
+        abg_hco3: { low: 22,   high: 26   }, // HCO₃ (mEq/L)
+        abg_be:   { low: -2,   high: 2    }, // Base Excess (mEq/L)
+        abg_sao2: { low: 95,   high: 100  }, // SaO₂ (%)
+        abg_lactate: { low: 0.5, high: 2.0 }, // Lactate (mmol/L)
     };
 
     // (جديد C.o) القيم الطبيعية لـ Inbody (تحتاج مراجعة علمية دقيقة)
@@ -6936,7 +6959,7 @@ window.addEventListener('resize', setTopbarHeight);
 
     function showToast(message, type = 'success', duration = 3000) {
         toastMessage.textContent = message;
-        toast.classList.remove('bg-green-600', 'bg-red-600', 'bg-[--color-primary]', 'bg-gray-800', 'bg-blue-500');
+        toast.classList.remove('bg-green-600', 'bg-red-600', 'bg-[--color-primary]', 'bg-gray-800', 'bg-blue-500', 'bg-amber-500');
 
         if (type === 'success') {
             toast.classList.add('bg-green-600');
@@ -6946,6 +6969,8 @@ window.addEventListener('resize', setTopbarHeight);
             toast.classList.add('bg-[--color-primary]');
         } else if (type === 'info') {
             toast.classList.add('bg-blue-500');
+        } else if (type === 'warning') {
+            toast.classList.add('bg-amber-500');
         } else {
             toast.classList.add('bg-gray-800');
         }
@@ -6958,6 +6983,35 @@ window.addEventListener('resize', setTopbarHeight);
             toast.classList.add('-translate-x-[200%]', 'opacity-0');
             toast.classList.remove('translate-x-0', 'opacity-100');
         }, duration);
+
+        // ===== الدمج الذكي مع مركز الإشعارات =====
+        // القاعدة: فقط الرسائل المهمة التي تستحق البقاء تُضاف للمركز
+        if (window.notifSystem) {
+            const skipPatterns = [
+                'يرجى ملء', 'الرجاء', 'كلمتا المرور', 'اسم المستخدم مستخدم',
+                'جاري تحميل', 'قم بفتح', 'لا توجد بيانات'
+            ];
+            const isTransient = skipPatterns.some(p => message.includes(p));
+
+            if (!isTransient) {
+                if (type === 'error') {
+                    // الأخطاء: تُحفظ في مركز الإشعارات دائماً تحت تبويب "نظام"
+                    notifSystem.add('system', '⚠️ تنبيه', message, null);
+                } else if (type === 'success' && (
+                    message.includes('تم حفظ') ||
+                    message.includes('تم إنشاء') ||
+                    message.includes('تم تحديث') ||
+                    message.includes('تم تسجيل') ||
+                    message.includes('تم استعادة') ||
+                    message.includes('تم حذف') ||
+                    message.includes('تم تصدير')
+                )) {
+                    // العمليات الجوهرية: تُضاف للمركز كـ system
+                    notifSystem.add('system', '✅ تم التنفيذ', message, null);
+                }
+                // success العادية (زر طباعة، نسخ…) ورسائل welcome / info: لا تُضاف للمركز
+            }
+        }
     }
     
     // --- دوال نافذة التأكيد ---
@@ -7647,6 +7701,10 @@ window.addEventListener('resize', setTopbarHeight);
                         <div id="rates-page-cardiac" class="rates-grid"></div>
                     </div>
                     <div class="lab-section">
+                        <h3 class="lab-section-title">🫁 غازات الدم الرياني (ABG — Arterial Blood Gas)</h3>
+                        <div id="rates-page-abg" class="rates-grid"></div>
+                    </div>
+                    <div class="lab-section">
                         <h3 class="lab-section-title">🔬 C. تحليل البول والراسب</h3>
                         <div id="rates-page-urine" class="rates-grid"></div>
                     </div>
@@ -7738,6 +7796,15 @@ window.addEventListener('resize', setTopbarHeight);
         document.getElementById('rates-page-cardiac').innerHTML =
             createRangeInput('troponin','Troponin',ranges) + createRangeInput('ck','CK',ranges) +
             createRangeInput('ckmb','CK-MB',ranges) + createRangeInput('myoglobin','Myoglobin',ranges);
+
+        document.getElementById('rates-page-abg').innerHTML =
+            createRangeInput('abg_ph','pH الدم الشرياني',ranges) +
+            createRangeInput('abg_pao2','PaO₂ (mmHg)',ranges) +
+            createRangeInput('abg_paco2','PaCO₂ (mmHg)',ranges) +
+            createRangeInput('abg_hco3','HCO₃ (mEq/L)',ranges) +
+            createRangeInput('abg_be','Base Excess (mEq/L)',ranges) +
+            createRangeInput('abg_sao2','SaO₂ (%)',ranges) +
+            createRangeInput('abg_lactate','Lactate (mmol/L)',ranges);
 
         document.getElementById('rates-page-urine').innerHTML =
             createRangeInput('urine_density','الكثافة (Density)',ranges) +
@@ -15512,20 +15579,34 @@ window.addEventListener('resize', setTopbarHeight);
             const iconMap = { appointment: '📅', followup: '🔔', system: '⚙️' };
             const iconBg  = { appointment: 'appt', followup: 'followup', system: 'system' };
 
-            list.innerHTML = filtered.map(n => `
+            // دالة مساعدة: تحديد أيقونة ولون إشعارات النظام بذكاء بناءً على العنوان
+            const getSystemStyle = (n) => {
+                if (n.type !== 'system') return { icon: iconMap[n.type] || '🔔', bg: iconBg[n.type] || 'system', badge: '' };
+                if (n.title && n.title.startsWith('⚠️')) {
+                    return { icon: '🚨', bg: 'system-error', badge: 'badge-error' };
+                }
+                if (n.title && n.title.startsWith('✅')) {
+                    return { icon: '✅', bg: 'system-success', badge: 'badge-success' };
+                }
+                return { icon: '⚙️', bg: 'system', badge: '' };
+            };
+
+            list.innerHTML = filtered.map(n => {
+                const style = getSystemStyle(n);
+                return `
                 <div class="notif-item ${n.read ? '' : 'unread'}" data-id="${n.id}" onclick="notifSystem.markRead('${n.id}')">
                     <div class="notif-unread-dot"></div>
-                    <div class="notif-item-icon ${iconBg[n.type] || 'system'}">${iconMap[n.type] || '🔔'}</div>
+                    <div class="notif-item-icon ${style.bg}">${style.icon}</div>
                     <div class="notif-item-body">
-                        <div class="notif-item-title">${this._esc(n.title)}</div>
+                        <div class="notif-item-title">${this._esc(n.title)}${style.badge ? `<span class="notif-sys-badge ${style.badge}">${style.badge === 'badge-error' ? 'خطأ' : 'نجاح'}</span>` : ''}</div>
                         <div class="notif-item-text">${this._esc(n.body)}</div>
                         <div class="notif-item-time">${this._relTime(n.timestamp)}</div>
                     </div>
                     <button onclick="event.stopPropagation();notifSystem.clearOne('${n.id}')"
                         style="background:none;border:none;cursor:pointer;color:#d1d5db;font-size:1rem;line-height:1;padding:0 2px;flex-shrink:0;"
                         title="حذف">✕</button>
-                </div>
-            `).join('');
+                </div>`;
+            }).join('');
         },
 
         // ---- تحديث الشارة ----
