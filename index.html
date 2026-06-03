@@ -6880,7 +6880,7 @@
 
             // توسيع قائمة زياراته إن كانت مخفية
             var visitsList = patientEl.querySelector('.visits-list');
-            var icon = toggleBtn.querySelector('.toggle-icon');
+            var icon = patientEl.querySelector('.toggle-icon');
             if (visitsList && visitsList.classList.contains('hidden')) {
                 visitsList.classList.remove('hidden');
                 if (icon) icon.classList.add('rotate-180');
@@ -8340,7 +8340,7 @@
             if (toggleBtn) {
                 const patientEl = toggleBtn.closest('.bg-gray-50');
                 const visitsList = patientEl ? patientEl.querySelector('.visits-list') : null;
-                const icon = toggleBtn.querySelector('.toggle-icon');
+                const icon = patientEl ? patientEl.querySelector('.toggle-icon') : null;
                 if (visitsList && icon) {
                     visitsList.classList.remove('hidden');
                     icon.classList.add('rotate-180');
@@ -8987,15 +8987,17 @@
 
             patientEl.innerHTML = `
                 <div class="flex justify-between items-center p-3 hover:bg-gray-100">
-                    <div data-id="${patient.id}" class="patient-item-toggle flex-1 flex justify-between items-center text-right pr-2 cursor-pointer select-none">
-                        <div class="flex items-center gap-2">
+                    <div class="flex-1 flex justify-between items-center text-right pr-2 select-none">
+                        <div data-id="${patient.id}" class="patient-item-name flex items-center gap-2 cursor-pointer flex-1">
                             <div>
                                 <span class="font-semibold text-[--color-primary]">${patient.name_ar}</span>
                                 <span class="block text-xs text-gray-500">${patient.national_id}</span>
                                 ${patient.phone ? `<span class="block text-xs text-[#0790AC]">📞 ${patient.phone}</span>` : ''}
                             </div>
                         </div>
-                        <svg class="w-4 h-4 toggle-icon flex-shrink-0 transition-transform duration-200" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+                        <div data-id="${patient.id}" class="patient-item-toggle flex-shrink-0 p-1 cursor-pointer">
+                            <svg class="w-4 h-4 toggle-icon transition-transform duration-200" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+                        </div>
                     </div>
                     ${devButtons}
                 </div>
@@ -9391,8 +9393,10 @@
     }
 
     function addDynamicEventListeners() {
+        // الضغط على السهم فقط: فتح/إغلاق قائمة الزيارات بدون إغلاق القائمة الجانبية
         document.querySelectorAll('.patient-item-toggle').forEach(btn => {
             btn.addEventListener('click', (e) => {
+                e.stopPropagation();
                 const patientId = btn.dataset.id;
                 const patientEl = btn.closest('.bg-gray-50');
                 const visitsList = patientEl ? patientEl.querySelector('.visits-list') : null;
@@ -9403,9 +9407,14 @@
                 if (icon) {
                     icon.classList.toggle('rotate-180');
                 }
-                // عرض ملخص المريض في لوحة العرض عند النقر على اسمه
+            });
+        });
+
+        // الضغط على اسم المريض: عرض ملخصه وإغلاق القائمة الجانبية
+        document.querySelectorAll('.patient-item-name').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const patientId = btn.dataset.id;
                 displayPatientSummary(patientId);
-                // إغلاق القائمة الجانبية عند الضغط على اسم المريض منها
                 closeSidebar();
             });
         });
