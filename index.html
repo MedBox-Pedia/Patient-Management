@@ -53,45 +53,65 @@
 
         /* ===== أنماط الطباعة (الوصفة الطبية والبرنامج الغذائي) ===== */
         @media print {
+            @page {
+                size: A4;
+                margin: 10mm 12mm;
+            }
             body * { visibility: hidden !important; }
             #prescription-print-area, #prescription-print-area * { visibility: visible !important; }
             #diet-print-area, #diet-print-area * { visibility: visible !important; }
-            #prescription-print-area {
-                position: fixed !important;
-                top: 0 !important; left: 0 !important; right: 0 !important;
+            #lab-request-print-area, #lab-request-print-area * { visibility: visible !important; }
+
+            /* --- الطباعة متعددة الصفحات: لا fixed بل block عادي --- */
+            #prescription-print-area,
+            #diet-print-area,
+            #lab-request-print-area {
+                position: absolute !important;
+                top: 0 !important;
+                left: 0 !important;
+                right: 0 !important;
                 width: 100% !important;
                 background: white !important;
-                padding: 24px !important;
+                padding: 0 !important;
+                margin: 0 !important;
                 z-index: 999999 !important;
-                font-family: 'Cairo', sans-serif;
-                direction: rtl;
+                font-family: 'Cairo', sans-serif !important;
+                direction: rtl !important;
+                box-sizing: border-box !important;
             }
-            #diet-print-area {
-                position: fixed !important;
-                top: 0 !important; left: 0 !important; right: 0 !important;
-                width: 100% !important;
-                background: white !important;
-                padding: 24px !important;
-                z-index: 99999 !important;
-                font-family: 'Cairo', sans-serif;
-                direction: rtl;
+
+            /* رأس الصفحة يتكرر في كل صفحة عند الطباعة */
+            .print-page-header {
+                display: block !important;
             }
+            /* ثبيت الهيدر عند الطباعة في كل صفحة */
+            .print-repeat-header {
+                display: table-header-group !important;
+            }
+            /* تجنب قطع العناصر المهمة */
+            .print-no-break {
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
+            }
+            /* فاصل صفحة قبل العنصر */
+            .print-break-before {
+                page-break-before: always !important;
+                break-before: always !important;
+            }
+            /* منع قطع الجداول */
+            table { page-break-inside: auto !important; }
+            tr    { page-break-inside: avoid !important; break-inside: avoid !important; }
+            thead { display: table-header-group !important; }
+            tfoot { display: table-footer-group !important; }
+
             .print-hide { display: none !important; }
             .print-table { width: 100%; border-collapse: collapse; margin-top: 8px; }
             .print-table th, .print-table td { border: 1px solid #ccc; padding: 6px 10px; text-align: center; font-size: 12px; }
-            .print-table thead tr { background: #0790AC; color: white; }
+            .print-table thead tr { background: #0790AC; color: white; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
             .print-table tfoot tr { background: #f3f4f6; font-weight: bold; }
-            #lab-request-print-area, #lab-request-print-area * { visibility: visible !important; }
-            #lab-request-print-area {
-                position: fixed !important;
-                top: 0 !important; left: 0 !important; right: 0 !important;
-                width: 100% !important;
-                background: white !important;
-                padding: 24px !important;
-                z-index: 999998 !important;
-                font-family: 'Cairo', sans-serif;
-                direction: rtl;
-            }
+
+            /* إجبار الطابعة على طباعة الألوان الخلفية */
+            * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
         }
         #prescription-print-area { display: none; }
         #diet-print-area { display: none; }
@@ -13807,6 +13827,96 @@ window.addEventListener('resize', setTopbarHeight);
         </div>`;
     }
 
+    // ===== دالة مساعدة: بناء هيدر الطباعة الموحد =====
+    // reportTitle: عنوان التقرير (وصفة طبية / طلب تحاليل / ...)
+    // qrHtml: HTML كود QR المريض
+    // patientName, patientAge, diagnosis: بيانات المريض
+    // specInfo: بيانات الطبيب/الأخصائي
+    // visitDate: تاريخ الزيارة
+    function buildPrintHeader(reportTitle, qrHtml, patientName, patientAge, diagnosis, specInfo, visitDate) {
+        const today = new Date().toLocaleDateString('ar-SA', { year: 'numeric', month: 'long', day: 'numeric' });
+        const titleBg = reportTitle.includes('وصفة') ? '#0790AC' :
+                        reportTitle.includes('تحاليل') ? '#7c3aed' :
+                        reportTitle.includes('غذائي') || reportTitle.includes('تغذية') ? '#15803d' : '#0790AC';
+        const genderBadge = '';
+        return `
+        <div class="print-no-break" style="font-family:'Cairo',sans-serif;direction:rtl;margin-bottom:0;">
+            <!-- ===== هيدر الطباعة ===== -->
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px 8px 10px;border-bottom:3px solid ${titleBg};background:linear-gradient(135deg,#f0fafc 0%,#ffffff 100%);gap:8px;">
+
+                <!-- يمين: لوغو + اسم التطبيق -->
+                <div style="display:flex;align-items:center;gap:8px;min-width:0;flex:0 0 auto;">
+                    <div style="width:44px;height:44px;background:${titleBg};border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                        <svg xmlns='http://www.w3.org/2000/svg' fill='white' viewBox='0 0 24 24' width='26' height='26'><path d='M9 2a1 1 0 000 2h2v1H7a2 2 0 00-2 2v13a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-4V4h2a1 1 0 100-2H9zm1 8a1 1 0 011-1h2a1 1 0 110 2h-2a1 1 0 01-1-1zm0 4a1 1 0 011-1h2a1 1 0 110 2h-2a1 1 0 01-1-1z'/></svg>
+                    </div>
+                    <div>
+                        <div style="font-size:17px;font-weight:700;color:${titleBg};line-height:1.2;">MedBox-Pedia</div>
+                        <div style="font-size:9.5px;color:#6b7280;font-weight:600;">نظام الدعم الطبي الشامل</div>
+                        ${specInfo.clinic ? `<div style="font-size:9px;color:${titleBg};font-weight:600;margin-top:1px;">🏥 ${specInfo.clinic}</div>` : ''}
+                        ${specInfo.phone ? `<div style="font-size:9px;color:#6b7280;">☎ ${specInfo.phone}</div>` : ''}
+                    </div>
+                </div>
+
+                <!-- وسط: عنوان التقرير -->
+                <div style="flex:1;text-align:center;">
+                    <div style="display:inline-block;background:${titleBg};color:white;font-size:13px;font-weight:700;padding:5px 18px;border-radius:20px;letter-spacing:0.3px;">
+                        ${reportTitle}
+                    </div>
+                    <div style="font-size:9px;color:#9ca3af;margin-top:3px;">${today} ${visitDate && visitDate !== today ? '| زيارة: ' + visitDate : ''}</div>
+                </div>
+
+                <!-- يسار: QR Code المريض -->
+                <div style="flex:0 0 auto;display:flex;flex-direction:column;align-items:center;gap:2px;">
+                    ${qrHtml}
+                </div>
+            </div>
+
+            <!-- ===== شريط بيانات المريض تحت الهيدر ===== -->
+            <div class="print-no-break" style="display:flex;align-items:stretch;gap:0;border-bottom:2px solid ${titleBg}22;background:#f8fafc;">
+                <div style="flex:1;padding:7px 12px;border-left:1px solid #e5e7eb;">
+                    <span style="font-size:9px;color:#9ca3af;display:block;margin-bottom:1px;">👤 اسم المريض</span>
+                    <span style="font-size:13px;font-weight:700;color:#1e3a5f;">${patientName || '—'}</span>
+                </div>
+                <div style="flex:0 0 auto;padding:7px 12px;border-left:1px solid #e5e7eb;min-width:80px;">
+                    <span style="font-size:9px;color:#9ca3af;display:block;margin-bottom:1px;">🎂 العمر</span>
+                    <span style="font-size:13px;font-weight:700;color:#374151;">${patientAge ? patientAge + ' سنة' : '—'}</span>
+                </div>
+                <div style="flex:2;padding:7px 12px;">
+                    <span style="font-size:9px;color:#9ca3af;display:block;margin-bottom:1px;">🩺 التشخيص الطبي</span>
+                    <span style="font-size:12px;font-weight:600;color:#dc2626;">${diagnosis || '—'}</span>
+                </div>
+            </div>
+        </div>`;
+    }
+
+    // ===== دالة مساعدة: بناء فوتر التوقيع الموحد =====
+    function buildPrintFooter(specInfo, visitDate) {
+        const today = new Date().toLocaleDateString('ar-SA', { year: 'numeric', month: 'long', day: 'numeric' });
+        const specialistLabel = specInfo.specialty
+            ? (specInfo.specialty.includes('طبيب') || specInfo.specialty.includes('دكتور') ? 'الطبيب المعالج' : 'الأخصائي المسؤول')
+            : 'الطبيب المعالج';
+        return `
+        <div class="print-no-break" style="display:flex;justify-content:space-between;align-items:flex-end;padding-top:14px;border-top:2px dashed #d1d5db;margin-top:20px;">
+            <!-- يسار: توقيع الطبيب/الأخصائي -->
+            <div style="text-align:center;min-width:200px;">
+                <div style="font-size:10px;color:#9ca3af;margin-bottom:3px;">${specialistLabel}</div>
+                ${specInfo.specialty ? `<div style="font-size:10px;color:#15803d;margin-bottom:3px;font-weight:600;">${specInfo.specialty}</div>` : ''}
+                <div style="font-size:13px;font-weight:700;color:#0790AC;border-bottom:2px solid #0790AC;padding-bottom:6px;display:inline-block;min-width:180px;">${specInfo.fullName || '—'}</div>
+                ${specInfo.clinic ? `<div style="font-size:9px;color:#6b7280;margin-top:3px;">${specInfo.clinic}</div>` : ''}
+                ${specInfo.phone ? `<div style="font-size:9px;color:#0790AC;margin-top:1px;">☎ ${specInfo.phone}</div>` : ''}
+                <div style="font-size:9px;color:#9ca3af;margin-top:4px;">التوقيع والختم</div>
+                <div style="border-bottom:1.5px solid #9ca3af;min-width:180px;height:32px;display:inline-block;margin-top:2px;"></div>
+            </div>
+            <!-- يمين: تاريخ + معلومات النظام -->
+            <div style="text-align:left;font-size:10px;color:#9ca3af;">
+                <div>تاريخ الإصدار: ${today}</div>
+                ${visitDate ? `<div>تاريخ الزيارة: ${visitDate}</div>` : ''}
+                <div style="margin-top:4px;">صادر من نظام MedBox-Pedia</div>
+                <div>نظام الدعم الطبي الشامل</div>
+            </div>
+        </div>`;
+    }
+
     // ===== طباعة الوصفة من بيانات الزيارة المحفوظة =====
     function printPrescriptionFromVisit(patient, visit) {
         const p = visit.personal;
@@ -13844,82 +13954,47 @@ window.addEventListener('resize', setTopbarHeight);
             : `<div style="color:#6b7280;font-size:13px;font-style:italic">لا توجد سوابق تحسسية مسجلة</div>`;
 
         // إضافة QR Code للوصفة
-        getQRImageHTMLForPrint(patient, 90).then(function(qrHtml) {
+        getQRImageHTMLForPrint(patient, 80).then(function(qrHtml) {
         const printArea = document.getElementById('prescription-print-area');
+        const headerHtml = buildPrintHeader('💊 وصفة طبية رسمية', qrHtml, patientName, patientAge, medDiagnosis, specInfo, visitDate);
         printArea.innerHTML = `
-            <div style="display:flex;align-items:center;justify-content:space-between;border-bottom:3px solid #0790AC;padding-bottom:14px;margin-bottom:20px">
-                <div style="display:flex;align-items:center;gap:12px">
-                    <div style="width:52px;height:52px;background:#0790AC;border-radius:12px;display:flex;align-items:center;justify-content:center">
-                        <svg xmlns='http://www.w3.org/2000/svg' fill='white' viewBox='0 0 24 24' width='32' height='32'><path d='M9 2a1 1 0 000 2h2v1H7a2 2 0 00-2 2v13a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-4V4h2a1 1 0 100-2H9zm1 8a1 1 0 011-1h2a1 1 0 110 2h-2a1 1 0 01-1-1zm0 4a1 1 0 011-1h2a1 1 0 110 2h-2a1 1 0 01-1-1z'/></svg>
-                    </div>
-                    <div>
-                        <div style="font-size:22px;font-weight:700;color:#0790AC">MedBox-Pedia</div>
-                        <div style="font-size:11px;color:#6b7280">وصفة طبية — Prescription</div>
-                        ${specInfo.clinic ? `<div style="font-size:12px;color:#0790AC;font-weight:600;margin-top:2px">🏥 ${specInfo.clinic}</div>` : ''}
-                        ${specInfo.address ? `<div style="font-size:11px;color:#6b7280">${specInfo.address}</div>` : ''}
-                    </div>
-                </div>
-                <div style="display:flex;align-items:center;gap:12px;">
-                    ${qrHtml}
-                    <div style="text-align:left;font-size:12px;color:#374151;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:10px 14px">
-                        <div style="margin-bottom:3px"><strong>تاريخ الطباعة:</strong> ${today}</div>
-                        <div style="margin-bottom:3px"><strong>تاريخ المراجعة:</strong> ${visitDate}</div>
-                        <div style="color:#0790AC;font-weight:600;font-size:13px">🏥 وصفة طبية رسمية</div>
-                    </div>
-                </div>
-            </div>
-            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:18px">
-                <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;padding:14px">
-                    <div style="font-size:12px;font-weight:700;color:#1d4ed8;margin-bottom:10px;border-bottom:1px solid #bfdbfe;padding-bottom:6px">👤 بيانات المريض</div>
-                    <table style="font-size:13px;width:100%;border:none;border-collapse:collapse">
-                        <tr><td style="color:#6b7280;padding:3px 6px;border:none;width:90px">الاسم:</td><td style="font-weight:700;border:none;font-size:14px">${patientName}</td></tr>
-                        <tr><td style="color:#6b7280;padding:3px 6px;border:none">العمر:</td><td style="border:none">${patientAge} سنة</td></tr>
-                        <tr><td style="color:#6b7280;padding:3px 6px;border:none">الجنس:</td><td style="border:none">${p.gender === 'male' ? 'ذكر' : p.gender === 'female' ? 'أنثى' : '—'}</td></tr>
-                    </table>
-                </div>
-                <div style="background:#fff7ed;border:1px solid #fed7aa;border-radius:10px;padding:14px">
-                    <div style="font-size:12px;font-weight:700;color:#c2410c;margin-bottom:10px;border-bottom:1px solid #fed7aa;padding-bottom:6px">⚠️ السوابق التحسسية</div>
-                    ${allergiesHtml}
-                </div>
-                ${buildSpecialistBlock(specInfo)}
-            </div>
-            ${diagnosisHtml ? `<div style="margin-bottom:14px">${diagnosisHtml}</div>` : ''}
-            <div style="margin-bottom:20px">
-                <div style="font-size:14px;font-weight:700;color:#374151;border-right:4px solid #0790AC;padding-right:10px;margin-bottom:10px">💊 الأدوية الموصوفة</div>
-                <table style="width:100%;border-collapse:collapse;font-size:12px">
+        <div style="font-family:'Cairo',sans-serif;direction:rtl;padding:12px 14px;">
+            ${headerHtml}
+
+            <!-- السوابق التحسسية -->
+            ${allergies.trim() ? `
+            <div class="print-no-break" style="margin:10px 0 8px 0;background:#fef9c3;border:1px solid #fde047;border-radius:8px;padding:8px 12px;font-size:12px;color:#92400e;">
+                <strong>⚠️ تنبيه حساسية:</strong> ${allergies}
+            </div>` : ''}
+
+            <!-- الأدوية الموصوفة -->
+            <div style="margin:12px 0 8px 0;">
+                <div style="font-size:13px;font-weight:700;color:#374151;border-right:4px solid #0790AC;padding-right:10px;margin-bottom:8px;">💊 الأدوية الموصوفة</div>
+                <table style="width:100%;border-collapse:collapse;font-size:11.5px;">
                     <thead>
-                        <tr style="background:#0790AC;color:white">
-                            <th style="padding:9px 10px;border:1px solid #0790AC;text-align:right">اسم الدواء</th>
-                            <th style="padding:9px 10px;border:1px solid #0790AC">التركيز</th>
-                            <th style="padding:9px 10px;border:1px solid #0790AC">الشكل</th>
-                            <th style="padding:9px 10px;border:1px solid #0790AC">الجرعة</th>
-                            <th style="padding:9px 10px;border:1px solid #0790AC">التكرار</th>
-                            <th style="padding:9px 10px;border:1px solid #0790AC">طريقة الاستخدام</th>
-                            <th style="padding:9px 10px;border:1px solid #0790AC">تاريخ البداية</th>
-                            <th style="padding:9px 10px;border:1px solid #0790AC">المدة</th>
+                        <tr style="background:#0790AC;color:white;">
+                            <th style="padding:8px 8px;border:1px solid #0790AC;text-align:right;">اسم الدواء</th>
+                            <th style="padding:8px 6px;border:1px solid #0790AC;">التركيز</th>
+                            <th style="padding:8px 6px;border:1px solid #0790AC;">الشكل</th>
+                            <th style="padding:8px 6px;border:1px solid #0790AC;">الجرعة</th>
+                            <th style="padding:8px 6px;border:1px solid #0790AC;">التكرار</th>
+                            <th style="padding:8px 6px;border:1px solid #0790AC;">طريقة الاستخدام</th>
+                            <th style="padding:8px 6px;border:1px solid #0790AC;">تاريخ البداية</th>
+                            <th style="padding:8px 6px;border:1px solid #0790AC;">المدة</th>
                         </tr>
                     </thead>
                     <tbody>${medsRows}</tbody>
                 </table>
             </div>
-            <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:10px 14px;margin-bottom:24px;font-size:12px;color:#374151">
+
+            <!-- ملاحظات -->
+            <div class="print-no-break" style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:8px 12px;margin:8px 0 12px 0;font-size:11.5px;color:#374151;">
                 <strong>ملاحظات:</strong> يرجى الالتزام بالجرعات المحددة وعدم تجاوزها. في حال ظهور أعراض جانبية يرجى التواصل مع الطبيب فوراً.
             </div>
-            <div style="display:flex;justify-content:space-between;align-items:flex-end;padding-top:16px;border-top:2px dashed #d1d5db;margin-top:8px">
-                <div style="font-size:11px;color:#9ca3af">
-                    <div>تاريخ الوصفة: ${visitDate}</div>
-                    <div style="margin-top:2px">هذه الوصفة صادرة من نظام MedBox-Pedia</div>
-                </div>
-                <div style="text-align:center">
-                    <div style="font-size:13px;font-weight:700;color:#374151;margin-bottom:6px">${specInfo.specialty ? specInfo.specialty : 'الطبيب المعالج'}</div>
-                    ${specInfo.clinic ? `<div style="font-size:11px;color:#6b7280;margin-bottom:4px">${specInfo.clinic}</div>` : ''}
-                    ${specInfo.phone ? `<div style="font-size:11px;color:#0790AC;margin-bottom:30px">☎ ${specInfo.phone}</div>` : '<div style="margin-bottom:36px"></div>'}
-                    <div style="border-top:2px solid #374151;width:200px;margin:0 auto;padding-top:6px">
-                        <div style="font-size:13px;font-weight:700;color:#0790AC">د. ${doctorName}</div>
-                        <div style="font-size:10px;color:#6b7280">التوقيع والختم</div>
-                    </div>
-                </div>
-            </div>
+
+            <!-- التوقيع -->
+            ${buildPrintFooter(specInfo, visitDate)}
+        </div>
         `;
         printArea.style.display = 'block';
         window.print();
@@ -13961,74 +14036,43 @@ window.addEventListener('resize', setTopbarHeight);
 
         const printArea = document.getElementById('prescription-print-area');
         printArea.innerHTML = `
-            <div style="display:flex;align-items:center;justify-content:space-between;border-bottom:3px solid #0790AC;padding-bottom:14px;margin-bottom:20px">
-                <div style="display:flex;align-items:center;gap:12px">
-                    <div style="width:52px;height:52px;background:#0790AC;border-radius:12px;display:flex;align-items:center;justify-content:center">
-                        <svg xmlns='http://www.w3.org/2000/svg' fill='white' viewBox='0 0 24 24' width='32' height='32'><path d='M9 2a1 1 0 000 2h2v1H7a2 2 0 00-2 2v13a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-4V4h2a1 1 0 100-2H9zm1 8a1 1 0 011-1h2a1 1 0 110 2h-2a1 1 0 01-1-1zm0 4a1 1 0 011-1h2a1 1 0 110 2h-2a1 1 0 01-1-1z'/></svg>
-                    </div>
-                    <div>
-                        <div style="font-size:22px;font-weight:700;color:#0790AC">MedBox-Pedia</div>
-                        <div style="font-size:11px;color:#6b7280">وصفة طبية — Prescription</div>
-                        ${specInfo.clinic ? `<div style="font-size:12px;color:#0790AC;font-weight:600;margin-top:2px">🏥 ${specInfo.clinic}</div>` : ''}
-                        ${specInfo.address ? `<div style="font-size:11px;color:#6b7280">${specInfo.address}</div>` : ''}
-                    </div>
-                </div>
-                <div style="text-align:left;font-size:12px;color:#374151;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:10px 14px">
-                    <div style="margin-bottom:3px"><strong>تاريخ الطباعة:</strong> ${today}</div>
-                    <div style="color:#0790AC;font-weight:600;font-size:13px">🏥 وصفة طبية رسمية</div>
-                </div>
-            </div>
-            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:18px">
-                <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;padding:14px">
-                    <div style="font-size:12px;font-weight:700;color:#1d4ed8;margin-bottom:10px;border-bottom:1px solid #bfdbfe;padding-bottom:6px">👤 بيانات المريض</div>
-                    <table style="font-size:13px;width:100%;border:none;border-collapse:collapse">
-                        <tr><td style="color:#6b7280;padding:3px 6px;border:none;width:90px">الاسم:</td><td style="font-weight:700;border:none;font-size:14px">${patientName}</td></tr>
-                        <tr><td style="color:#6b7280;padding:3px 6px;border:none">العمر:</td><td style="border:none">${patientAge} سنة</td></tr>
-                    </table>
-                </div>
-                <div style="background:#fff7ed;border:1px solid #fed7aa;border-radius:10px;padding:14px">
-                    <div style="font-size:12px;font-weight:700;color:#c2410c;margin-bottom:10px;border-bottom:1px solid #fed7aa;padding-bottom:6px">⚠️ السوابق التحسسية</div>
-                    ${allergiesHtml}
-                </div>
-                ${buildSpecialistBlock(specInfo)}
-            </div>
-            ${diagnosisHtml2 ? `<div style="margin-bottom:14px">${diagnosisHtml2}</div>` : ''}
-            <div style="margin-bottom:20px">
-                <div style="font-size:14px;font-weight:700;color:#374151;border-right:4px solid #0790AC;padding-right:10px;margin-bottom:10px">💊 الأدوية الموصوفة</div>
-                <table style="width:100%;border-collapse:collapse;font-size:12px">
+        <div style="font-family:'Cairo',sans-serif;direction:rtl;padding:12px 14px;">
+            ${buildPrintHeader('💊 وصفة طبية رسمية', '', patientName, patientAge, medDiagnosis, specInfo, '')}
+
+            <!-- السوابق التحسسية -->
+            ${allergies.trim() ? `
+            <div class="print-no-break" style="margin:10px 0 8px 0;background:#fef9c3;border:1px solid #fde047;border-radius:8px;padding:8px 12px;font-size:12px;color:#92400e;">
+                <strong>⚠️ تنبيه حساسية:</strong> ${allergies}
+            </div>` : ''}
+
+            <!-- الأدوية الموصوفة -->
+            <div style="margin:12px 0 8px 0;">
+                <div style="font-size:13px;font-weight:700;color:#374151;border-right:4px solid #0790AC;padding-right:10px;margin-bottom:8px;">💊 الأدوية الموصوفة</div>
+                <table style="width:100%;border-collapse:collapse;font-size:11.5px;">
                     <thead>
-                        <tr style="background:#0790AC;color:white">
-                            <th style="padding:9px 10px;border:1px solid #0790AC;text-align:right">اسم الدواء</th>
-                            <th style="padding:9px 10px;border:1px solid #0790AC">التركيز</th>
-                            <th style="padding:9px 10px;border:1px solid #0790AC">الشكل</th>
-                            <th style="padding:9px 10px;border:1px solid #0790AC">الجرعة</th>
-                            <th style="padding:9px 10px;border:1px solid #0790AC">التكرار</th>
-                            <th style="padding:9px 10px;border:1px solid #0790AC">طريقة الاستخدام</th>
-                            <th style="padding:9px 10px;border:1px solid #0790AC">تاريخ البداية</th>
-                            <th style="padding:9px 10px;border:1px solid #0790AC">المدة</th>
+                        <tr style="background:#0790AC;color:white;">
+                            <th style="padding:8px;border:1px solid #0790AC;text-align:right;">اسم الدواء</th>
+                            <th style="padding:8px 6px;border:1px solid #0790AC;">التركيز</th>
+                            <th style="padding:8px 6px;border:1px solid #0790AC;">الشكل</th>
+                            <th style="padding:8px 6px;border:1px solid #0790AC;">الجرعة</th>
+                            <th style="padding:8px 6px;border:1px solid #0790AC;">التكرار</th>
+                            <th style="padding:8px 6px;border:1px solid #0790AC;">طريقة الاستخدام</th>
+                            <th style="padding:8px 6px;border:1px solid #0790AC;">تاريخ البداية</th>
+                            <th style="padding:8px 6px;border:1px solid #0790AC;">المدة</th>
                         </tr>
                     </thead>
                     <tbody>${medsRows}</tbody>
                 </table>
             </div>
-            <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:10px 14px;margin-bottom:24px;font-size:12px;color:#374151">
+
+            <!-- ملاحظات -->
+            <div class="print-no-break" style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:8px 12px;margin:8px 0 12px 0;font-size:11.5px;color:#374151;">
                 <strong>ملاحظات:</strong> يرجى الالتزام بالجرعات المحددة وعدم تجاوزها. في حال ظهور أعراض جانبية يرجى التواصل مع الطبيب فوراً.
             </div>
-            <div style="display:flex;justify-content:space-between;align-items:flex-end;padding-top:16px;border-top:2px dashed #d1d5db;margin-top:8px">
-                <div style="font-size:11px;color:#9ca3af">
-                    <div>تاريخ الوصفة: ${today}</div>
-                    <div style="margin-top:2px">هذه الوصفة صادرة من نظام MedBox-Pedia</div>
-                </div>
-                <div style="text-align:center">
-                    <div style="font-size:13px;font-weight:700;color:#374151;margin-bottom:6px">${specInfo.specialty ? specInfo.specialty : 'الطبيب المعالج'}</div>
-                    ${specInfo.clinic ? `<div style="font-size:11px;color:#6b7280;margin-bottom:4px">${specInfo.clinic}</div>` : ''}
-                    ${specInfo.phone ? `<div style="font-size:11px;color:#0790AC;margin-bottom:30px">☎ ${specInfo.phone}</div>` : '<div style="margin-bottom:36px"></div>'}
-                    <div style="border-top:2px solid #374151;width:200px;margin:0 auto;padding-top:6px">
-                        <div style="font-size:13px;font-weight:700;color:#0790AC">د. ${doctorName}</div>
-                        <div style="font-size:10px;color:#6b7280">التوقيع والختم</div>
-                    </div>
-                </div>
-            </div>
+
+            <!-- التوقيع -->
+            ${buildPrintFooter(specInfo, '')}
+        </div>
         `;
         printArea.style.display = 'block';
         window.print();
@@ -14098,130 +14142,83 @@ window.addEventListener('resize', setTopbarHeight);
         ).toFixed(0);
 
         const printArea = document.getElementById('diet-print-area');
-        getQRImageHTMLForPrint(patientData, 85).then(function(dietQrHtml) {
+        getQRImageHTMLForPrint(patientData, 80).then(function(dietQrHtml) {
+        const dietHeaderHtml = buildPrintHeader('🥗 برنامج غذائي', dietQrHtml, p.name_ar || '—', p.age || '—', h.medical_diagnosis || '', specInfo, visitData.date || '');
         printArea.innerHTML = `
-            <!-- رأس الصفحة -->
-            <div style="display:flex;align-items:center;justify-content:space-between;border-bottom:3px solid #0790AC;padding-bottom:12px;margin-bottom:16px">
-                <div>
-                    <div style="font-size:22px;font-weight:700;color:#0790AC">MedBox-Pedia</div>
-                    <div style="font-size:11px;color:#6b7280">جدول الحصص الغذائية</div>
-                </div>
-                <div style="display:flex;align-items:center;gap:10px;">
-                    ${dietQrHtml}
-                    <div style="text-align:left;font-size:12px;color:#374151">
-                        <div><b>تاريخ الطباعة:</b> ${today}</div>
-                        <div><b>تاريخ المراجعة:</b> ${visitData.date || '—'}</div>
-                    </div>
-                </div>
-            </div>
+        <div style="font-family:'Cairo',sans-serif;direction:rtl;padding:12px 14px;">
+            ${dietHeaderHtml}
 
-            <!-- بيانات المريض والأخصائي -->
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">
-                <div style="background:#f0f9ff;border:1px solid #bae6fd;border-radius:8px;padding:12px">
-                    <div style="font-size:13px;font-weight:700;color:#0369a1;margin-bottom:8px;border-bottom:1px solid #bae6fd;padding-bottom:4px">بيانات المريض</div>
-                    <table style="font-size:12px;width:100%;border:none">
-                        <tr><td style="color:#6b7280;padding:2px 4px;border:none">الاسم:</td><td style="font-weight:600;border:none">${p.name_ar || '—'}</td></tr>
-                        <tr><td style="color:#6b7280;padding:2px 4px;border:none">الجنس:</td><td style="border:none">${p.gender === 'male' ? 'ذكر' : p.gender === 'female' ? 'أنثى' : '—'}</td></tr>
-                        <tr><td style="color:#6b7280;padding:2px 4px;border:none">العمر:</td><td style="border:none">${p.age ? p.age + ' سنة' : '—'}</td></tr>
-                    </table>
-                </div>
-                <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:12px">
-                    <div style="font-size:13px;font-weight:700;color:#15803d;margin-bottom:8px;border-bottom:1px solid #bbf7d0;padding-bottom:4px">👨‍⚕️ بيانات الأخصائي</div>
-                    <table style="font-size:12px;width:100%;border:none">
-                        <tr><td style="color:#6b7280;padding:2px 4px;border:none">الاسم:</td><td style="font-weight:700;color:#15803d;border:none">${specialistName}</td></tr>
-                        ${specInfo.specialty ? `<tr><td style="color:#6b7280;padding:2px 4px;border:none">التخصص:</td><td style="font-weight:600;border:none">${specInfo.specialty}</td></tr>` : ''}
-                        ${specInfo.clinic ? `<tr><td style="color:#6b7280;padding:2px 4px;border:none">العيادة:</td><td style="font-weight:600;border:none">${specInfo.clinic}</td></tr>` : ''}
-                        ${specInfo.address ? `<tr><td style="color:#6b7280;padding:2px 4px;border:none">العنوان:</td><td style="border:none">${specInfo.address}</td></tr>` : ''}
-                        ${specInfo.phone ? `<tr><td style="color:#6b7280;padding:2px 4px;border:none">الهاتف:</td><td style="font-weight:600;color:#0790AC;border:none">${specInfo.phone}</td></tr>` : ''}
-                        <tr><td style="color:#6b7280;padding:2px 4px;border:none">تاريخ البرنامج:</td><td style="border:none">${today}</td></tr>
-                    </table>
-                </div>
-            </div>
+            <!-- السوابق التحسسية -->
+            ${(h.allergies && h.allergies.trim()) ? `
+            <div class="print-no-break" style="margin:10px 0 8px 0;background:#fef9c3;border:1px solid #fde047;border-radius:8px;padding:8px 12px;font-size:12px;color:#92400e;">
+                <strong>⚠️ تنبيه حساسية:</strong> ${h.allergies}
+            </div>` : ''}
 
             <!-- الأدوية المستخدمة -->
-            <div style="margin-bottom:14px">
-                <div style="font-size:13px;font-weight:700;color:#374151;border-right:4px solid #0790AC;padding-right:8px;margin-bottom:6px">الأدوية المستخدمة</div>
+            <div class="print-no-break" style="margin:10px 0 8px 0;">
+                <div style="font-size:12px;font-weight:700;color:#374151;border-right:4px solid #0790AC;padding-right:8px;margin-bottom:6px;">الأدوية المستخدمة</div>
                 ${medsHtml}
             </div>
 
-            <!-- السوابق التحسسية -->
-            <div style="margin-bottom:16px">
-                <div style="font-size:13px;font-weight:700;color:#374151;border-right:4px solid #f59e0b;padding-right:8px;margin-bottom:6px">السوابق التحسسية</div>
-                ${allergiesHtml}
-            </div>
-
-            ${dietDiagnosisHtml ? `
-            <!-- التشخيص الطبي -->
-            <div style="margin-bottom:16px">
-                <div style="font-size:13px;font-weight:700;color:#374151;border-right:4px solid #3b82f6;padding-right:8px;margin-bottom:6px">التشخيص الطبي</div>
-                ${dietDiagnosisHtml}
-            </div>` : ''}
-
             <!-- الأهداف الغذائية -->
-            <div style="margin-bottom:14px">
-                <div style="font-size:13px;font-weight:700;color:#374151;border-right:4px solid #8b5cf6;padding-right:8px;margin-bottom:6px">الأهداف الغذائية المحسوبة</div>
-                <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;text-align:center">
-                    <div style="background:#f0fdf4;border:1px solid #86efac;border-radius:6px;padding:8px">
-                        <div style="font-size:10px;color:#6b7280">كربوهيدرات</div>
-                        <div style="font-size:16px;font-weight:700;color:#15803d">${targetCarb}<span style="font-size:10px"> غ</span></div>
+            <div class="print-no-break" style="margin-bottom:10px;">
+                <div style="font-size:12px;font-weight:700;color:#374151;border-right:4px solid #8b5cf6;padding-right:8px;margin-bottom:6px;">🎯 الأهداف الغذائية المحسوبة</div>
+                <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;text-align:center;">
+                    <div style="background:#f0fdf4;border:1px solid #86efac;border-radius:6px;padding:6px;">
+                        <div style="font-size:9px;color:#6b7280;">كربوهيدرات</div>
+                        <div style="font-size:15px;font-weight:700;color:#15803d;">${targetCarb}<span style="font-size:9px;"> غ</span></div>
                     </div>
-                    <div style="background:#eff6ff;border:1px solid #93c5fd;border-radius:6px;padding:8px">
-                        <div style="font-size:10px;color:#6b7280">بروتين</div>
-                        <div style="font-size:16px;font-weight:700;color:#1d4ed8">${targetProt}<span style="font-size:10px"> غ</span></div>
+                    <div style="background:#eff6ff;border:1px solid #93c5fd;border-radius:6px;padding:6px;">
+                        <div style="font-size:9px;color:#6b7280;">بروتين</div>
+                        <div style="font-size:15px;font-weight:700;color:#1d4ed8;">${targetProt}<span style="font-size:9px;"> غ</span></div>
                     </div>
-                    <div style="background:#fff7ed;border:1px solid #fdba74;border-radius:6px;padding:8px">
-                        <div style="font-size:10px;color:#6b7280">دهون</div>
-                        <div style="font-size:16px;font-weight:700;color:#c2410c">${targetFat}<span style="font-size:10px"> غ</span></div>
+                    <div style="background:#fff7ed;border:1px solid #fdba74;border-radius:6px;padding:6px;">
+                        <div style="font-size:9px;color:#6b7280;">دهون</div>
+                        <div style="font-size:15px;font-weight:700;color:#c2410c;">${targetFat}<span style="font-size:9px;"> غ</span></div>
                     </div>
-                    <div style="background:#f0f9ff;border:1px solid #7dd3fc;border-radius:6px;padding:8px">
-                        <div style="font-size:10px;color:#6b7280">طاقة</div>
-                        <div style="font-size:16px;font-weight:700;color:#0790AC">${targetKcal}<span style="font-size:10px"> سعرة</span></div>
+                    <div style="background:#f0f9ff;border:1px solid #7dd3fc;border-radius:6px;padding:6px;">
+                        <div style="font-size:9px;color:#6b7280;">طاقة</div>
+                        <div style="font-size:15px;font-weight:700;color:#0790AC;">${targetKcal}<span style="font-size:9px;"> سعرة</span></div>
                     </div>
                 </div>
             </div>
 
             <!-- جدول البرنامج الغذائي -->
-            <div style="margin-bottom:8px">
-                <div style="font-size:13px;font-weight:700;color:#374151;border-right:4px solid #0790AC;padding-right:8px;margin-bottom:6px">جدول الحصص الغذائية</div>
-                <table class="print-table" style="width:100%;border-collapse:collapse">
+            <div style="margin-bottom:8px;">
+                <div style="font-size:12px;font-weight:700;color:#374151;border-right:4px solid #0790AC;padding-right:8px;margin-bottom:6px;">📊 جدول الحصص الغذائية</div>
+                <table class="print-table" style="width:100%;border-collapse:collapse;font-size:11.5px;">
                     <thead>
-                        <tr style="background:#0790AC;color:white">
-                            <th style="padding:8px;border:1px solid #ccc;text-align:right">القائمة</th>
-                            <th style="padding:8px;border:1px solid #ccc">الحصص</th>
-                            <th style="padding:8px;border:1px solid #ccc">كربوهيدرات (غ)</th>
-                            <th style="padding:8px;border:1px solid #ccc">بروتين (غ)</th>
-                            <th style="padding:8px;border:1px solid #ccc">دهون (غ)</th>
-                            <th style="padding:8px;border:1px solid #ccc">طاقة (سعرة)</th>
+                        <tr style="background:#0790AC;color:white;">
+                            <th style="padding:7px 8px;border:1px solid #ccc;text-align:right;">القائمة</th>
+                            <th style="padding:7px 6px;border:1px solid #ccc;">الحصص</th>
+                            <th style="padding:7px 6px;border:1px solid #ccc;">كربوهيدرات (غ)</th>
+                            <th style="padding:7px 6px;border:1px solid #ccc;">بروتين (غ)</th>
+                            <th style="padding:7px 6px;border:1px solid #ccc;">دهون (غ)</th>
+                            <th style="padding:7px 6px;border:1px solid #ccc;">طاقة (سعرة)</th>
                         </tr>
                     </thead>
                     <tbody>${rowsHtml}</tbody>
                     <tfoot>
-                        <tr style="background:#f3f4f6;font-weight:700;border-top:2px solid #9ca3af">
-                            <td style="padding:8px;border:1px solid #ccc;text-align:right">الإجمالي</td>
-                            <td style="padding:8px;border:1px solid #ccc">—</td>
-                            <td style="padding:8px;border:1px solid #ccc;color:#15803d">${totCarb}</td>
-                            <td style="padding:8px;border:1px solid #ccc;color:#1d4ed8">${totProt}</td>
-                            <td style="padding:8px;border:1px solid #ccc;color:#c2410c">${totFat}</td>
-                            <td style="padding:8px;border:1px solid #ccc;color:#0790AC">${totKcal}</td>
+                        <tr style="background:#f3f4f6;font-weight:700;border-top:2px solid #9ca3af;">
+                            <td style="padding:7px 8px;border:1px solid #ccc;text-align:right;">الإجمالي</td>
+                            <td style="padding:7px 6px;border:1px solid #ccc;">—</td>
+                            <td style="padding:7px 6px;border:1px solid #ccc;color:#15803d;">${totCarb}</td>
+                            <td style="padding:7px 6px;border:1px solid #ccc;color:#1d4ed8;">${totProt}</td>
+                            <td style="padding:7px 6px;border:1px solid #ccc;color:#c2410c;">${totFat}</td>
+                            <td style="padding:7px 6px;border:1px solid #ccc;color:#0790AC;">${totKcal}</td>
                         </tr>
                     </tfoot>
                 </table>
             </div>
 
-            <!-- توقيع الأخصائي -->
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:32px;padding-top:14px;border-top:1px dashed #d1d5db">
-                <div style="text-align:center">
-                    <div style="font-size:12px;color:#6b7280;margin-bottom:4px">اسم الأخصائي</div>
-                    <div style="font-size:14px;font-weight:700;color:#374151;border-bottom:2px solid #0790AC;padding-bottom:6px;display:inline-block;min-width:180px">${specialistName}</div>
-                    ${specInfo.specialty ? `<div style="font-size:11px;color:#15803d;margin-top:4px">${specInfo.specialty}</div>` : ''}
-                    ${specInfo.clinic ? `<div style="font-size:11px;color:#6b7280;margin-top:2px">${specInfo.clinic}</div>` : ''}
-                    ${specInfo.phone ? `<div style="font-size:11px;color:#0790AC;margin-top:2px">☎ ${specInfo.phone}</div>` : ''}
-                </div>
-                <div style="text-align:center">
-                    <div style="font-size:12px;color:#6b7280;margin-bottom:4px">التوقيع والختم</div>
-                    <div style="border-bottom:2px solid #0790AC;padding-bottom:6px;min-width:180px;height:38px;display:inline-block"></div>
-                </div>
+            <!-- ملاحظات البرنامج الغذائي -->
+            <div class="print-no-break" style="background:#f0f9ff;border:1px solid #bae6fd;border-radius:8px;padding:8px 12px;margin:8px 0 12px 0;font-size:11.5px;color:#374151;">
+                <strong>ملاحظات:</strong> يرجى الالتزام بالحصص الغذائية المحددة وتوزيعها على وجبات منتظمة. استشر الأخصائي عند أي استفسار.
             </div>
+
+            <!-- التوقيع -->
+            ${buildPrintFooter(specInfo, visitData.date || '')}
+        </div>
         `;
 
         // إظهار منطقة الطباعة ثم الطباعة ثم إخفاؤها
@@ -14528,80 +14525,23 @@ window.addEventListener('resize', setTopbarHeight);
                         window._appData.patients.find(function(pp) { return pp.name_ar === patientName || pp.national_id === patientName; }) : null;
                     return found || { id: patientName, name_ar: patientName };
                   })();
-            getQRImageHTMLForPrint(labQrPatient, 85).then(function(labQrHtml) {
+            getQRImageHTMLForPrint(labQrPatient, 80).then(function(labQrHtml) {
+            const labHeaderHtml = buildPrintHeader('🧪 طلب تحاليل مخبرية وإجراءات تشخيصية', labQrHtml, patientName, patientAge, diagnosis, labSpecInfo, '');
             printArea.innerHTML = `
-                <!-- رأس الصفحة -->
-                <div style="display:flex;align-items:center;justify-content:space-between;border-bottom:3px solid #0790AC;padding-bottom:14px;margin-bottom:18px">
-                    <div>
-                        <div style="font-size:24px;font-weight:700;color:#0790AC;letter-spacing:-0.5px">MedBox-Pedia</div>
-                        <div style="font-size:11px;color:#6b7280;margin-top:2px">نظام الدعم الطبي الشامل</div>
-                    </div>
-                    <div style="display:flex;align-items:center;gap:10px;">
-                        ${labQrHtml}
-                        <div style="text-align:left;font-size:12px;color:#374151;line-height:1.8">
-                            <div><b>تاريخ الطلب:</b> ${today}</div>
-                            ${labSpecInfo.phone ? `<div style="margin-top:4px;padding:4px 10px;background:#f0f9ff;border:1px solid #bae6fd;border-radius:6px;color:#0369a1;font-weight:600">☎ ${labSpecInfo.phone}</div>` : ''}
-                        ${labSpecInfo.clinic ? `<div style="margin-top:4px;font-size:11px;color:#6b7280;font-weight:600">${labSpecInfo.clinic}</div>` : ''}
-                        </div>
-                    </div>
-                </div>
-
-                <!-- عنوان الوثيقة -->
-                <div style="text-align:center;margin-bottom:18px">
-                    <div style="display:inline-block;background:#0790AC;color:white;font-size:16px;font-weight:700;padding:8px 32px;border-radius:8px;letter-spacing:0.5px">
-                        طلب تحاليل مخبرية وإجراءات تشخيصية
-                    </div>
-                </div>
-
-                <!-- بيانات المريض -->
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:18px">
-                    <div style="background:#f0f9ff;border:1px solid #bae6fd;border-radius:10px;padding:14px">
-                        <div style="font-size:13px;font-weight:700;color:#0369a1;border-bottom:1px solid #bae6fd;padding-bottom:6px;margin-bottom:10px">📋 بيانات المريض</div>
-                        <table style="width:100%;font-size:12px;border:none;border-collapse:collapse">
-                            <tr>
-                                <td style="color:#6b7280;padding:4px 6px;border:none;width:90px">اسم المريض:</td>
-                                <td style="font-weight:700;font-size:14px;color:#1e3a5f;border:none">${patientName}</td>
-                            </tr>
-                            <tr>
-                                <td style="color:#6b7280;padding:4px 6px;border:none">العمر:</td>
-                                <td style="font-weight:600;border:none">${patientAge} سنة</td>
-                            </tr>
-                            <tr>
-                                <td style="color:#6b7280;padding:4px 6px;border:none">التشخيص:</td>
-                                <td style="font-weight:600;color:#dc2626;border:none">${diagnosis}</td>
-                            </tr>
-                        </table>
-                    </div>
-                    <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:14px">
-                        <div style="font-size:13px;font-weight:700;color:#15803d;border-bottom:1px solid #bbf7d0;padding-bottom:6px;margin-bottom:10px">👨‍⚕️ بيانات الأخصائي</div>
-                        <table style="width:100%;font-size:12px;border:none;border-collapse:collapse">
-                            <tr>
-                                <td style="color:#6b7280;padding:4px 6px;border:none;width:90px">الاسم:</td>
-                                <td style="font-weight:700;color:#15803d;border:none">${specialistName}</td>
-                            </tr>
-                            ${labSpecInfo.specialty ? `<tr><td style="color:#6b7280;padding:4px 6px;border:none">التخصص:</td><td style="font-weight:600;border:none">${labSpecInfo.specialty}</td></tr>` : ''}
-                            ${labSpecInfo.clinic ? `<tr><td style="color:#6b7280;padding:4px 6px;border:none">العيادة:</td><td style="font-weight:600;border:none">${labSpecInfo.clinic}</td></tr>` : ''}
-                            ${labSpecInfo.address ? `<tr><td style="color:#6b7280;padding:4px 6px;border:none">العنوان:</td><td style="border:none">${labSpecInfo.address}</td></tr>` : ''}
-                            ${labSpecInfo.phone ? `<tr><td style="color:#6b7280;padding:4px 6px;border:none">الهاتف:</td><td style="font-weight:600;color:#0790AC;border:none">${labSpecInfo.phone}</td></tr>` : ''}
-                            <tr>
-                                <td style="color:#6b7280;padding:4px 6px;border:none">تاريخ الطلب:</td>
-                                <td style="font-weight:600;border:none">${today}</td>
-                            </tr>
-                        </table>
-                    </div>
-                </div>
+            <div style="font-family:'Cairo',sans-serif;direction:rtl;padding:12px 14px;">
+                ${labHeaderHtml}
 
                 <!-- جدول التحاليل المطلوبة -->
-                <div style="margin-bottom:16px">
-                    <div style="font-size:13px;font-weight:700;color:#374151;border-right:4px solid #0790AC;padding-right:10px;margin-bottom:10px">
-                        التحاليل والإجراءات التشخيصية المطلوبة (${checkedBoxes.length})
+                <div style="margin:12px 0 10px 0;">
+                    <div style="font-size:12px;font-weight:700;color:#374151;border-right:4px solid #7c3aed;padding-right:10px;margin-bottom:8px;">
+                        🔬 التحاليل والإجراءات التشخيصية المطلوبة (${checkedBoxes.length})
                     </div>
-                    <table style="width:100%;border-collapse:collapse;font-family:'Cairo',sans-serif">
+                    <table style="width:100%;border-collapse:collapse;font-family:'Cairo',sans-serif;font-size:12px;">
                         <thead>
-                            <tr style="background:#0790AC;color:white">
-                                <th style="padding:10px;border:1px solid #ccc;width:50px;text-align:center;font-size:13px">#</th>
-                                <th style="padding:10px;border:1px solid #ccc;text-align:right;font-size:13px">اسم التحليل / الإجراء</th>
-                                <th style="padding:10px;border:1px solid #ccc;width:80px;text-align:center;font-size:13px">تم</th>
+                            <tr style="background:#7c3aed;color:white;">
+                                <th style="padding:8px;border:1px solid #ccc;width:40px;text-align:center;">#</th>
+                                <th style="padding:8px;border:1px solid #ccc;text-align:right;">اسم التحليل / الإجراء</th>
+                                <th style="padding:8px;border:1px solid #ccc;width:70px;text-align:center;">تم ✓</th>
                             </tr>
                         </thead>
                         <tbody>${selectedLabs}</tbody>
@@ -14609,27 +14549,13 @@ window.addEventListener('resize', setTopbarHeight);
                 </div>
 
                 <!-- ملاحظات -->
-                <div style="background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:10px 14px;margin-bottom:20px;font-size:12px;color:#92400e">
+                <div class="print-no-break" style="background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:8px 12px;margin-bottom:12px;font-size:11.5px;color:#92400e;">
                     <b>⚠️ ملاحظة:</b> يرجى تسليم نتائج التحاليل للأخصائي عند المراجعة القادمة.
                 </div>
 
-                <!-- توقيع الأخصائي -->
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:28px;padding-top:16px;border-top:2px dashed #d1d5db">
-                    <div style="text-align:center">
-                        <div style="font-size:12px;color:#6b7280;margin-bottom:6px">اسم الأخصائي</div>
-                        <div style="font-size:14px;font-weight:700;color:#374151;border-bottom:2px solid #0790AC;padding-bottom:6px;display:inline-block;min-width:180px">${specialistName}</div>
-                        ${labSpecInfo.specialty ? `<div style="font-size:11px;color:#15803d;margin-top:4px">${labSpecInfo.specialty}</div>` : ''}
-                        ${labSpecInfo.clinic ? `<div style="font-size:11px;color:#6b7280;margin-top:2px">${labSpecInfo.clinic}</div>` : ''}
-                        ${labSpecInfo.phone ? `<div style="font-size:11px;color:#0790AC;margin-top:2px">☎ ${labSpecInfo.phone}</div>` : ''}
-                    </div>
-                    <div style="text-align:center">
-                        <div style="font-size:12px;color:#6b7280;margin-bottom:6px">التوقيع والختم</div>
-                        <div style="border-bottom:2px solid #0790AC;padding-bottom:6px;min-width:180px;height:38px;display:inline-block"></div>
-                    </div>
-                </div>
-                <div style="text-align:center;margin-top:18px;font-size:10px;color:#9ca3af;border-top:1px solid #f3f4f6;padding-top:10px">
-                    MedBox-Pedia — تم إصدار هذا الطلب بتاريخ ${today}
-                </div>
+                <!-- التوقيع -->
+                ${buildPrintFooter(labSpecInfo, '')}
+            </div>
             `;
 
             // إخفاء المودال وطباعة الطلب
