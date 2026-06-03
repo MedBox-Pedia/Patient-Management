@@ -5139,112 +5139,7 @@
     </div>
 
     <!-- (جديد) نافذة المعدلات والقيم الطبيعية (Modal) -->
-    <div id="rates-modal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 overflow-y-auto" dir="rtl">
-        <div class="bg-white rounded-lg shadow-2xl w-full max-w-4xl max-h-[95vh] flex flex-col">
-            <!-- رأس النافذة -->
-            <div class="flex justify-between items-center p-4 border-b border-gray-200">
-                <h2 id="rates-modal-title" class="text-xl font-bold text-[--color-primary]">المعدلات والقيم الطبيعية</h2>
-                <button id="rates-modal-close-btn" class="text-gray-500 hover:text-red-600">
-                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
-                </button>
-            </div>
-
-            <!-- شريط التنقل بين القوائم -->
-            <div class="p-4 bg-gray-50 border-b border-gray-200">
-                <nav class="flex space-x-4 space-x-reverse justify-center overflow-x-auto">
-                    <button data-tab="1" class="rates-tab-btn flex-shrink-0 text-center px-3 py-2 font-semibold border-b-2 border-[--color-primary] text-[--color-primary]">1. التحاليل الطبية</button>
-                    <button data-tab="2" class="rates-tab-btn flex-shrink-0 text-center px-3 py-2 font-semibold text-gray-500 border-b-2 border-transparent">2. العلامات الحيوية</button>
-                    <button data-tab="3" class="rates-tab-btn flex-shrink-0 text-center px-3 py-2 font-semibold text-gray-500 border-b-2 border-transparent">3. المعادلات التغذوية</button>
-                </nav>
-            </div>
-
-            <!-- محتوى القوائم -->
-            <form id="rates-form" class="flex-1 overflow-y-auto p-6 space-y-6">
-                <!-- القائمة 1: التحاليل الطبية -->
-                <div id="rates-tab-1" class="rates-tab-content space-y-4">
-                    <!-- A. التحاليل الدموية -->
-                    <div class="lab-section">
-                        <h3 class="lab-section-title">A. قسم التحاليل الدموية</h3>
-                        <div id="rates-labs-hematology" class="rates-grid">
-                            <!-- سيتم ملؤها بـ JS -->
-                        </div>
-                    </div>
-                    <!-- B. التحاليل الكيميائية -->
-                    <div class="lab-section">
-                        <h3 class="lab-section-title">B. قسم التحاليل الكيميائية</h3>
-                        <h4 class="lab-subsection-title">a) التحاليل الخاصة بتقييم السكر</h4>
-                        <div id="rates-labs-sugar" class="rates-grid">
-                            <!-- سيتم ملؤها بـ JS -->
-                        </div>
-                        <h4 class="lab-subsection-title">b) وظائف الكلية</h4>
-                        <div id="rates-labs-kidney" class="rates-grid">
-                            <!-- سيتم ملؤها بـ JS -->
-                        </div>
-                        <h4 class="lab-subsection-title">c) وظائف الكبد</h4>
-                        <div id="rates-labs-liver" class="rates-grid">
-                            <!-- سيتم ملؤها بـ JS -->
-                        </div>
-                        <h4 class="lab-subsection-title">d) فيتامينات</h4>
-                        <div id="rates-labs-vitamins" class="rates-grid">
-                            <!-- سيتم ملؤها بـ JS -->
-                        </div>
-                        <h4 class="lab-subsection-title">e) الشوارد</h4>
-                        <div id="rates-labs-electrolytes" class="rates-grid">
-                            <!-- سيتم ملؤها بـ JS -->
-                        </div>
-                        <h4 class="lab-subsection-title">f) الهرمونات</h4>
-                        <div id="rates-labs-hormones" class="rates-grid">
-                            <!-- سيتم ملؤها بـ JS -->
-                        </div>
-                    </div>
-                    <!-- خمائر القلب -->
-                    <div class="lab-section">
-                        <h3 class="lab-section-title">❤️ خمائر القلب (Cardiac Enzymes)</h3>
-                        <div id="rates-labs-cardiac" class="rates-grid">
-                            <!-- سيتم ملؤها بـ JS -->
-                        </div>
-                    </div>
-                    <!-- تحليل البول -->
-                    <div class="lab-section">
-                        <h3 class="lab-section-title">🔬 C. تحليل البول والراسب</h3>
-                        <div id="rates-labs-urine" class="rates-grid">
-                            <!-- سيتم ملؤها بـ JS -->
-                        </div>
-                    </div>
-                </div>
-
-                <!-- القائمة 2: العلامات الحيوية -->
-                <div id="rates-tab-2" class="rates-tab-content hidden space-y-4">
-                    <div class="lab-section">
-                        <h3 class="lab-section-title">القيم الطبيعية للقياسات والعلامات الحيوية</h3>
-                        <div id="rates-vitals" class="rates-grid">
-                            <!-- سيتم ملؤها بـ JS -->
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- القائمة 3: المعادلات التغذوية -->
-                <div id="rates-tab-3" class="rates-tab-content hidden space-y-4">
-                    <div class="lab-section">
-                        <h3 class="lab-section-title">القيم الطبيعية للمعادلات التغذوية (Inbody)</h3>
-                        <div id="rates-inbody" class="rates-grid">
-                            <!-- سيتم ملؤها بـ JS -->
-                        </div>
-                    </div>
-                </div>
-            </form>
-
-            <!-- أزرار الحفظ -->
-            <div class="p-4 bg-gray-50 border-t border-gray-200 flex justify-end">
-                <button type="button" id="rates-modal-cancel-btn" class="bg-red-600 text-white px-5 py-2 rounded-lg font-semibold hover:bg-red-700 transition duration-200 ml-2">
-                    إلغاء
-                </button>
-                <button type="button" id="rates-modal-save-btn" class="bg-green-600 text-white px-5 py-2 rounded-lg font-semibold hover:bg-green-700 transition duration-200">
-                    حفظ القيم
-                </button>
-            </div>
-        </div>
-    </div>
+    <!-- rates-modal: تم تحويله إلى شاشة رئيسية عبر renderRatesPage() -->
 
 <!-- منطقة طباعة البرنامج الغذائي (مخفية) -->
 <div id="diet-print-area" aria-hidden="true"></div>
@@ -5677,13 +5572,7 @@
     // --- (جديد) عناصر نافذة القيم الطبيعية ---
     // (تعديل 10) تم نقل الزر إلى القائمة الجانبية
     const manageLimitsBtn = document.getElementById('manage-limits-btn');
-    const ratesModal = document.getElementById('rates-modal');
-    const ratesModalCloseBtn = document.getElementById('rates-modal-close-btn');
-    const ratesModalCancelBtn = document.getElementById('rates-modal-cancel-btn');
-    const ratesModalSaveBtn = document.getElementById('rates-modal-save-btn');
-    const ratesTabBtns = document.querySelectorAll('.rates-tab-btn');
-    const ratesTabContents = document.querySelectorAll('.rates-tab-content');
-    const ratesForm = document.getElementById('rates-form');
+    // ratesTabBtns/ratesTabContents/ratesForm: تُجلب ديناميكياً في renderRatesPage()
 
     // --- عناصر نافذة المريض ---
     const smokingCheck = document.getElementById('smoking');
@@ -6817,12 +6706,8 @@
         // (تعديل) القائمة الجانبية أصبحت جنباً إلى جنب، لذا لا تُغلق عند النقر على المحتوى
         // mainContent.addEventListener('click', ...) - تم تعطيله
 
-        // --- (جديد) ربط أحداث نافذة القيم الطبيعية ---
+        // --- ربط زر الحدود الطبيعية (يفتح كشاشة رئيسية) ---
         if (manageLimitsBtn) manageLimitsBtn.addEventListener('click', () => { closeSidebarOnMobile(); openRatesModal(); });
-        if (ratesModalCloseBtn) ratesModalCloseBtn.addEventListener('click', closeRatesModal);
-        if (ratesModalCancelBtn) ratesModalCancelBtn.addEventListener('click', closeRatesModal);
-        if (ratesModalSaveBtn) ratesModalSaveBtn.addEventListener('click', saveRatesAndClose);
-        if (document.querySelector('.rates-tab-btn')) setupRatesModalTabs();
 
         // تحديث الواجهة بناءً على الحالة الأولية
         updateUI();
@@ -7607,14 +7492,196 @@
     /**
      * إعداد التنقل بين التبويبات في نافذة القيم الطبيعية
      */
-    function setupRatesModalTabs() {
-        ratesTabBtns.forEach(btn => {
+    // =============================================
+    // === صفحة الحدود الطبيعية (شاشة رئيسية) ====
+    // =============================================
+
+    /**
+     * عرض صفحة الحدود الطبيعية كشاشة رئيسية بالكامل
+     */
+    function renderRatesPage() {
+        const ranges = (appData.settings && appData.settings.normalRanges) ? appData.settings.normalRanges : normalRanges;
+        const inbodyRanges = (appData.settings && appData.settings.normalRangesInbody) ? appData.settings.normalRangesInbody : normalRangesInbody;
+
+        patientDisplayArea.innerHTML = `
+        <div class="bg-white rounded-2xl shadow-xl overflow-hidden" dir="rtl">
+
+            <!-- رأس الصفحة -->
+            <div class="bg-gradient-to-l from-[--color-primary] to-[--color-primary-dark] px-6 py-5 flex items-center gap-4">
+                <div class="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center flex-shrink-0">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7 text-white" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 17.25v1.007a3 3 0 01-.879 2.122L7.5 21h9l-.621-.621A3 3 0 0115 18.257V17.25m6-12V15a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 15V5.25m18 0A2.25 2.25 0 0018.75 3H5.25A2.25 2.25 0 003 5.25m18 0H3" />
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold text-white">الحدود الطبيعية للقيم المخبرية</h1>
+                    <p class="text-sm text-white/75 mt-0.5">تخصيص القيم المرجعية للتحاليل والعلامات الحيوية</p>
+                </div>
+            </div>
+
+            <!-- شريط التبويبات -->
+            <div class="border-b border-gray-200 bg-gray-50 px-6">
+                <nav class="flex gap-1 overflow-x-auto" id="rates-page-tabs">
+                    <button data-tab="1" class="rates-page-tab-btn flex-shrink-0 px-5 py-3.5 text-sm font-semibold border-b-2 border-[--color-primary] text-[--color-primary] transition-colors">
+                        🧪 التحاليل الطبية
+                    </button>
+                    <button data-tab="2" class="rates-page-tab-btn flex-shrink-0 px-5 py-3.5 text-sm font-semibold border-b-2 border-transparent text-gray-500 hover:text-gray-700 transition-colors">
+                        💓 العلامات الحيوية
+                    </button>
+                    <button data-tab="3" class="rates-page-tab-btn flex-shrink-0 px-5 py-3.5 text-sm font-semibold border-b-2 border-transparent text-gray-500 hover:text-gray-700 transition-colors">
+                        ⚖️ المعادلات التغذوية
+                    </button>
+                </nav>
+            </div>
+
+            <!-- محتوى التبويبات -->
+            <form id="rates-page-form">
+
+                <!-- التبويب 1: التحاليل الطبية -->
+                <div id="rates-page-tab-1" class="rates-page-tab-content p-6 space-y-6">
+                    <div class="lab-section">
+                        <h3 class="lab-section-title">🩸 A. قسم التحاليل الدموية</h3>
+                        <div id="rates-page-hematology" class="rates-grid"></div>
+                    </div>
+                    <div class="lab-section">
+                        <h3 class="lab-section-title">🔬 B. قسم التحاليل الكيميائية</h3>
+                        <h4 class="lab-subsection-title">a) تقييم السكر</h4>
+                        <div id="rates-page-sugar" class="rates-grid"></div>
+                        <h4 class="lab-subsection-title">b) وظائف الكلية</h4>
+                        <div id="rates-page-kidney" class="rates-grid"></div>
+                        <h4 class="lab-subsection-title">c) وظائف الكبد</h4>
+                        <div id="rates-page-liver" class="rates-grid"></div>
+                        <h4 class="lab-subsection-title">d) فيتامينات</h4>
+                        <div id="rates-page-vitamins" class="rates-grid"></div>
+                        <h4 class="lab-subsection-title">e) الشوارد</h4>
+                        <div id="rates-page-electrolytes" class="rates-grid"></div>
+                        <h4 class="lab-subsection-title">f) الهرمونات</h4>
+                        <div id="rates-page-hormones" class="rates-grid"></div>
+                    </div>
+                    <div class="lab-section">
+                        <h3 class="lab-section-title">❤️ خمائر القلب (Cardiac Enzymes)</h3>
+                        <div id="rates-page-cardiac" class="rates-grid"></div>
+                    </div>
+                    <div class="lab-section">
+                        <h3 class="lab-section-title">🔬 C. تحليل البول والراسب</h3>
+                        <div id="rates-page-urine" class="rates-grid"></div>
+                    </div>
+                </div>
+
+                <!-- التبويب 2: العلامات الحيوية -->
+                <div id="rates-page-tab-2" class="rates-page-tab-content hidden p-6 space-y-6">
+                    <div class="lab-section">
+                        <h3 class="lab-section-title">القيم الطبيعية للقياسات والعلامات الحيوية</h3>
+                        <div id="rates-page-vitals" class="rates-grid"></div>
+                    </div>
+                </div>
+
+                <!-- التبويب 3: المعادلات التغذوية -->
+                <div id="rates-page-tab-3" class="rates-page-tab-content hidden p-6 space-y-6">
+                    <div class="lab-section">
+                        <h3 class="lab-section-title">القيم الطبيعية للمعادلات التغذوية (Inbody)</h3>
+                        <div id="rates-page-inbody" class="rates-grid"></div>
+                    </div>
+                </div>
+
+                <!-- شريط الأزرار السفلي -->
+                <div class="px-6 py-4 bg-gray-50 border-t border-gray-200 flex items-center justify-between gap-3 flex-wrap">
+                    <button type="button" id="rates-page-reset-btn"
+                        class="flex items-center gap-2 px-4 py-2 text-sm font-semibold text-amber-700 bg-amber-50 border border-amber-200 rounded-lg hover:bg-amber-100 transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
+                        </svg>
+                        استعادة القيم الافتراضية
+                    </button>
+                    <div class="flex gap-3">
+                        <button type="button" id="rates-page-cancel-btn"
+                            class="px-5 py-2 text-sm font-semibold text-gray-600 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                            إلغاء
+                        </button>
+                        <button type="button" id="rates-page-save-btn"
+                            class="flex items-center gap-2 px-6 py-2 text-sm font-semibold text-white bg-[--color-primary] rounded-lg hover:bg-[--color-primary-dark] transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                            </svg>
+                            حفظ القيم
+                        </button>
+                    </div>
+                </div>
+
+            </form>
+        </div>`;
+
+        // ملء البيانات في الحقول
+        document.getElementById('rates-page-hematology').innerHTML =
+            createRangeInput('wbc','WBC',ranges) + createRangeInput('rbc','RBC',ranges) +
+            createRangeInput('mcv','MCV',ranges) + createRangeInput('mch','MCH',ranges) +
+            createRangeInput('mchc','MCHC',ranges) + createRangeInput('rdw','RDW',ranges) +
+            createRangeInput('hb','HB',ranges) + createRangeInput('ht','HT',ranges) +
+            createRangeInput('platelets','Platelets',ranges) + createRangeInput('esr','ESR',ranges) +
+            createRangeInput('serum_iron','Serum Iron (FR)',ranges) + createRangeInput('tibc','TIBC',ranges) +
+            createRangeInput('ferritin','Ferritin',ranges);
+
+        document.getElementById('rates-page-sugar').innerHTML =
+            createRangeInput('glucose_fast','سكر صيامي',ranges) +
+            createRangeInput('glucose_random','سكر عشوائي',ranges) +
+            createRangeInput('homa_ir','مقاومة الانسولين',ranges);
+
+        document.getElementById('rates-page-kidney').innerHTML =
+            createRangeInput('cr','Cr',ranges) + createRangeInput('urea','Urea',ranges) +
+            createRangeInput('ua','UA',ranges) + createRangeInput('crcl','CrCl',ranges) +
+            createRangeInput('egfr','eGFR',ranges);
+
+        document.getElementById('rates-page-liver').innerHTML =
+            createRangeInput('alt','ALT',ranges) + createRangeInput('ast','AST',ranges) +
+            createRangeInput('bili_t','T.Bilirubin',ranges) + createRangeInput('albumin','Albumin',ranges) +
+            createRangeInput('crp','CRP',ranges);
+
+        document.getElementById('rates-page-vitamins').innerHTML =
+            createRangeInput('vit_b6','V.B6',ranges) + createRangeInput('vit_b9','B9 (الفوليك)',ranges) +
+            createRangeInput('vit_b12','V.B12',ranges) + createRangeInput('vit_d3','V.D3',ranges);
+
+        document.getElementById('rates-page-electrolytes').innerHTML =
+            createRangeInput('k','K',ranges) + createRangeInput('na','Na',ranges) +
+            createRangeInput('cl','Cl',ranges) + createRangeInput('mg','Mg',ranges) +
+            createRangeInput('p','P',ranges) + createRangeInput('ca','Ca',ranges);
+
+        document.getElementById('rates-page-hormones').innerHTML =
+            createRangeInput('tsh','TSH',ranges) + createRangeInput('t3','T3',ranges) +
+            createRangeInput('t4','T4',ranges) + createRangeInput('fsh','FSH',ranges) +
+            createRangeInput('lh','LH',ranges) + createRangeInput('testo','Testosterone',ranges) +
+            createRangeInput('pth','PTH',ranges);
+
+        document.getElementById('rates-page-cardiac').innerHTML =
+            createRangeInput('troponin','Troponin',ranges) + createRangeInput('ck','CK',ranges) +
+            createRangeInput('ckmb','CK-MB',ranges) + createRangeInput('myoglobin','Myoglobin',ranges);
+
+        document.getElementById('rates-page-urine').innerHTML =
+            createRangeInput('urine_density','الكثافة (Density)',ranges) +
+            createRangeInput('urine_rbc','كريات حمراء (RBC/HPF)',ranges) +
+            createRangeInput('urine_wbc','كريات بيضاء (WBC/HPF)',ranges);
+
+        document.getElementById('rates-page-vitals').innerHTML =
+            createRangeInput('bp_sys','الضغط (الانقباضي)',ranges) +
+            createRangeInput('bp_dias','الضغط (الانبساطي)',ranges) +
+            createRangeInput('pulse','النبض',ranges) + createRangeInput('resp','التنفس',ranges) +
+            createRangeInput('spo2','الاشباع (SpO2)',ranges) + createRangeInput('temp','الحرارة',ranges);
+
+        document.getElementById('rates-page-inbody').innerHTML =
+            createInbodyRangeInput('bmi','BMI',inbodyRanges) +
+            createInbodyRangeInput('tbf','TBF %',inbodyRanges) +
+            createInbodyRangeInput('vfi','VFI',inbodyRanges) +
+            createInbodyRangeInput('tbw','TBW %',inbodyRanges) +
+            createInbodyRangeInput('sm','SM %',inbodyRanges) +
+            createInbodyRangeInput('bmc','BMC (kg)',inbodyRanges) +
+            createInbodyRangeInput('bmr','BMR',inbodyRanges);
+
+        // ربط أحداث التبويبات
+        document.querySelectorAll('.rates-page-tab-btn').forEach(btn => {
             btn.addEventListener('click', () => {
                 const tab = btn.dataset.tab;
-                ratesTabContents.forEach(content => content.classList.add('hidden'));
-                document.getElementById(`rates-tab-${tab}`).classList.remove('hidden');
-                
-                ratesTabBtns.forEach(b => {
+                document.querySelectorAll('.rates-page-tab-content').forEach(c => c.classList.add('hidden'));
+                document.getElementById('rates-page-tab-' + tab).classList.remove('hidden');
+                document.querySelectorAll('.rates-page-tab-btn').forEach(b => {
                     b.classList.remove('border-[--color-primary]', 'text-[--color-primary]');
                     b.classList.add('border-transparent', 'text-gray-500');
                 });
@@ -7622,189 +7689,106 @@
                 btn.classList.remove('border-transparent', 'text-gray-500');
             });
         });
+
+        // زر الحفظ
+        document.getElementById('rates-page-save-btn').addEventListener('click', saveRatesPage);
+
+        // زر الإلغاء
+        document.getElementById('rates-page-cancel-btn').addEventListener('click', () => {
+            showWelcomeView();
+        });
+
+        // زر استعادة القيم الافتراضية
+        document.getElementById('rates-page-reset-btn').addEventListener('click', async () => {
+            const confirmed = await showConfirm('استعادة القيم الافتراضية', 'هل أنت متأكد من استعادة جميع القيم الطبيعية إلى إعداداتها الافتراضية؟ سيتم فقدان جميع التعديلات.');
+            if (confirmed) {
+                if (appData.settings) {
+                    delete appData.settings.normalRanges;
+                    delete appData.settings.normalRangesInbody;
+                }
+                saveDataToLocalStorage();
+                showToast('تم استعادة القيم الافتراضية', 'success');
+                renderRatesPage();
+            }
+        });
+
+        patientDisplayArea.classList.remove('hidden');
+        welcomeMessage.classList.add('hidden');
     }
 
     /**
-     * ملء نافذة القيم الطبيعية بالبيانات الحالية
-     */
-    function populateRatesModal() {
-        // تحميل القيم الحالية من الإعدادات
-        const ranges = (appData.settings && appData.settings.normalRanges) ? appData.settings.normalRanges : normalRanges;
-        const inbodyRanges = (appData.settings && appData.settings.normalRangesInbody) ? appData.settings.normalRangesInbody : normalRangesInbody;
-
-        // القائمة 1: التحاليل الطبية
-        document.getElementById('rates-labs-hematology').innerHTML = `
-            ${createRangeInput('wbc', 'WBC', ranges)}
-            ${createRangeInput('rbc', 'RBC', ranges)}
-            ${createRangeInput('mcv', 'MCV', ranges)}
-            ${createRangeInput('mch', 'MCH', ranges)}
-            ${createRangeInput('mchc', 'MCHC', ranges)}
-            ${createRangeInput('rdw', 'RDW', ranges)}
-            ${createRangeInput('hb', 'HB', ranges)}
-            ${createRangeInput('ht', 'HT', ranges)}
-            ${createRangeInput('platelets', 'Platelets', ranges)}
-            ${createRangeInput('esr', 'ESR', ranges)}
-            ${createRangeInput('serum_iron', 'Serum Iron (FR)', ranges)}
-            ${createRangeInput('tibc', 'TIBC', ranges)}
-            ${createRangeInput('ferritin', 'Ferritin', ranges)}
-        `;
-        document.getElementById('rates-labs-sugar').innerHTML = `
-            ${createRangeInput('glucose_fast', 'سكر صيامي', ranges)}
-            ${createRangeInput('glucose_random', 'سكر عشوائي', ranges)}
-            ${createRangeInput('homa_ir', 'مقاومة الانسولين', ranges)}
-        `;
-        document.getElementById('rates-labs-kidney').innerHTML = `
-            ${createRangeInput('cr', 'Cr', ranges)}
-            ${createRangeInput('urea', 'Urea', ranges)}
-            ${createRangeInput('ua', 'UA', ranges)}
-            ${createRangeInput('crcl', 'CrCl', ranges)}
-            ${createRangeInput('egfr', 'eGFR', ranges)}
-        `;
-        document.getElementById('rates-labs-liver').innerHTML = `
-            ${createRangeInput('alt', 'ALT', ranges)}
-            ${createRangeInput('ast', 'AST', ranges)}
-            ${createRangeInput('bili_t', 'T.Bilirubin', ranges)}
-            ${createRangeInput('albumin', 'Albumin', ranges)}
-            ${createRangeInput('crp', 'CRP', ranges)}
-        `;
-        document.getElementById('rates-labs-vitamins').innerHTML = `
-            ${createRangeInput('vit_b6', 'V.B6', ranges)}
-            ${createRangeInput('vit_b9', 'B9 (الفوليك)', ranges)}
-            ${createRangeInput('vit_b12', 'V.B12', ranges)}
-            ${createRangeInput('vit_d3', 'V.D3', ranges)}
-        `;
-        document.getElementById('rates-labs-electrolytes').innerHTML = `
-            ${createRangeInput('k', 'K', ranges)}
-            ${createRangeInput('na', 'Na', ranges)}
-            ${createRangeInput('cl', 'Cl', ranges)}
-            ${createRangeInput('mg', 'Mg', ranges)}
-            ${createRangeInput('p', 'P', ranges)}
-            ${createRangeInput('ca', 'Ca', ranges)}
-        `;
-        document.getElementById('rates-labs-hormones').innerHTML = `
-            ${createRangeInput('tsh', 'TSH', ranges)}
-            ${createRangeInput('t3', 'T3', ranges)}
-            ${createRangeInput('t4', 'T4', ranges)}
-            ${createRangeInput('fsh', 'FSH', ranges)}
-            ${createRangeInput('lh', 'LH', ranges)}
-            ${createRangeInput('testo', 'Testosterone', ranges)}
-            ${createRangeInput('pth', 'PTH', ranges)}
-        `;
-        document.getElementById('rates-labs-cardiac').innerHTML = `
-            ${createRangeInput('troponin', 'Troponin', ranges)}
-            ${createRangeInput('ck', 'CK', ranges)}
-            ${createRangeInput('ckmb', 'CK-MB', ranges)}
-            ${createRangeInput('myoglobin', 'Myoglobin', ranges)}
-        `;
-        document.getElementById('rates-labs-urine').innerHTML = `
-            ${createRangeInput('urine_density', 'الكثافة (Density)', ranges)}
-            ${createRangeInput('urine_rbc', 'كريات حمراء (RBC/HPF)', ranges)}
-            ${createRangeInput('urine_wbc', 'كريات بيضاء (WBC/HPF)', ranges)}
-        `;
-        
-        // القائمة 2: العلامات الحيوية
-        document.getElementById('rates-vitals').innerHTML = `
-            ${createRangeInput('bp_sys', 'الضغط (الانقباضي)', ranges)}
-            ${createRangeInput('bp_dias', 'الضغط (الانبساطي)', ranges)}
-            ${createRangeInput('pulse', 'النبض', ranges)}
-            ${createRangeInput('resp', 'التنفس', ranges)}
-            ${createRangeInput('spo2', 'الاشباع (SpO2)', ranges)}
-            ${createRangeInput('temp', 'الحرارة', ranges)}
-        `;
-        
-        // القائمة 3: المعادلات التغذوية
-        document.getElementById('rates-inbody').innerHTML = `
-            ${createInbodyRangeInput('bmi', 'BMI', inbodyRanges)}
-            ${createInbodyRangeInput('tbf', 'TBF %', inbodyRanges)}
-            ${createInbodyRangeInput('vfi', 'VFI', inbodyRanges)}
-            ${createInbodyRangeInput('tbw', 'TBW %', inbodyRanges)}
-            ${createInbodyRangeInput('sm', 'SM %', inbodyRanges)}
-            ${createInbodyRangeInput('bmc', 'BMC (kg)', inbodyRanges)}
-            ${createInbodyRangeInput('bmr', 'BMR', inbodyRanges)}
-        `;
-    }
-
-    /**
-     * فتح نافذة القيم الطبيعية
+     * فتح صفحة القيم الطبيعية (يُستدعى من الزر)
      */
     function openRatesModal() {
-        populateRatesModal(); // ملء الفورم بالبيانات الحالية
-        ratesModal.classList.remove('hidden');
-        // الانتقال إلى التبويب الأول
-        ratesTabContents.forEach(content => content.classList.add('hidden'));
-        document.getElementById('rates-tab-1').classList.remove('hidden');
-        ratesTabBtns.forEach(b => {
-            b.classList.remove('border-[--color-primary]', 'text-[--color-primary]');
-            b.classList.add('border-transparent', 'text-gray-500');
-        });
-        document.querySelector('.rates-tab-btn[data-tab="1"]').classList.add('border-[--color-primary]', 'text-[--color-primary]');
+        renderRatesPage();
     }
 
     /**
-     * إغلاق نافذة القيم الطبيعية
+     * إغلاق صفحة القيم الطبيعية (للتوافق مع الكود القديم)
      */
     function closeRatesModal() {
-        ratesModal.classList.add('hidden');
+        showWelcomeView();
     }
 
     /**
-     * حفظ القيم الطبيعية الجديدة وإغلاق النافذة
+     * حفظ القيم الطبيعية من صفحة الحدود
      */
-    function saveRatesAndClose() {
-        const formData = new FormData(ratesForm);
-        
-        // التأكد من وجود كائنات الإعدادات
+    function saveRatesPage() {
+        const ratesPageForm = document.getElementById('rates-page-form');
+        if (!ratesPageForm) return;
+        const formData = new FormData(ratesPageForm);
+
         if (!appData.settings) appData.settings = {};
         if (!appData.settings.normalRanges) appData.settings.normalRanges = {};
         if (!appData.settings.normalRangesInbody) appData.settings.normalRangesInbody = {};
 
         const newRanges = appData.settings.normalRanges;
         const newInbodyRanges = appData.settings.normalRangesInbody;
-        
-        // تجميع القيم من normalRanges
-        const rangeKeys = Object.keys(normalRanges); // استخدام المتغير العام كدليل للمفاتيح
-        rangeKeys.forEach(key => {
-            const low = formData.get(`${key}_low`);
-            const high = formData.get(`${key}_high`);
+
+        // حقول normalRanges
+        Object.keys(normalRanges).forEach(key => {
+            const low  = formData.get(key + '_low');
+            const high = formData.get(key + '_high');
             if (!newRanges[key]) newRanges[key] = {};
-            // تحويل القيمة إلى رقم أو undefined إذا كانت فارغة
-            newRanges[key].low = low ? parseFloat(low) : undefined;
+            newRanges[key].low  = low  ? parseFloat(low)  : undefined;
             newRanges[key].high = high ? parseFloat(high) : undefined;
         });
-        
-        // تجميع القيم من normalRangesInbody (غير معتمدة على الجنس)
-        const inbodyKeys = ['bmi', 'vfi', 'sm', 'bmc', 'bmr'];
-        inbodyKeys.forEach(key => {
-            const low = formData.get(`${key}_low`);
-            const high = formData.get(`${key}_high`);
+
+        // حقول normalRangesInbody (غير معتمدة على الجنس)
+        ['bmi','vfi','sm','bmc','bmr'].forEach(key => {
+            const low  = formData.get(key + '_low');
+            const high = formData.get(key + '_high');
             if (!newInbodyRanges[key]) newInbodyRanges[key] = {};
-            newInbodyRanges[key].low = low ? parseFloat(low) : undefined;
+            newInbodyRanges[key].low  = low  ? parseFloat(low)  : undefined;
             newInbodyRanges[key].high = high ? parseFloat(high) : undefined;
         });
 
-        // تجميع القيم من normalRangesInbody (معتمدة على الجنس)
-        ['tbf', 'tbw'].forEach(key => {
-            const male_low = formData.get(`${key}_male_low`);
-            const male_high = formData.get(`${key}_male_high`);
-            const female_low = formData.get(`${key}_female_low`);
-            const female_high = formData.get(`${key}_female_high`);
-            
-            if (!newInbodyRanges[`${key}_male`]) newInbodyRanges[`${key}_male`] = {};
-            newInbodyRanges[`${key}_male`].low = male_low ? parseFloat(male_low) : undefined;
-            newInbodyRanges[`${key}_male`].high = male_high ? parseFloat(male_high) : undefined;
-            
-            if (!newInbodyRanges[`${key}_female`]) newInbodyRanges[`${key}_female`] = {};
-            newInbodyRanges[`${key}_female`].low = female_low ? parseFloat(female_low) : undefined;
-            newInbodyRanges[`${key}_female`].high = female_high ? parseFloat(female_high) : undefined;
+        // حقول normalRangesInbody (معتمدة على الجنس)
+        ['tbf','tbw'].forEach(key => {
+            const ml = formData.get(key + '_male_low');
+            const mh = formData.get(key + '_male_high');
+            const fl = formData.get(key + '_female_low');
+            const fh = formData.get(key + '_female_high');
+            if (!newInbodyRanges[key + '_male'])   newInbodyRanges[key + '_male']   = {};
+            if (!newInbodyRanges[key + '_female']) newInbodyRanges[key + '_female'] = {};
+            newInbodyRanges[key + '_male'].low    = ml ? parseFloat(ml) : undefined;
+            newInbodyRanges[key + '_male'].high   = mh ? parseFloat(mh) : undefined;
+            newInbodyRanges[key + '_female'].low  = fl ? parseFloat(fl) : undefined;
+            newInbodyRanges[key + '_female'].high = fh ? parseFloat(fh) : undefined;
         });
-        
-        // تحديث المتغيرات العامة (العاملة) لتطبيق التغييرات فوراً
-        normalRanges = newRanges;
+
+        normalRanges      = newRanges;
         normalRangesInbody = newInbodyRanges;
 
         saveDataToLocalStorage();
-        showToast('تم حفظ القيم الطبيعية بنجاح', 'success');
-        closeRatesModal();
+        showToast('✅ تم حفظ القيم الطبيعية بنجاح', 'success');
+    }
+
+    /**
+     * للتوافق مع أي استدعاء قديم لـ saveRatesAndClose
+     */
+    function saveRatesAndClose() {
+        saveRatesPage();
     }
 
 
