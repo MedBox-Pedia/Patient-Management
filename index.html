@@ -6854,28 +6854,34 @@
 
     // تمييز المريض في القائمة الجانبية بتأثير وميض
     window.highlightPatientInSidebar = function(patientId) {
-        // فتح القائمة الجانبية أولاً إن كانت مغلقة
+        // فتح القائمة الجانبية أولاً
         openSidebar();
 
-        // الانتقال إلى عرض قائمة المرضى إن لزم
+        // تحديث الحالة الحالية
+        currentView = 'patient_management';
+
+        // إظهار قائمة المرضى دائماً
         var sidebarPatientView = document.getElementById('sidebar-patient-list-view');
         var sidebarToolsViewEl = document.getElementById('sidebar-tools-view');
         var sidebarSettingsViewEl = document.getElementById('sidebar-settings-view');
-        if (sidebarPatientView && sidebarPatientView.classList.contains('hidden')) {
-            // إظهار عرض قائمة المرضى مباشرةً دون الحاجة للضغط على الزر
-            if (sidebarToolsViewEl) sidebarToolsViewEl.classList.remove('hidden');
-            sidebarPatientView.classList.remove('hidden');
-            if (sidebarSettingsViewEl) sidebarSettingsViewEl.classList.add('hidden');
+        if (sidebarToolsViewEl) sidebarToolsViewEl.classList.remove('hidden');
+        if (sidebarPatientView) sidebarPatientView.classList.remove('hidden');
+        if (sidebarSettingsViewEl) sidebarSettingsViewEl.classList.add('hidden');
+
+        // إذا كانت القائمة فارغة نملأها أولاً
+        var container = document.getElementById('patient-list-container');
+        if (container && container.children.length === 0) {
+            renderPatientList();
         }
 
-        // دالة تنفيذ التمييز بعد ضمان وجود المريض في DOM
-        function _doHighlight() {
-            var toggleBtn = document.querySelector('.patient-item-toggle[data-id="' + patientId + '"]');
-            if (!toggleBtn) return false;
-            var patientEl = toggleBtn.closest('.bg-gray-50');
+        // دالة الانتقال للمريض في القائمة
+        function _scrollToPatient() {
+            var nameEl = document.querySelector('.patient-item-name[data-id="' + patientId + '"]');
+            if (!nameEl) return false;
+            var patientEl = nameEl.closest('.bg-gray-50');
             if (!patientEl) return false;
 
-            // التمرير إليه فقط بدون وميض
+            // التمرير إليه
             patientEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
 
             // توسيع قائمة زياراته إن كانت مخفية
@@ -6885,16 +6891,14 @@
                 visitsList.classList.remove('hidden');
                 if (icon) icon.classList.add('rotate-180');
             }
-
             return true;
         }
 
         setTimeout(function() {
-            // محاولة أولى: قد يكون المريض محملاً بالفعل
-            if (_doHighlight()) return;
+            // محاولة أولى
+            if (_scrollToPatient()) return;
 
-            // المريض غير موجود في DOM بسبب Lazy Loading
-            // نبحث عن اسمه لعمل renderPatientList بفلتر اسمه
+            // المريض غير موجود في DOM بسبب Lazy Loading → فلترة باسمه
             var allPatients = (typeof appData !== 'undefined' && appData.patients) ? appData.patients : [];
             var pat = null;
             for (var i = 0; i < allPatients.length; i++) {
@@ -6902,19 +6906,16 @@
             }
             if (!pat) return;
 
-            // رسم القائمة بفلتر اسم المريض لضمان ظهوره
             renderPatientList(pat.name_ar);
-
             setTimeout(function() {
-                if (_doHighlight()) {
-                    // إعادة عرض القائمة الكاملة بعد لحظة مع إبقاء التمييز
-                    setTimeout(function() {
-                        renderPatientList('');
-                        setTimeout(function() { _doHighlight(); }, 200);
-                    }, 1800);
-                }
+                _scrollToPatient();
+                // إعادة القائمة الكاملة بعد ثانيتين
+                setTimeout(function() {
+                    renderPatientList('');
+                    setTimeout(_scrollToPatient, 150);
+                }, 2000);
             }, 200);
-        }, 380);
+        }, 420);
     };
 
     function showToast(message, type = 'success', duration = 3000) {
