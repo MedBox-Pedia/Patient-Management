@@ -9414,12 +9414,11 @@
             });
         });
 
-        // الضغط على اسم المريض: عرض ملخصه وإغلاق القائمة الجانبية
+        // الضغط على اسم المريض: عرض ملخصه
         document.querySelectorAll('.patient-item-name').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 const patientId = btn.dataset.id;
                 displayPatientSummary(patientId);
-                closeSidebar();
             });
         });
         
@@ -9428,9 +9427,6 @@
                 const patientId = btn.dataset.id;
                 const visitIndex = btn.dataset.vindex;
                 displayPatientVisitData(patientId, visitIndex);
-                
-                // إغلاق القائمة الجانبية تلقائياً عند اختيار مراجعة
-                closeSidebar();
             });
         });
         
@@ -9528,9 +9524,6 @@
         if (!patient) return;
         const visit = patient.visits[visitIndex];
         if (!visit) return;
-
-        // إغلاق القائمة الجانبية تلقائياً عند عرض زيارة
-        closeSidebar();
 
         // حفظ المريض والزيارة الحالية للطباعة
         currentViewPatient = patient;
