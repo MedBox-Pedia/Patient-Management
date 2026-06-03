@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MedBox-Pedia v 2-2-2</title>
+    <title>MedBox-Pedia v 2-2-3</title>
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -2917,7 +2917,7 @@
                         <img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" id="dash-logo-img" alt="MedBox Logo" style="width:52px;height:52px;object-fit:contain;border-radius:10px;background:rgba(255,255,255,0.15);padding:4px;flex-shrink:0;">
                         <div style="flex:1;min-width:0;">
                             <h2 style="color:#fff;font-size:1.2rem;font-weight:800;margin:0;letter-spacing:-0.3px;">MedBox – Pedia</h2>
-                            <p style="color:rgba(255,255,255,0.55);font-size:0.72rem;margin:1px 0 2px;letter-spacing:0.5px;font-family:'Courier New',monospace;font-weight:600;">V 2-2-2 | 29-5-26</p>
+                            <p style="color:rgba(255,255,255,0.55);font-size:0.72rem;margin:1px 0 2px;letter-spacing:0.5px;font-family:'Courier New',monospace;font-weight:600;">V 2-2-3 | 29-5-26</p>
                             <p style="color:rgba(255,255,255,0.82);font-size:0.82rem;margin:0;">وسيلة دعم شاملة للممارسين الصحيين</p>
                         </div>
                         <!-- بيانات العيادة مكان التاريخ في أقصى اليسار -->
@@ -6995,12 +6995,19 @@
                     if (typeof _autoSyncTimer !== 'undefined' && _autoSyncTimer) {
                         if (typeof startAutoSync === 'function') startAutoSync();
                     }
-                    // (إصلاح) تحميل آخر نسخة من Drive تلقائياً بعد تجديد التوكن
-                    // فقط إذا كان المستخدم مسجلاً أصلاً (جلسة موجودة)
+                    // استعادة جلسة المستخدم إذا كانت محفوظة ولكن appData.currentUser فارغ
                     var _hasSess = false;
                     try {
                         var _s = localStorage.getItem('mbSession');
-                        if (_s) { var _so = JSON.parse(_s); _hasSess = !!(_so && _so.currentUser); }
+                        if (_s) {
+                            var _so = JSON.parse(_s);
+                            _hasSess = !!(_so && _so.currentUser);
+                            if (_hasSess && typeof appData !== 'undefined' && !appData.currentUser) {
+                                appData.currentUser = _so.currentUser;
+                                appData.currentAccountId = _so.currentAccountId || null;
+                                if (typeof updateUI === 'function') updateUI();
+                            }
+                        }
                     } catch(e) {}
                     if (_hasSess || (typeof appData !== 'undefined' && appData.currentUser)) {
                         if (typeof findOrCreateDriveFile === 'function' && typeof loadFromDrivePromptSilent === 'function') {
@@ -16617,6 +16624,8 @@ function disconnectGoogleDrive() {
     // إيقاف الحفظ التلقائي
     if (_autoSyncTimer) { clearInterval(_autoSyncTimer); _autoSyncTimer = null; }
     if (_autoSyncCountdownTimer) { clearInterval(_autoSyncCountdownTimer); _autoSyncCountdownTimer = null; }
+    // إيقاف مؤقت التجديد
+    if (window._tokenRefreshTimer) { clearInterval(window._tokenRefreshTimer); window._tokenRefreshTimer = null; }
     const toggle = document.getElementById('auto-sync-toggle');
     if (toggle) toggle.checked = false;
     const nextEl = document.getElementById('auto-sync-next');
@@ -16625,6 +16634,75 @@ function disconnectGoogleDrive() {
     addSyncLog('تم قطع الاتصال', 'info');
     if (typeof showToast === 'function') showToast('تم قطع الاتصال بـ Google Drive', 'success');
 }
+
+// ===== تجديد توكن Google تلقائياً عند العودة للمتصفح =====
+(function _setupTokenAutoRefresh() {
+
+    // تجديد صامت للتوكن عبر Google OAuth2
+    function _tryRefreshToken() {
+        // لا نجدد إذا لم يكن هناك مستخدم Google محفوظ
+        var savedGUser = null;
+        try { savedGUser = localStorage.getItem('mbGoogleUser'); } catch(e) {}
+        if (!savedGUser) return;
+
+        // لا نجدد إذا كان التوكن لا يزال صالحاً لأكثر من 10 دقائق
+        if (_cloudAccessToken && _cloudTokenExpiry && ((_cloudTokenExpiry - Date.now()) > 10 * 60 * 1000)) return;
+
+        try {
+            if (typeof google === 'undefined' || !google.accounts || !google.accounts.oauth2) return;
+            var client = google.accounts.oauth2.initTokenClient({
+                client_id: GOOGLE_CLIENT_ID,
+                scope: 'https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile',
+                prompt: '',
+                callback: function(response) {
+                    if (response && !response.error && response.access_token) {
+                        _cloudAccessToken = response.access_token;
+                        _cloudTokenExpiry = Date.now() + (response.expires_in * 1000);
+                        window._cloudAccessToken = _cloudAccessToken;
+                        window._cloudTokenExpiry = _cloudTokenExpiry;
+                        updateCloudUI();
+                        // استعادة جلسة المستخدم إذا انتهت بسبب إغلاق المتصفح
+                        try {
+                            var _s = localStorage.getItem('mbSession');
+                            if (_s) {
+                                var _so = JSON.parse(_s);
+                                if (_so && _so.currentUser && typeof appData !== 'undefined' && !appData.currentUser) {
+                                    appData.currentUser = _so.currentUser;
+                                    appData.currentAccountId = _so.currentAccountId || null;
+                                    if (typeof updateUI === 'function') updateUI();
+                                }
+                            }
+                        } catch(e) {}
+                        // إعادة تشغيل الحفظ التلقائي إن كان مفعلاً
+                        if (typeof startAutoSync === 'function') {
+                            var toggle = document.getElementById('auto-sync-toggle') || document.getElementById('topbar-auto-sync-toggle');
+                            if (toggle && toggle.checked) startAutoSync();
+                        }
+                    }
+                }
+            });
+            client.requestAccessToken({ prompt: '' });
+        } catch(e) {}
+    }
+
+    // تجديد عند العودة لتبويب المتصفح
+    document.addEventListener('visibilitychange', function() {
+        if (!document.hidden) {
+            setTimeout(_tryRefreshToken, 300);
+        }
+    });
+
+    // تجديد عند تركيز النافذة (مثلاً بعد Alt+Tab)
+    window.addEventListener('focus', function() {
+        setTimeout(_tryRefreshToken, 300);
+    });
+
+    // تجديد دوري كل 45 دقيقة (التوكن ينتهي بعد 60 دقيقة)
+    window._tokenRefreshTimer = setInterval(_tryRefreshToken, 45 * 60 * 1000);
+
+    // تعريف عالمي للاستخدام من أماكن أخرى
+    window._tryRefreshToken = _tryRefreshToken;
+})();
 
 // --- البحث عن الملف في Drive ---
 async function findOrCreateDriveFile() {
