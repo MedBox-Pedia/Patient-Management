@@ -20314,16 +20314,28 @@ window._loadGeminiKeyFromDrive = async function() {
 
     var PORTAL_KEY = 'medbox_patient_accounts';
 
-    function getAccounts() {
+    // ── قراءة الحسابات من localStorage ──
+    function getPortalAccounts() {
         try { return JSON.parse(localStorage.getItem(PORTAL_KEY) || '{}'); } catch(e) { return {}; }
     }
-    function saveAccounts(accounts) {
+    function savePortalAccounts(accounts) {
         localStorage.setItem(PORTAL_KEY, JSON.stringify(accounts));
+    }
+
+    // ── جلب قائمة المرضى من المصدر الصحيح ──
+    function getPatients() {
+        // window._appData هو المرجع الحقيقي المعرَّف داخل الـ IIFE
+        if (window._appData && Array.isArray(window._appData.patients) && window._appData.patients.length > 0) {
+            return window._appData.patients;
+        }
+        // احتياط: قراءة من IndexedDB عبر النسخة المؤقتة إن وُجدت
+        if (window._lastLoadedPatients) return window._lastLoadedPatients;
+        return [];
     }
 
     function generatePassword(len) {
         len = len || 8;
-        var chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789abcdefghjkmnpqrstuvwxyz';
+        var chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789abcdefghjkmnpqrstuvwxyz@#!';
         var pass = '';
         for (var i = 0; i < len; i++) { pass += chars[Math.floor(Math.random() * chars.length)]; }
         return pass;
@@ -20334,22 +20346,31 @@ window._loadGeminiKeyFromDrive = async function() {
         return base + '?portal=' + encodeURIComponent(nationalId);
     }
 
-    // تحقق من رابط البوابة عند التحميل
+    // ── تحقق من رابط البوابة عند التحميل ──
     document.addEventListener('DOMContentLoaded', function() {
         var params = new URLSearchParams(window.location.search);
         if (params.get('portal')) {
-            setTimeout(function() { document.getElementById('patient-login-page').classList.add('active'); }, 200);
+            setTimeout(function() { document.getElementById('patient-login-page').classList.add('active'); }, 400);
         }
 
-        // إضافة زر إدارة الحسابات في القائمة الجانبية
-        var sidebarSettingsView = document.getElementById('sidebar-settings-view');
-        if (sidebarSettingsView) {
-            var btn = document.createElement('button');
-            btn.className = 'w-full flex items-center gap-3 px-4 py-3 text-sm font-semibold text-gray-700 hover:bg-[var(--color-primary-light)] rounded-xl transition-colors';
-            btn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-[#0790AC]" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15 9h3.75M15 12h3.75M15 15h3.75M4.5 19.5h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5zm6-10.125a1.875 1.875 0 11-3.75 0 1.875 1.875 0 013.75 0zm1.294 6.336a6.721 6.721 0 01-3.17.789 6.721 6.721 0 01-3.168-.789 3.376 3.376 0 016.338 0z" /></svg> إدارة حسابات المرضى';
-            btn.onclick = function() { openPatientPortalModal(); };
-            sidebarSettingsView.appendChild(btn);
-        }
+        // إضافة زر إدارة الحسابات في القائمة الجانبية (يُحاول كل 500ms حتى يجد العنصر)
+        var attempts = 0;
+        var addBtn = setInterval(function() {
+            attempts++;
+            var sidebarSettingsView = document.getElementById('sidebar-settings-view');
+            if (sidebarSettingsView && !document.getElementById('portal-mgmt-btn')) {
+                var btn = document.createElement('button');
+                btn.id = 'portal-mgmt-btn';
+                btn.style.cssText = 'width:100%;display:flex;align-items:center;gap:10px;padding:10px 14px;background:none;border:none;font-family:Cairo,sans-serif;font-size:0.88rem;font-weight:600;color:#374151;cursor:pointer;border-radius:12px;text-align:right;transition:background 0.18s;';
+                btn.onmouseover = function(){ this.style.background='#e6f4f7'; this.style.color='#0790AC'; };
+                btn.onmouseout  = function(){ this.style.background=''; this.style.color='#374151'; };
+                btn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" style="width:20px;height:20px;color:#0790AC;flex-shrink:0;" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15 9h3.75M15 12h3.75M15 15h3.75M4.5 19.5h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5zm6-10.125a1.875 1.875 0 11-3.75 0 1.875 1.875 0 013.75 0zm1.294 6.336a6.721 6.721 0 01-3.17.789 6.721 6.721 0 01-3.168-.789 3.376 3.376 0 016.338 0z" /></svg> إدارة حسابات المرضى';
+                btn.onclick = function() { openPatientPortalModal(); };
+                sidebarSettingsView.appendChild(btn);
+                clearInterval(addBtn);
+            }
+            if (attempts > 20) clearInterval(addBtn);
+        }, 500);
     });
 
     window.openPatientPortalModal = function() {
@@ -20362,40 +20383,39 @@ window._loadGeminiKeyFromDrive = async function() {
 
     function renderPortalModal() {
         var body = document.getElementById('patient-portal-modal-body');
-        var accounts = getAccounts();
-        // جلب المرضى من appData
-        var patients = (window.appData && window.appData.patients) ? window.appData.patients : [];
+        var accounts = getPortalAccounts();
+        var patients = getPatients();
 
         var html = '';
-        // زر إنشاء حسابات لجميع المرضى
         html += '<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:16px;">';
         html += '<p style="font-size:0.82rem;color:#6b7280;margin:0;">إنشاء وإدارة حسابات لعرض النتائج الطبية</p>';
         html += '<button onclick="generateAllPatientAccounts()" style="background:#0790AC;color:#fff;border:none;border-radius:8px;padding:8px 14px;font-family:Cairo,sans-serif;font-size:0.82rem;font-weight:700;cursor:pointer;">⚡ إنشاء حسابات للكل</button>';
         html += '</div>';
 
         if (patients.length === 0) {
-            html += '<div style="text-align:center;padding:32px;color:#9ca3af;font-size:0.88rem;">لا يوجد مرضى مسجلون</div>';
+            html += '<div style="text-align:center;padding:32px;color:#9ca3af;font-size:0.88rem;">⚠️ لا يوجد مرضى مسجلون — تأكد من تسجيل الدخول أولاً</div>';
         } else {
             html += '<div id="portal-patients-list">';
             patients.forEach(function(p) {
-                var acc = accounts[p.id];
+                var pid = p.id || p.national_id;
+                var acc = accounts[pid];
                 var hasAcc = !!acc;
                 html += '<div class="patient-account-row">';
                 html += '<div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#0790AC,#056a80);display:flex;align-items:center;justify-content:center;color:#fff;font-size:1rem;flex-shrink:0;">👤</div>';
                 html += '<div style="flex:1;min-width:0;">';
                 html += '<div style="font-weight:700;color:#374151;font-size:0.9rem;">' + (p.name_ar || 'غير محدد') + '</div>';
-                html += '<div style="font-size:0.75rem;color:#9ca3af;">رقم: ' + (p.national_id || p.id) + '</div>';
+                html += '<div style="font-size:0.75rem;color:#9ca3af;">رقم: ' + (p.national_id || pid) + '</div>';
                 if (hasAcc) {
-                    html += '<div style="font-size:0.75rem;color:#16a34a;font-weight:600;margin-top:2px;">✅ كلمة السر: <span style="font-family:monospace;background:#f0fdf4;padding:1px 6px;border-radius:4px;">' + acc.password + '</span></div>';
+                    html += '<div style="font-size:0.75rem;color:#16a34a;font-weight:600;margin-top:2px;">✅ كلمة السر: <span style="font-family:monospace;background:#f0fdf4;padding:1px 6px;border-radius:4px;letter-spacing:1px;">' + acc.password + '</span></div>';
                 }
                 html += '</div>';
                 html += '<div style="display:flex;gap:6px;flex-wrap:wrap;">';
                 if (!hasAcc) {
-                    html += '<button onclick="createPatientAccount(\'' + p.id + '\')" style="background:#0790AC;color:#fff;border:none;border-radius:7px;padding:6px 10px;font-family:Cairo,sans-serif;font-size:0.75rem;font-weight:700;cursor:pointer;">إنشاء حساب</button>';
+                    html += '<button onclick="createPatientAccount(\'' + pid + '\')" style="background:#0790AC;color:#fff;border:none;border-radius:7px;padding:6px 10px;font-family:Cairo,sans-serif;font-size:0.75rem;font-weight:700;cursor:pointer;">إنشاء حساب</button>';
                 } else {
-                    html += '<button onclick="regeneratePassword(\'' + p.id + '\')" style="background:#f59e0b;color:#fff;border:none;border-radius:7px;padding:6px 10px;font-family:Cairo,sans-serif;font-size:0.75rem;font-weight:700;cursor:pointer;">🔄 كلمة سر جديدة</button>';
-                    html += '<button onclick="copyPortalLink(\'' + p.id + '\')" style="background:#6366f1;color:#fff;border:none;border-radius:7px;padding:6px 10px;font-family:Cairo,sans-serif;font-size:0.75rem;font-weight:700;cursor:pointer;">🔗 نسخ الرابط</button>';
-                    html += '<button onclick="deletePatientAccount(\'' + p.id + '\')" style="background:#fee2e2;color:#dc2626;border:none;border-radius:7px;padding:6px 10px;font-family:Cairo,sans-serif;font-size:0.75rem;font-weight:700;cursor:pointer;">حذف</button>';
+                    html += '<button onclick="regeneratePatientPassword(\'' + pid + '\')" style="background:#f59e0b;color:#fff;border:none;border-radius:7px;padding:6px 10px;font-family:Cairo,sans-serif;font-size:0.75rem;font-weight:700;cursor:pointer;">🔄 سر جديد</button>';
+                    html += '<button onclick="copyPortalLink(\'' + pid + '\')" style="background:#6366f1;color:#fff;border:none;border-radius:7px;padding:6px 10px;font-family:Cairo,sans-serif;font-size:0.75rem;font-weight:700;cursor:pointer;">🔗 رابط</button>';
+                    html += '<button onclick="deletePatientAccount(\'' + pid + '\')" style="background:#fee2e2;color:#dc2626;border:none;border-radius:7px;padding:6px 10px;font-family:Cairo,sans-serif;font-size:0.75rem;font-weight:700;cursor:pointer;">حذف</button>';
                 }
                 html += '</div>';
                 html += '</div>';
@@ -20406,37 +20426,45 @@ window._loadGeminiKeyFromDrive = async function() {
     }
 
     window.createPatientAccount = function(patientId) {
-        var accounts = getAccounts();
+        var accounts = getPortalAccounts();
         var pass = generatePassword(8);
         accounts[patientId] = { password: pass, createdAt: new Date().toISOString() };
-        saveAccounts(accounts);
+        savePortalAccounts(accounts);
         renderPortalModal();
         if (typeof showToast === 'function') showToast('✅ تم إنشاء الحساب بنجاح', 'success');
     };
 
-    window.regeneratePassword = function(patientId) {
-        var accounts = getAccounts();
+    window.regeneratePatientPassword = function(patientId) {
+        var accounts = getPortalAccounts();
         if (!accounts[patientId]) return;
         accounts[patientId].password = generatePassword(8);
         accounts[patientId].updatedAt = new Date().toISOString();
-        saveAccounts(accounts);
+        savePortalAccounts(accounts);
         renderPortalModal();
         if (typeof showToast === 'function') showToast('🔄 تم تجديد كلمة السر', 'success');
     };
 
     window.generateAllPatientAccounts = function() {
-        var accounts = getAccounts();
-        var patients = (window.appData && window.appData.patients) ? window.appData.patients : [];
+        var patients = getPatients();
+        if (!patients || patients.length === 0) {
+            if (typeof showToast === 'function') showToast('⚠️ لا يوجد مرضى — تأكد من تسجيل الدخول', 'error');
+            return;
+        }
+        var accounts = getPortalAccounts();
         var count = 0;
         patients.forEach(function(p) {
-            if (!accounts[p.id]) {
-                accounts[p.id] = { password: generatePassword(8), createdAt: new Date().toISOString() };
+            var pid = p.id || p.national_id;
+            if (!accounts[pid]) {
+                accounts[pid] = { password: generatePassword(8), createdAt: new Date().toISOString() };
                 count++;
             }
         });
-        saveAccounts(accounts);
+        savePortalAccounts(accounts);
         renderPortalModal();
-        if (typeof showToast === 'function') showToast('✅ تم إنشاء ' + count + ' حساب جديد', 'success');
+        if (typeof showToast === 'function') {
+            if (count > 0) showToast('✅ تم إنشاء ' + count + ' حساب جديد', 'success');
+            else showToast('ℹ️ جميع المرضى لديهم حسابات بالفعل', 'info');
+        }
     };
 
     window.copyPortalLink = function(patientId) {
@@ -20454,14 +20482,14 @@ window._loadGeminiKeyFromDrive = async function() {
     };
 
     window.deletePatientAccount = function(patientId) {
-        var accounts = getAccounts();
+        var accounts = getPortalAccounts();
         delete accounts[patientId];
-        saveAccounts(accounts);
+        savePortalAccounts(accounts);
         renderPortalModal();
         if (typeof showToast === 'function') showToast('تم حذف الحساب', 'info');
     };
 
-    // ===== تسجيل دخول المريض =====
+    // ── تسجيل دخول المريض ──
     window.patientPortalLogin = function() {
         var name = (document.getElementById('portal-login-name').value || '').trim();
         var pass = (document.getElementById('portal-login-pass').value || '').trim();
@@ -20470,14 +20498,17 @@ window._loadGeminiKeyFromDrive = async function() {
 
         if (!name || !pass) { errEl.textContent = 'يرجى إدخال الاسم وكلمة السر'; errEl.style.display = 'block'; return; }
 
-        var patients = (window.appData && window.appData.patients) ? window.appData.patients : [];
-        var accounts = getAccounts();
+        var patients = getPatients();
+        var accounts = getPortalAccounts();
         var matched = null;
 
         patients.forEach(function(p) {
-            var nameAr = (p.name_ar || '').trim().toLowerCase();
-            var inputName = name.trim().toLowerCase();
-            if (nameAr === inputName && accounts[p.id] && accounts[p.id].password === pass) {
+            var pid = p.id || p.national_id;
+            var nameAr = (p.name_ar || '').trim();
+            var inputName = name.trim();
+            // مقارنة غير حساسة لحالة الأحرف ومع تجاهل المسافات الزائدة
+            if (nameAr.toLowerCase() === inputName.toLowerCase() &&
+                accounts[pid] && accounts[pid].password === pass) {
                 matched = p;
             }
         });
@@ -20488,7 +20519,6 @@ window._loadGeminiKeyFromDrive = async function() {
             return;
         }
 
-        // دخول ناجح
         document.getElementById('patient-login-page').classList.remove('active');
         showPatientPortalView(matched);
     };
@@ -20512,7 +20542,6 @@ window._loadGeminiKeyFromDrive = async function() {
         }
 
         var html = '';
-        // عرض الزيارات من الأحدث للأقدم
         var visits = patient.visits.slice().reverse();
 
         visits.forEach(function(visit, idx) {
@@ -20523,14 +20552,11 @@ window._loadGeminiKeyFromDrive = async function() {
             html += '<span style="font-size:0.75rem;color:#9ca3af;">رقم الزيارة: ' + (patient.visits.length - idx) + '</span>';
             html += '</div>';
 
-            // المعلومات الأساسية
-            var p = visit.personal || {};
             var phy = visit.physical || {};
             var vitals = visit.vitals || {};
             var health = visit.health || {};
             var labs = visit.labs || {};
 
-            // القياسات
             html += '<div class="portal-section-title">⚖️ القياسات الجسدية</div>';
             html += '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px;margin-bottom:10px;">';
             if (phy.height) html += portalStat('الطول', phy.height + ' cm');
@@ -20541,38 +20567,28 @@ window._loadGeminiKeyFromDrive = async function() {
             if (vitals.spo2) html += portalStat('SpO₂', vitals.spo2 + '%');
             html += '</div>';
 
-            // التشخيص
             if (health.current_complaint || health.medical_diagnosis) {
                 html += '<div class="portal-section-title">🩺 التشخيص والشكوى</div>';
-                if (health.current_complaint) {
-                    html += '<div style="font-size:0.85rem;color:#374151;margin-bottom:6px;"><b>الشكوى:</b> ' + health.current_complaint + '</div>';
-                }
-                if (health.medical_diagnosis) {
-                    html += '<div style="font-size:0.85rem;color:#374151;margin-bottom:6px;"><b>التشخيص:</b> ' + health.medical_diagnosis + '</div>';
-                }
+                if (health.current_complaint) html += '<div style="font-size:0.85rem;color:#374151;margin-bottom:6px;"><b>الشكوى:</b> ' + health.current_complaint + '</div>';
+                if (health.medical_diagnosis) html += '<div style="font-size:0.85rem;color:#374151;margin-bottom:6px;"><b>التشخيص:</b> ' + health.medical_diagnosis + '</div>';
             }
 
-            // التحاليل المخبرية
             var labItems = [
-                ['lab_wbc','WBC'],['lab_rbc','RBC'],['lab_hb','HB'],['lab_hba1c','HbA1c'],
-                ['lab_glucose_fast','سكر صيام'],['lab_glucose_random','سكر عشوائي'],
-                ['lab_cr','Creatinine'],['lab_urea','Urea'],['lab_alt','ALT'],['lab_ast','AST'],
-                ['lab_cholesterol','كوليسترول'],['lab_tg','TG'],['lab_vit_d3','Vit D3'],
+                ['wbc','WBC'],['rbc','RBC'],['hb','HB'],['hba1c','HbA1c'],
+                ['glucose_fast','سكر صيام'],['glucose_random','سكر عشوائي'],
+                ['cr','Creatinine'],['urea','Urea'],['alt','ALT'],['ast','AST'],
+                ['cholesterol','كوليسترول'],['tg','TG'],['vit_d3','Vit D3'],
             ];
             var labHtml = '';
             labItems.forEach(function(item) {
-                var key = item[0].replace('lab_','');
-                var val = labs[key];
-                if (val !== undefined && val !== '') {
-                    labHtml += portalStat(item[1], val);
-                }
+                var val = labs[item[0]];
+                if (val !== undefined && val !== '') { labHtml += portalStat(item[1], val); }
             });
             if (labHtml) {
                 html += '<div class="portal-section-title">🧪 التحاليل المخبرية</div>';
                 html += '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px;margin-bottom:10px;">' + labHtml + '</div>';
             }
 
-            // الأدوية
             var meds = health.medications || [];
             if (meds.length > 0) {
                 html += '<div class="portal-section-title">💊 الأدوية الموصوفة</div>';
@@ -20586,8 +20602,7 @@ window._loadGeminiKeyFromDrive = async function() {
                 });
                 html += '</div>';
             }
-
-            html += '</div>'; // end patient-portal-card
+            html += '</div>';
         });
         return html;
     }
@@ -20598,11 +20613,6 @@ window._loadGeminiKeyFromDrive = async function() {
                '<div style="font-size:0.95rem;font-weight:800;color:#0790AC;">' + value + '</div>' +
                '</div>';
     }
-
-    // تعريض الدوال
-    window._portalGetAccounts = getAccounts;
-    window._portalSaveAccounts = saveAccounts;
-    window._portalGeneratePassword = generatePassword;
 
 })();
 </script>
