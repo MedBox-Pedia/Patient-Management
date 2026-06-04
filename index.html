@@ -3395,9 +3395,21 @@ window.addEventListener('resize', setTopbarHeight);
             <!-- رأس النافذة -->
             <div class="flex justify-between items-center p-4 border-b border-gray-200">
                 <h2 id="patient-modal-title" class="text-xl font-bold text-[--color-primary]">إضافة مريض جديد</h2>
-                <button id="patient-modal-close-btn" class="text-gray-500 hover:text-red-600">
-                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
-                </button>
+                <div class="flex items-center gap-2">
+                    <!-- زر الإدخال الصوتي -->
+                    <button onclick="openVoicePanel()" title="إدخال صوتي"
+                        style="display:flex;align-items:center;gap:6px;padding:7px 13px;background:#ede9fe;color:#7c3aed;border:none;border-radius:9px;font-family:'Cairo',sans-serif;font-size:0.82rem;font-weight:700;cursor:pointer;transition:all 0.18s;"
+                        onmouseover="this.style.background='#7c3aed';this.style.color='#fff';"
+                        onmouseout="this.style.background='#ede9fe';this.style.color='#7c3aed';">
+                        <svg xmlns="http://www.w3.org/2000/svg" style="width:17px;height:17px;flex-shrink:0;" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 01-3-3V4.5a3 3 0 116 0v8.25a3 3 0 01-3 3z" />
+                        </svg>
+                        <span>إدخال صوتي</span>
+                    </button>
+                    <button id="patient-modal-close-btn" class="text-gray-500 hover:text-red-600">
+                        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+                    </button>
+                </div>
             </div>
 
             <!-- شريط التنقل بين القوائم -->
@@ -20210,6 +20222,7 @@ window._loadGeminiKeyFromDrive = async function() {
         if (menu)     menu.classList.remove('open');
         if (backdrop) backdrop.classList.remove('open');
     }
+    window._closePrintMenu = _closePrintMenu;
 
     // إغلاق عند النقر خارج القائمة
     document.addEventListener('click', function(e) {
@@ -20576,16 +20589,7 @@ window._loadGeminiKeyFromDrive = async function() {
         document.getElementById('voice-transcript-box').textContent = '';
     };
 
-    // إضافة زر الميكروفون في الشريط العلوي بعد تحميل الصفحة
-    document.addEventListener('DOMContentLoaded', function() {
-        var topRight = document.querySelector('.flex.items-center.space-x-1.sm\\:space-x-2.space-x-reverse');
-        if (topRight) {
-            var voiceBtn = document.createElement('div');
-            voiceBtn.className = 'group relative';
-            voiceBtn.innerHTML = '<button class="top-bar-icon-btn" style="color:#0790AC" onclick="openVoicePanel()" title="الإدخال الصوتي"><svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 01-3-3V4.5a3 3 0 116 0v8.25a3 3 0 01-3 3z" /></svg><span class="tooltip">إدخال صوتي</span></button>';
-            topRight.insertBefore(voiceBtn, topRight.firstChild);
-        }
-    });
+    // زر الإدخال الصوتي تم نقله إلى قائمة إجراءات الزيارة (print-menu-dropdown)
 })();
 
 // =============================================
