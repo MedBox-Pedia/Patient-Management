@@ -3133,6 +3133,14 @@ window.addEventListener('resize', setTopbarHeight);
                     <button id="manage-limits-btn" class="w-full text-right p-3 rounded-lg hover:bg-gray-100 transition-colors hidden">
                         إدارة الحدود الطبيعية
                     </button>
+                    <!-- زر إدارة حسابات المرضى (بوابة المريض) -->
+                    <button id="portal-mgmt-btn" onclick="openPatientPortalModal()" class="w-full text-right p-3 rounded-lg hover:bg-[#e6f4f7] transition-colors flex items-center gap-2" style="color:#374151;background:none;border:none;cursor:pointer;font-family:Cairo,sans-serif;font-size:0.9rem;">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" style="color:#0790AC;flex-shrink:0;" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 9h3.75M15 12h3.75M15 15h3.75M4.5 19.5h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5zm6-10.125a1.875 1.875 0 11-3.75 0 1.875 1.875 0 013.75 0zm1.294 6.336a6.721 6.721 0 01-3.17.789 6.721 6.721 0 01-3.168-.789 3.376 3.376 0 016.338 0z" />
+                        </svg>
+                        <span>إدارة حسابات المرضى</span>
+                    </button>
+
                     <!-- زر البرامج الغذائية -->
                     <div class="auto-sync-toggle" style="padding: 10px 12px; background: #f9fafb; border-radius: 10px; border: 1px solid #e5e7eb;">
                         <div>
@@ -20369,25 +20377,6 @@ window._loadGeminiKeyFromDrive = async function() {
         if (params.get('portal')) {
             setTimeout(function() { document.getElementById('patient-login-page').classList.add('active'); }, 400);
         }
-
-        // إضافة زر إدارة الحسابات في القائمة الجانبية (يُحاول كل 500ms حتى يجد العنصر)
-        var attempts = 0;
-        var addBtn = setInterval(function() {
-            attempts++;
-            var sidebarSettingsView = document.getElementById('sidebar-settings-view');
-            if (sidebarSettingsView && !document.getElementById('portal-mgmt-btn')) {
-                var btn = document.createElement('button');
-                btn.id = 'portal-mgmt-btn';
-                btn.style.cssText = 'width:100%;display:flex;align-items:center;gap:10px;padding:10px 14px;background:none;border:none;font-family:Cairo,sans-serif;font-size:0.88rem;font-weight:600;color:#374151;cursor:pointer;border-radius:12px;text-align:right;transition:background 0.18s;';
-                btn.onmouseover = function(){ this.style.background='#e6f4f7'; this.style.color='#0790AC'; };
-                btn.onmouseout  = function(){ this.style.background=''; this.style.color='#374151'; };
-                btn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" style="width:20px;height:20px;color:#0790AC;flex-shrink:0;" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15 9h3.75M15 12h3.75M15 15h3.75M4.5 19.5h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5zm6-10.125a1.875 1.875 0 11-3.75 0 1.875 1.875 0 013.75 0zm1.294 6.336a6.721 6.721 0 01-3.17.789 6.721 6.721 0 01-3.168-.789 3.376 3.376 0 016.338 0z" /></svg> إدارة حسابات المرضى';
-                btn.onclick = function() { openPatientPortalModal(); };
-                sidebarSettingsView.appendChild(btn);
-                clearInterval(addBtn);
-            }
-            if (attempts > 20) clearInterval(addBtn);
-        }, 500);
     });
 
     window.openPatientPortalModal = function() {
