@@ -2659,6 +2659,175 @@
             flex-shrink: 0;
         }
         #notif-perm-bar.show { display: flex; }
+
+        /* ===== زر الإدخال الصوتي ===== */
+        .voice-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            background: #e6f4f7;
+            color: #0790AC;
+            transition: all 0.2s;
+            flex-shrink: 0;
+            padding: 0;
+        }
+        .voice-btn:hover { background: #0790AC; color: #fff; }
+        .voice-btn.recording {
+            background: #ef4444;
+            color: #fff;
+            animation: voicePulse 1s ease-in-out infinite;
+        }
+        @keyframes voicePulse {
+            0%,100% { box-shadow: 0 0 0 0 rgba(239,68,68,0.5); }
+            50% { box-shadow: 0 0 0 6px rgba(239,68,68,0); }
+        }
+        /* نافذة لوحة التحكم الصوتية الشاملة */
+        #voice-panel-modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 10001;
+            background: rgba(0,0,0,0.55);
+            align-items: center;
+            justify-content: center;
+        }
+        #voice-panel-modal.active { display: flex; }
+        #voice-panel-box {
+            background: #fff;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            width: 92vw;
+            max-width: 480px;
+            overflow: hidden;
+            animation: slideUpModal 0.25s ease;
+        }
+        #voice-panel-header {
+            background: linear-gradient(135deg, #0790AC 0%, #056a80 100%);
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            color: #fff;
+        }
+        #voice-panel-body { padding: 20px; }
+        #voice-status-ring {
+            width: 80px; height: 80px;
+            border-radius: 50%;
+            background: #e6f4f7;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 12px;
+            transition: all 0.3s;
+        }
+        #voice-status-ring.recording {
+            background: #fee2e2;
+            animation: voicePulse 1s ease-in-out infinite;
+        }
+        #voice-transcript-box {
+            min-height: 56px;
+            background: #f8fafc;
+            border: 1.5px solid #e5e7eb;
+            border-radius: 10px;
+            padding: 10px 14px;
+            font-size: 0.95rem;
+            color: #374151;
+            margin: 12px 0;
+            direction: rtl;
+            line-height: 1.7;
+        }
+        .voice-target-select {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1.5px solid #e5e7eb;
+            border-radius: 8px;
+            font-family: 'Cairo', sans-serif;
+            font-size: 0.9rem;
+            background: #f9fafb;
+            color: #374151;
+            margin-bottom: 12px;
+            outline: none;
+        }
+        .voice-target-select:focus { border-color: #0790AC; }
+        /* ===== نظام حسابات المرضى ===== */
+        #patient-portal-modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 10002;
+            background: rgba(0,0,0,0.6);
+            align-items: center;
+            justify-content: center;
+        }
+        #patient-portal-modal.active { display: flex; }
+        #patient-portal-box {
+            background: #fff;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            width: 95vw;
+            max-width: 640px;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: slideUpModal 0.25s ease;
+        }
+        /* صفحة دخول المريض */
+        #patient-login-page {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 20000;
+            background: linear-gradient(135deg, #eaf6f9 0%, #f3f4f6 100%);
+            overflow-y: auto;
+        }
+        #patient-login-page.active { display: block; }
+        .patient-portal-card {
+            background: #fff;
+            border: 1.5px solid #e0f2fe;
+            border-radius: 14px;
+            padding: 14px 16px;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 8px rgba(7,144,172,0.07);
+        }
+        .patient-portal-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+        .patient-portal-badge.normal { background: #dcfce7; color: #16a34a; }
+        .patient-portal-badge.high { background: #fee2e2; color: #dc2626; }
+        .patient-portal-badge.low { background: #dbeafe; color: #2563eb; }
+        .portal-section-title {
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: #0790AC;
+            padding: 4px 10px;
+            background: rgba(7,144,172,0.07);
+            border-radius: 6px;
+            border-right: 3px solid #0790AC;
+            margin: 10px 0 6px;
+        }
+        /* بطاقة المريض في قائمة الحسابات */
+        .patient-account-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 14px;
+            border: 1.5px solid #e5e7eb;
+            border-radius: 10px;
+            margin-bottom: 8px;
+            background: #f9fafb;
+            transition: border-color 0.15s, box-shadow 0.15s;
+        }
+        .patient-account-row:hover { border-color: #0790AC; box-shadow: 0 2px 8px rgba(7,144,172,0.1); }
     </style>
 </head>
 <body class="text-gray-800 flex flex-col h-screen overflow-hidden" style="background:linear-gradient(135deg,#eaf6f9 0%,#f3f4f6 100%);">
@@ -19835,6 +20004,605 @@ window._loadGeminiKeyFromDrive = async function() {
                 break;
         }
     };
+
+})();
+</script>
+
+<!-- ========== نافذة الإدخال الصوتي الشامل ========== -->
+<div id="voice-panel-modal">
+  <div id="voice-panel-box">
+    <div id="voice-panel-header">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <svg xmlns="http://www.w3.org/2000/svg" style="width:22px;height:22px;" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 01-3-3V4.5a3 3 0 116 0v8.25a3 3 0 01-3 3z" />
+        </svg>
+        <span style="font-size:1.05rem;font-weight:700;">الإدخال الصوتي</span>
+      </div>
+      <button onclick="closeVoicePanel()" style="background:rgba(255,255,255,0.2);border:none;border-radius:50%;width:30px;height:30px;cursor:pointer;color:#fff;font-size:1.1rem;display:flex;align-items:center;justify-content:center;">✕</button>
+    </div>
+    <div id="voice-panel-body">
+      <!-- اختيار الحقل المستهدف -->
+      <label style="font-size:0.82rem;font-weight:700;color:#374151;display:block;margin-bottom:6px;">📋 اختر الحقل المستهدف:</label>
+      <select id="voice-target-field" class="voice-target-select">
+        <option value="">-- اختر الحقل --</option>
+        <optgroup label="🩺 الشكوى والتشخيص">
+          <option value="current-complaint">الشكوى الرئيسية</option>
+          <option value="medical-diagnosis">التشخيص الطبي</option>
+          <option value="chronic-diseases">الأمراض المزمنة</option>
+          <option value="surgical-history">التاريخ الجراحي</option>
+          <option value="allergies">الحساسية</option>
+          <option value="genetic-diseases">الأمراض الوراثية</option>
+        </optgroup>
+        <optgroup label="💉 العلامات الحيوية">
+          <option value="vital_bp_sys">ضغط الدم الانقباضي</option>
+          <option value="vital_bp_dias">ضغط الدم الانبساطي</option>
+          <option value="vital_pulse">النبض</option>
+          <option value="vital_resp">التنفس</option>
+          <option value="vital_temp">الحرارة</option>
+          <option value="vital_spo2">الاشباع SpO2</option>
+        </optgroup>
+        <optgroup label="⚖️ القياسات">
+          <option value="height">الطول (cm)</option>
+          <option value="weight">الوزن (kg)</option>
+          <option value="waist-circ">محيط الخصر</option>
+          <option value="arm-circ">محيط الذراع</option>
+          <option value="neck-circ">محيط الرقبة</option>
+          <option value="hip-circ">محيط الورك</option>
+        </optgroup>
+        <optgroup label="🧪 تحاليل الدم الكاملة">
+          <option value="lab_wbc">WBC</option>
+          <option value="lab_rbc">RBC</option>
+          <option value="lab_hb">HB</option>
+          <option value="lab_ht">HT</option>
+          <option value="lab_platelets">Platelets</option>
+          <option value="lab_mcv">MCV</option>
+        </optgroup>
+        <optgroup label="🩸 السكر والكلى والكبد">
+          <option value="lab_glucose_fast">سكر الصيام</option>
+          <option value="lab_glucose_random">سكر عشوائي</option>
+          <option value="lab_hba1c">HbA1c</option>
+          <option value="lab_cr">Creatinine</option>
+          <option value="lab_urea">Urea</option>
+          <option value="lab_alt">ALT</option>
+          <option value="lab_ast">AST</option>
+        </optgroup>
+        <optgroup label="📝 الملاحظات">
+          <option value="beliefs-notes">ملاحظات أخرى</option>
+          <option value="address">العنوان</option>
+        </optgroup>
+      </select>
+
+      <!-- حلقة الحالة -->
+      <div style="text-align:center;">
+        <div id="voice-status-ring">
+          <svg xmlns="http://www.w3.org/2000/svg" style="width:36px;height:36px;color:#0790AC;" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 01-3-3V4.5a3 3 0 116 0v8.25a3 3 0 01-3 3z" />
+          </svg>
+        </div>
+        <p id="voice-status-text" style="font-size:0.85rem;font-weight:600;color:#6b7280;margin-bottom:8px;">اضغط "تسجيل" للبدء</p>
+      </div>
+
+      <!-- صندوق النص المنقول -->
+      <div id="voice-transcript-box" style="min-height:56px;"></div>
+
+      <!-- أزرار التحكم -->
+      <div style="display:flex;gap:10px;margin-top:12px;">
+        <button id="voice-record-btn" onclick="toggleVoiceRecording()"
+          style="flex:1;background:#0790AC;color:#fff;border:none;border-radius:10px;padding:11px;font-family:Cairo,sans-serif;font-weight:700;font-size:0.95rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;">
+          <svg xmlns="http://www.w3.org/2000/svg" style="width:18px;height:18px;" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 01-3-3V4.5a3 3 0 116 0v8.25a3 3 0 01-3 3z" />
+          </svg>
+          تسجيل
+        </button>
+        <button onclick="applyVoiceTranscript()"
+          style="flex:1;background:#16a34a;color:#fff;border:none;border-radius:10px;padding:11px;font-family:Cairo,sans-serif;font-weight:700;font-size:0.95rem;cursor:pointer;">
+          ✓ تطبيق
+        </button>
+        <button onclick="clearVoiceTranscript()"
+          style="background:#f3f4f6;color:#374151;border:none;border-radius:10px;padding:11px 14px;font-family:Cairo,sans-serif;font-weight:700;cursor:pointer;">
+          مسح
+        </button>
+      </div>
+
+      <!-- تنبيه المتصفح -->
+      <div id="voice-browser-warn" style="display:none;margin-top:10px;padding:8px 12px;background:#fef3c7;border:1px solid #fde68a;border-radius:8px;font-size:0.8rem;color:#92400e;">
+        ⚠️ متصفحك لا يدعم التعرف على الصوت، أو لم يُمنح الإذن. يُوصى باستخدام Chrome أو Edge.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== صفحة دخول المريض (Patient Portal Login) ========== -->
+<div id="patient-login-page">
+  <div style="max-width:440px;margin:0 auto;padding:40px 20px;">
+    <!-- شعار -->
+    <div style="text-align:center;margin-bottom:32px;">
+      <div style="width:70px;height:70px;background:linear-gradient(135deg,#0790AC,#056a80);border-radius:20px;display:inline-flex;align-items:center;justify-content:center;margin-bottom:14px;">
+        <svg xmlns="http://www.w3.org/2000/svg" style="width:36px;height:36px;color:#fff;" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+        </svg>
+      </div>
+      <h1 style="font-size:1.4rem;font-weight:800;color:#0790AC;margin:0;">بوابة المريض</h1>
+      <p style="font-size:0.88rem;color:#6b7280;margin-top:4px;">MedBox-Pedia — عرض النتائج الطبية</p>
+    </div>
+    <!-- نموذج الدخول -->
+    <div style="background:#fff;border-radius:18px;box-shadow:0 8px 32px rgba(7,144,172,0.12);border:1.5px solid #e0f2fe;padding:28px 24px;">
+      <h2 style="font-size:1rem;font-weight:700;color:#374151;margin:0 0 18px;text-align:center;">تسجيل الدخول إلى ملفك الطبي</h2>
+      <label style="font-size:0.82rem;font-weight:700;color:#374151;display:block;margin-bottom:6px;">الاسم الثلاثي</label>
+      <input id="portal-login-name" type="text" placeholder="أدخل الاسم الثلاثي كاملاً"
+        style="width:100%;padding:11px 14px;border:1.5px solid #e5e7eb;border-radius:10px;font-family:Cairo,sans-serif;font-size:0.95rem;direction:rtl;box-sizing:border-box;margin-bottom:14px;outline:none;"
+        onfocus="this.style.borderColor='#0790AC'" onblur="this.style.borderColor='#e5e7eb'">
+      <label style="font-size:0.82rem;font-weight:700;color:#374151;display:block;margin-bottom:6px;">كلمة السر</label>
+      <input id="portal-login-pass" type="password" placeholder="أدخل كلمة السر"
+        style="width:100%;padding:11px 14px;border:1.5px solid #e5e7eb;border-radius:10px;font-family:Cairo,sans-serif;font-size:0.95rem;direction:ltr;box-sizing:border-box;margin-bottom:18px;outline:none;"
+        onfocus="this.style.borderColor='#0790AC'" onblur="this.style.borderColor='#e5e7eb'"
+        onkeydown="if(event.key==='Enter') patientPortalLogin()">
+      <div id="portal-login-error" style="display:none;background:#fee2e2;color:#dc2626;padding:8px 12px;border-radius:8px;font-size:0.82rem;margin-bottom:12px;text-align:center;"></div>
+      <button onclick="patientPortalLogin()"
+        style="width:100%;background:linear-gradient(135deg,#0790AC,#056a80);color:#fff;border:none;border-radius:10px;padding:13px;font-family:Cairo,sans-serif;font-weight:700;font-size:1rem;cursor:pointer;">
+        دخول إلى ملفي الطبي
+      </button>
+    </div>
+    <p style="text-align:center;font-size:0.78rem;color:#9ca3af;margin-top:18px;">للمساعدة، تواصل مع عيادتك</p>
+  </div>
+</div>
+
+<!-- ========== نافذة إدارة حسابات المرضى (للطبيب) ========== -->
+<div id="patient-portal-modal">
+  <div id="patient-portal-box">
+    <div style="background:linear-gradient(135deg,#0790AC,#056a80);padding:16px 20px;display:flex;align-items:center;justify-content:space-between;color:#fff;">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <svg xmlns="http://www.w3.org/2000/svg" style="width:22px;height:22px;" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 9h3.75M15 12h3.75M15 15h3.75M4.5 19.5h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5zm6-10.125a1.875 1.875 0 11-3.75 0 1.875 1.875 0 013.75 0zm1.294 6.336a6.721 6.721 0 01-3.17.789 6.721 6.721 0 01-3.168-.789 3.376 3.376 0 016.338 0z" />
+        </svg>
+        <span style="font-size:1.05rem;font-weight:700;">إدارة حسابات المرضى</span>
+      </div>
+      <button onclick="closePatientPortalModal()" style="background:rgba(255,255,255,0.2);border:none;border-radius:50%;width:30px;height:30px;cursor:pointer;color:#fff;font-size:1.1rem;display:flex;align-items:center;justify-content:center;">✕</button>
+    </div>
+    <div style="padding:20px;" id="patient-portal-modal-body">
+      <!-- سيتم ملؤه بـ JS -->
+    </div>
+  </div>
+</div>
+
+<!-- ========== عرض ملف المريض (بوابة المريض) ========== -->
+<div id="patient-portal-view" style="display:none;position:fixed;inset:0;z-index:20001;background:linear-gradient(135deg,#eaf6f9 0%,#f3f4f6 100%);overflow-y:auto;">
+  <div style="max-width:800px;margin:0 auto;padding:20px;">
+    <!-- رأس البوابة -->
+    <div style="background:linear-gradient(135deg,#0790AC,#056a80);border-radius:18px;padding:20px 24px;margin-bottom:20px;color:#fff;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
+      <div>
+        <p style="font-size:0.82rem;opacity:0.8;margin:0 0 4px;">بوابة المريض — MedBox-Pedia</p>
+        <h2 id="portal-patient-name" style="font-size:1.3rem;font-weight:800;margin:0;"></h2>
+      </div>
+      <button onclick="logoutPatientPortal()"
+        style="background:rgba(255,255,255,0.2);border:1.5px solid rgba(255,255,255,0.4);border-radius:10px;padding:8px 16px;color:#fff;font-family:Cairo,sans-serif;font-weight:600;cursor:pointer;font-size:0.85rem;">
+        تسجيل الخروج
+      </button>
+    </div>
+    <div id="portal-patient-content"></div>
+  </div>
+</div>
+
+<script>
+// =============================================
+// ===== 1. نظام الإدخال الصوتي (Voice Input) ====
+// =============================================
+(function() {
+    var recognition = null;
+    var isRecording = false;
+    var transcript = '';
+
+    function isSupported() {
+        return !!(window.SpeechRecognition || window.webkitSpeechRecognition);
+    }
+
+    window.openVoicePanel = function() {
+        document.getElementById('voice-panel-modal').classList.add('active');
+        document.getElementById('voice-transcript-box').textContent = '';
+        document.getElementById('voice-status-text').textContent = 'اضغط "تسجيل" للبدء';
+        document.getElementById('voice-status-ring').classList.remove('recording');
+        document.getElementById('voice-browser-warn').style.display = isSupported() ? 'none' : 'block';
+        transcript = '';
+    };
+
+    window.closeVoicePanel = function() {
+        stopVoice();
+        document.getElementById('voice-panel-modal').classList.remove('active');
+    };
+
+    window.toggleVoiceRecording = function() {
+        if (isRecording) { stopVoice(); } else { startVoice(); }
+    };
+
+    function startVoice() {
+        if (!isSupported()) {
+            document.getElementById('voice-browser-warn').style.display = 'block';
+            return;
+        }
+        var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+        recognition = new SR();
+        recognition.lang = 'ar-SA';
+        recognition.continuous = true;
+        recognition.interimResults = true;
+
+        recognition.onstart = function() {
+            isRecording = true;
+            document.getElementById('voice-status-text').textContent = '🔴 جاري الاستماع...';
+            document.getElementById('voice-status-ring').classList.add('recording');
+            document.getElementById('voice-record-btn').innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" style="width:18px;height:18px;" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><rect x="6" y="6" width="12" height="12" rx="2" fill="currentColor"/></svg> إيقاف';
+            document.getElementById('voice-record-btn').style.background = '#ef4444';
+        };
+
+        recognition.onresult = function(e) {
+            var interim = '';
+            var final = '';
+            for (var i = e.resultIndex; i < e.results.length; i++) {
+                if (e.results[i].isFinal) { final += e.results[i][0].transcript; }
+                else { interim += e.results[i][0].transcript; }
+            }
+            transcript += final;
+            document.getElementById('voice-transcript-box').textContent = transcript + interim;
+        };
+
+        recognition.onerror = function(e) {
+            stopVoice();
+            if (e.error === 'not-allowed') {
+                document.getElementById('voice-browser-warn').style.display = 'block';
+            }
+        };
+
+        recognition.onend = function() {
+            if (isRecording) { recognition.start(); }
+        };
+
+        recognition.start();
+    }
+
+    function stopVoice() {
+        isRecording = false;
+        if (recognition) { recognition.onend = null; recognition.stop(); recognition = null; }
+        document.getElementById('voice-status-text').textContent = 'تم الإيقاف — يمكنك تعديل النص أو تطبيقه';
+        document.getElementById('voice-status-ring').classList.remove('recording');
+        document.getElementById('voice-record-btn').innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" style="width:18px;height:18px;" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 01-3-3V4.5a3 3 0 116 0v8.25a3 3 0 01-3 3z" /></svg> تسجيل';
+        document.getElementById('voice-record-btn').style.background = '#0790AC';
+    }
+
+    window.applyVoiceTranscript = function() {
+        var fieldId = document.getElementById('voice-target-field').value;
+        var text = document.getElementById('voice-transcript-box').textContent.trim();
+        if (!fieldId) { if (typeof showToast === 'function') showToast('اختر الحقل المستهدف أولاً', 'error'); return; }
+        if (!text) { if (typeof showToast === 'function') showToast('لا يوجد نص لتطبيقه', 'error'); return; }
+        var el = document.getElementById(fieldId);
+        if (!el) { if (typeof showToast === 'function') showToast('الحقل غير موجود في النموذج الحالي', 'error'); return; }
+        // للحقول الرقمية، نحاول استخراج الرقم
+        if (el.type === 'number') {
+            var nums = text.replace(/[^\d.٠-٩]/g, '').replace(/[٠-٩]/g, function(d){ return d.charCodeAt(0)-1632; });
+            if (nums) { el.value = nums; el.dispatchEvent(new Event('input',{bubbles:true})); el.dispatchEvent(new Event('change',{bubbles:true})); }
+        } else {
+            el.value = el.value ? (el.value + '\n' + text) : text;
+            el.dispatchEvent(new Event('input',{bubbles:true}));
+        }
+        // تأثير بصري
+        el.style.transition = 'background 0.4s';
+        el.style.background = '#d1fae5';
+        setTimeout(function(){ el.style.background = ''; }, 1400);
+        if (typeof showToast === 'function') showToast('✅ تم تطبيق النص على الحقل', 'success');
+        closeVoicePanel();
+    };
+
+    window.clearVoiceTranscript = function() {
+        transcript = '';
+        document.getElementById('voice-transcript-box').textContent = '';
+    };
+
+    // إضافة زر الميكروفون في الشريط العلوي بعد تحميل الصفحة
+    document.addEventListener('DOMContentLoaded', function() {
+        var topRight = document.querySelector('.flex.items-center.space-x-1.sm\\:space-x-2.space-x-reverse');
+        if (topRight) {
+            var voiceBtn = document.createElement('div');
+            voiceBtn.className = 'group relative';
+            voiceBtn.innerHTML = '<button class="top-bar-icon-btn" style="color:#0790AC" onclick="openVoicePanel()" title="الإدخال الصوتي"><svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 01-3-3V4.5a3 3 0 116 0v8.25a3 3 0 01-3 3z" /></svg><span class="tooltip">إدخال صوتي</span></button>';
+            topRight.insertBefore(voiceBtn, topRight.firstChild);
+        }
+    });
+})();
+
+// =============================================
+// ===== 2. نظام بوابة المرضى (Patient Portal) ==
+// =============================================
+(function() {
+
+    var PORTAL_KEY = 'medbox_patient_accounts';
+
+    function getAccounts() {
+        try { return JSON.parse(localStorage.getItem(PORTAL_KEY) || '{}'); } catch(e) { return {}; }
+    }
+    function saveAccounts(accounts) {
+        localStorage.setItem(PORTAL_KEY, JSON.stringify(accounts));
+    }
+
+    function generatePassword(len) {
+        len = len || 8;
+        var chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789abcdefghjkmnpqrstuvwxyz';
+        var pass = '';
+        for (var i = 0; i < len; i++) { pass += chars[Math.floor(Math.random() * chars.length)]; }
+        return pass;
+    }
+
+    function generatePortalLink(nationalId) {
+        var base = window.location.href.split('?')[0];
+        return base + '?portal=' + encodeURIComponent(nationalId);
+    }
+
+    // تحقق من رابط البوابة عند التحميل
+    document.addEventListener('DOMContentLoaded', function() {
+        var params = new URLSearchParams(window.location.search);
+        if (params.get('portal')) {
+            setTimeout(function() { document.getElementById('patient-login-page').classList.add('active'); }, 200);
+        }
+
+        // إضافة زر إدارة الحسابات في القائمة الجانبية
+        var sidebarSettingsView = document.getElementById('sidebar-settings-view');
+        if (sidebarSettingsView) {
+            var btn = document.createElement('button');
+            btn.className = 'w-full flex items-center gap-3 px-4 py-3 text-sm font-semibold text-gray-700 hover:bg-[var(--color-primary-light)] rounded-xl transition-colors';
+            btn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-[#0790AC]" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15 9h3.75M15 12h3.75M15 15h3.75M4.5 19.5h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5zm6-10.125a1.875 1.875 0 11-3.75 0 1.875 1.875 0 013.75 0zm1.294 6.336a6.721 6.721 0 01-3.17.789 6.721 6.721 0 01-3.168-.789 3.376 3.376 0 016.338 0z" /></svg> إدارة حسابات المرضى';
+            btn.onclick = function() { openPatientPortalModal(); };
+            sidebarSettingsView.appendChild(btn);
+        }
+    });
+
+    window.openPatientPortalModal = function() {
+        renderPortalModal();
+        document.getElementById('patient-portal-modal').classList.add('active');
+    };
+    window.closePatientPortalModal = function() {
+        document.getElementById('patient-portal-modal').classList.remove('active');
+    };
+
+    function renderPortalModal() {
+        var body = document.getElementById('patient-portal-modal-body');
+        var accounts = getAccounts();
+        // جلب المرضى من appData
+        var patients = (window.appData && window.appData.patients) ? window.appData.patients : [];
+
+        var html = '';
+        // زر إنشاء حسابات لجميع المرضى
+        html += '<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:16px;">';
+        html += '<p style="font-size:0.82rem;color:#6b7280;margin:0;">إنشاء وإدارة حسابات لعرض النتائج الطبية</p>';
+        html += '<button onclick="generateAllPatientAccounts()" style="background:#0790AC;color:#fff;border:none;border-radius:8px;padding:8px 14px;font-family:Cairo,sans-serif;font-size:0.82rem;font-weight:700;cursor:pointer;">⚡ إنشاء حسابات للكل</button>';
+        html += '</div>';
+
+        if (patients.length === 0) {
+            html += '<div style="text-align:center;padding:32px;color:#9ca3af;font-size:0.88rem;">لا يوجد مرضى مسجلون</div>';
+        } else {
+            html += '<div id="portal-patients-list">';
+            patients.forEach(function(p) {
+                var acc = accounts[p.id];
+                var hasAcc = !!acc;
+                html += '<div class="patient-account-row">';
+                html += '<div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#0790AC,#056a80);display:flex;align-items:center;justify-content:center;color:#fff;font-size:1rem;flex-shrink:0;">👤</div>';
+                html += '<div style="flex:1;min-width:0;">';
+                html += '<div style="font-weight:700;color:#374151;font-size:0.9rem;">' + (p.name_ar || 'غير محدد') + '</div>';
+                html += '<div style="font-size:0.75rem;color:#9ca3af;">رقم: ' + (p.national_id || p.id) + '</div>';
+                if (hasAcc) {
+                    html += '<div style="font-size:0.75rem;color:#16a34a;font-weight:600;margin-top:2px;">✅ كلمة السر: <span style="font-family:monospace;background:#f0fdf4;padding:1px 6px;border-radius:4px;">' + acc.password + '</span></div>';
+                }
+                html += '</div>';
+                html += '<div style="display:flex;gap:6px;flex-wrap:wrap;">';
+                if (!hasAcc) {
+                    html += '<button onclick="createPatientAccount(\'' + p.id + '\')" style="background:#0790AC;color:#fff;border:none;border-radius:7px;padding:6px 10px;font-family:Cairo,sans-serif;font-size:0.75rem;font-weight:700;cursor:pointer;">إنشاء حساب</button>';
+                } else {
+                    html += '<button onclick="regeneratePassword(\'' + p.id + '\')" style="background:#f59e0b;color:#fff;border:none;border-radius:7px;padding:6px 10px;font-family:Cairo,sans-serif;font-size:0.75rem;font-weight:700;cursor:pointer;">🔄 كلمة سر جديدة</button>';
+                    html += '<button onclick="copyPortalLink(\'' + p.id + '\')" style="background:#6366f1;color:#fff;border:none;border-radius:7px;padding:6px 10px;font-family:Cairo,sans-serif;font-size:0.75rem;font-weight:700;cursor:pointer;">🔗 نسخ الرابط</button>';
+                    html += '<button onclick="deletePatientAccount(\'' + p.id + '\')" style="background:#fee2e2;color:#dc2626;border:none;border-radius:7px;padding:6px 10px;font-family:Cairo,sans-serif;font-size:0.75rem;font-weight:700;cursor:pointer;">حذف</button>';
+                }
+                html += '</div>';
+                html += '</div>';
+            });
+            html += '</div>';
+        }
+        body.innerHTML = html;
+    }
+
+    window.createPatientAccount = function(patientId) {
+        var accounts = getAccounts();
+        var pass = generatePassword(8);
+        accounts[patientId] = { password: pass, createdAt: new Date().toISOString() };
+        saveAccounts(accounts);
+        renderPortalModal();
+        if (typeof showToast === 'function') showToast('✅ تم إنشاء الحساب بنجاح', 'success');
+    };
+
+    window.regeneratePassword = function(patientId) {
+        var accounts = getAccounts();
+        if (!accounts[patientId]) return;
+        accounts[patientId].password = generatePassword(8);
+        accounts[patientId].updatedAt = new Date().toISOString();
+        saveAccounts(accounts);
+        renderPortalModal();
+        if (typeof showToast === 'function') showToast('🔄 تم تجديد كلمة السر', 'success');
+    };
+
+    window.generateAllPatientAccounts = function() {
+        var accounts = getAccounts();
+        var patients = (window.appData && window.appData.patients) ? window.appData.patients : [];
+        var count = 0;
+        patients.forEach(function(p) {
+            if (!accounts[p.id]) {
+                accounts[p.id] = { password: generatePassword(8), createdAt: new Date().toISOString() };
+                count++;
+            }
+        });
+        saveAccounts(accounts);
+        renderPortalModal();
+        if (typeof showToast === 'function') showToast('✅ تم إنشاء ' + count + ' حساب جديد', 'success');
+    };
+
+    window.copyPortalLink = function(patientId) {
+        var link = generatePortalLink(patientId);
+        try {
+            navigator.clipboard.writeText(link).then(function() {
+                if (typeof showToast === 'function') showToast('🔗 تم نسخ الرابط الخاص بالمريض', 'success');
+            });
+        } catch(e) {
+            var ta = document.createElement('textarea');
+            ta.value = link; document.body.appendChild(ta); ta.select();
+            document.execCommand('copy'); document.body.removeChild(ta);
+            if (typeof showToast === 'function') showToast('🔗 تم نسخ الرابط', 'success');
+        }
+    };
+
+    window.deletePatientAccount = function(patientId) {
+        var accounts = getAccounts();
+        delete accounts[patientId];
+        saveAccounts(accounts);
+        renderPortalModal();
+        if (typeof showToast === 'function') showToast('تم حذف الحساب', 'info');
+    };
+
+    // ===== تسجيل دخول المريض =====
+    window.patientPortalLogin = function() {
+        var name = (document.getElementById('portal-login-name').value || '').trim();
+        var pass = (document.getElementById('portal-login-pass').value || '').trim();
+        var errEl = document.getElementById('portal-login-error');
+        errEl.style.display = 'none';
+
+        if (!name || !pass) { errEl.textContent = 'يرجى إدخال الاسم وكلمة السر'; errEl.style.display = 'block'; return; }
+
+        var patients = (window.appData && window.appData.patients) ? window.appData.patients : [];
+        var accounts = getAccounts();
+        var matched = null;
+
+        patients.forEach(function(p) {
+            var nameAr = (p.name_ar || '').trim().toLowerCase();
+            var inputName = name.trim().toLowerCase();
+            if (nameAr === inputName && accounts[p.id] && accounts[p.id].password === pass) {
+                matched = p;
+            }
+        });
+
+        if (!matched) {
+            errEl.textContent = 'الاسم أو كلمة السر غير صحيحة';
+            errEl.style.display = 'block';
+            return;
+        }
+
+        // دخول ناجح
+        document.getElementById('patient-login-page').classList.remove('active');
+        showPatientPortalView(matched);
+    };
+
+    function showPatientPortalView(patient) {
+        document.getElementById('portal-patient-name').textContent = patient.name_ar;
+        document.getElementById('portal-patient-content').innerHTML = buildPatientPortalContent(patient);
+        document.getElementById('patient-portal-view').style.display = 'block';
+    }
+
+    window.logoutPatientPortal = function() {
+        document.getElementById('patient-portal-view').style.display = 'none';
+        document.getElementById('patient-login-page').classList.add('active');
+        document.getElementById('portal-login-name').value = '';
+        document.getElementById('portal-login-pass').value = '';
+    };
+
+    function buildPatientPortalContent(patient) {
+        if (!patient.visits || patient.visits.length === 0) {
+            return '<div style="text-align:center;padding:40px;color:#9ca3af;">لا توجد زيارات مسجلة</div>';
+        }
+
+        var html = '';
+        // عرض الزيارات من الأحدث للأقدم
+        var visits = patient.visits.slice().reverse();
+
+        visits.forEach(function(visit, idx) {
+            var date = visit.date || 'غير محدد';
+            html += '<div class="patient-portal-card">';
+            html += '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">';
+            html += '<h3 style="font-size:1rem;font-weight:700;color:#0790AC;margin:0;">🗓️ زيارة ' + date + '</h3>';
+            html += '<span style="font-size:0.75rem;color:#9ca3af;">رقم الزيارة: ' + (patient.visits.length - idx) + '</span>';
+            html += '</div>';
+
+            // المعلومات الأساسية
+            var p = visit.personal || {};
+            var phy = visit.physical || {};
+            var vitals = visit.vitals || {};
+            var health = visit.health || {};
+            var labs = visit.labs || {};
+
+            // القياسات
+            html += '<div class="portal-section-title">⚖️ القياسات الجسدية</div>';
+            html += '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px;margin-bottom:10px;">';
+            if (phy.height) html += portalStat('الطول', phy.height + ' cm');
+            if (phy.weight) html += portalStat('الوزن', phy.weight + ' kg');
+            if (vitals.bp_sys && vitals.bp_dias) html += portalStat('ضغط الدم', vitals.bp_sys + '/' + vitals.bp_dias);
+            if (vitals.pulse) html += portalStat('النبض', vitals.pulse + ' ن/د');
+            if (vitals.temp) html += portalStat('الحرارة', vitals.temp + ' °C');
+            if (vitals.spo2) html += portalStat('SpO₂', vitals.spo2 + '%');
+            html += '</div>';
+
+            // التشخيص
+            if (health.current_complaint || health.medical_diagnosis) {
+                html += '<div class="portal-section-title">🩺 التشخيص والشكوى</div>';
+                if (health.current_complaint) {
+                    html += '<div style="font-size:0.85rem;color:#374151;margin-bottom:6px;"><b>الشكوى:</b> ' + health.current_complaint + '</div>';
+                }
+                if (health.medical_diagnosis) {
+                    html += '<div style="font-size:0.85rem;color:#374151;margin-bottom:6px;"><b>التشخيص:</b> ' + health.medical_diagnosis + '</div>';
+                }
+            }
+
+            // التحاليل المخبرية
+            var labItems = [
+                ['lab_wbc','WBC'],['lab_rbc','RBC'],['lab_hb','HB'],['lab_hba1c','HbA1c'],
+                ['lab_glucose_fast','سكر صيام'],['lab_glucose_random','سكر عشوائي'],
+                ['lab_cr','Creatinine'],['lab_urea','Urea'],['lab_alt','ALT'],['lab_ast','AST'],
+                ['lab_cholesterol','كوليسترول'],['lab_tg','TG'],['lab_vit_d3','Vit D3'],
+            ];
+            var labHtml = '';
+            labItems.forEach(function(item) {
+                var key = item[0].replace('lab_','');
+                var val = labs[key];
+                if (val !== undefined && val !== '') {
+                    labHtml += portalStat(item[1], val);
+                }
+            });
+            if (labHtml) {
+                html += '<div class="portal-section-title">🧪 التحاليل المخبرية</div>';
+                html += '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px;margin-bottom:10px;">' + labHtml + '</div>';
+            }
+
+            // الأدوية
+            var meds = health.medications || [];
+            if (meds.length > 0) {
+                html += '<div class="portal-section-title">💊 الأدوية الموصوفة</div>';
+                html += '<div style="display:flex;flex-direction:column;gap:6px;">';
+                meds.forEach(function(m) {
+                    html += '<div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:8px 12px;font-size:0.85rem;color:#374151;">';
+                    html += '<b>' + (m.name || '') + '</b>';
+                    if (m.dose) html += ' — ' + m.dose;
+                    if (m.frequency_num && m.frequency_unit) html += ' — ' + m.frequency_num + ' مرة ' + m.frequency_unit;
+                    html += '</div>';
+                });
+                html += '</div>';
+            }
+
+            html += '</div>'; // end patient-portal-card
+        });
+        return html;
+    }
+
+    function portalStat(label, value) {
+        return '<div style="background:#f8fafc;border:1px solid #e5e7eb;border-radius:8px;padding:8px 10px;text-align:center;">' +
+               '<div style="font-size:0.68rem;font-weight:700;color:#6b7280;margin-bottom:4px;">' + label + '</div>' +
+               '<div style="font-size:0.95rem;font-weight:800;color:#0790AC;">' + value + '</div>' +
+               '</div>';
+    }
+
+    // تعريض الدوال
+    window._portalGetAccounts = getAccounts;
+    window._portalSaveAccounts = saveAccounts;
+    window._portalGeneratePassword = generatePassword;
 
 })();
 </script>
