@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MedBox-Pedia v 3-1-4</title>
+    <title>MedBox-Pedia v 3-1-5</title>
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -635,8 +635,6 @@
             background: linear-gradient(135deg, #0790AC 0%, #056a80 100%);
             color: white;
             flex-shrink: 0;
-            position: sticky;
-            top: 0;
             z-index: 2;
             box-shadow: 0 2px 8px rgba(7,144,172,0.25);
         }
@@ -3071,9 +3069,9 @@ window.addEventListener('resize', setTopbarHeight);
         <div id="sidebar-backdrop" onclick="toggleSidebar()" style="display:none;position:fixed;inset:0;z-index:199;background:rgba(15,23,42,0.45);opacity:0;transition:opacity 0.35s cubic-bezier(0.4,0,0.2,1);"></div>
         
         <aside id="sidebar" class="w-72 md:w-80 flex-shrink-0 z-20 flex flex-col h-full relative" style="transform:translateX(100%);will-change:transform;overflow:hidden;margin-right:-18rem;transition:transform 0.4s cubic-bezier(0.32,0.72,0,1),margin-right 0.4s cubic-bezier(0.32,0.72,0,1);">
-        <!-- Sidebar inner scroll -->
-        <div style="position:relative;height:100%;display:flex;flex-direction:column;overflow-y:auto;overflow-x:hidden;background:linear-gradient(165deg,#f0fafc 0%,#ffffff 40%,#f8fdff 100%);border-left:1.5px solid rgba(7,144,172,0.12);box-shadow:-8px 0 40px rgba(7,144,172,0.18),-2px 0 12px rgba(0,0,0,0.08);">
-        <!-- شريط البحث + الفرز + الإغلاق (بلون البرنامج الرئيسي) -->
+        <!-- Sidebar inner: fixed header + scrollable body -->
+        <div style="position:relative;height:100%;display:flex;flex-direction:column;overflow:hidden;background:linear-gradient(165deg,#f0fafc 0%,#ffffff 40%,#f8fdff 100%);border-left:1.5px solid rgba(7,144,172,0.12);box-shadow:-8px 0 40px rgba(7,144,172,0.18),-2px 0 12px rgba(0,0,0,0.08);">
+        <!-- شريط البحث + الفرز + الإغلاق (ثابت دائماً في الأعلى) -->
         <div id="sidebar-search-header">
             <!-- حقل البحث -->
             <input type="search" id="patient-search-input" placeholder="بحث عن مريض...">
@@ -3095,12 +3093,14 @@ window.addEventListener('resize', setTopbarHeight);
                 </svg>
             </button>
         </div>
+        <!-- منطقة القوائم القابلة للتمرير -->
+        <div id="sidebar-scrollable-body" style="flex:1;overflow-y:auto;overflow-x:hidden;display:flex;flex-direction:column;">
 
             <!-- حاوية البحث (مخفية - للحفاظ على JS) -->
             <div id="sidebar-tools-view" class="flex-shrink-0" style="display:none!important;height:0;overflow:hidden;"></div>
 
             <!-- قسم قائمة المرضى -->
-            <div id="sidebar-patient-list-view" class="hidden p-4 space-y-2 flex-1 overflow-y-auto">
+            <div id="sidebar-patient-list-view" class="hidden p-4 space-y-2 flex-1">
                 <h3 class="font-bold text-lg text-[--color-primary] mb-2">قائمة المرضى</h3>
                 <div id="patient-list-container" class="space-y-2">
                     <!-- سيتم ملء قائمة المرضى هنا -->
@@ -3108,7 +3108,7 @@ window.addEventListener('resize', setTopbarHeight);
             </div>
             
             <!-- (جديد 5) قسم الإعدادات -->
-            <div id="sidebar-settings-view" class="hidden p-4 space-y-2 flex-1 overflow-y-auto">
+            <div id="sidebar-settings-view" class="hidden p-4 space-y-2 flex-1">
                 <h3 class="font-bold text-lg text-[--color-primary] mb-2">الإعدادات</h3>
                 <div class="space-y-2">
                     <button id="settings-about-btn" class="w-full text-right p-3 rounded-lg hover:bg-gray-100 transition-colors">حول البرنامج</button>
@@ -3173,6 +3173,7 @@ window.addEventListener('resize', setTopbarHeight);
                     </div>
                 </div>
             </div>
+        </div><!-- end sidebar-scrollable-body -->
                        
             
             <!-- (تعديل 2) تم نقل هذا القسم إلى الأعلى -->
@@ -3194,7 +3195,7 @@ window.addEventListener('resize', setTopbarHeight);
                         <img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" id="dash-logo-img" alt="MedBox Logo" style="width:52px;height:52px;object-fit:contain;border-radius:10px;background:rgba(255,255,255,0.15);padding:4px;flex-shrink:0;">
                         <div style="flex:1;min-width:0;">
                             <h2 style="color:#fff;font-size:1.2rem;font-weight:800;margin:0;letter-spacing:-0.3px;">MedBox – Pedia</h2>
-                            <p style="color:rgba(255,255,255,0.55);font-size:0.72rem;margin:1px 0 2px;letter-spacing:0.5px;font-family:'Courier New',monospace;font-weight:600;">V 3-1-4 | 5-6-26</p>
+                            <p style="color:rgba(255,255,255,0.55);font-size:0.72rem;margin:1px 0 2px;letter-spacing:0.5px;font-family:'Courier New',monospace;font-weight:600;">V 3-1-5 | 5-6-26</p>
                             <p style="color:rgba(255,255,255,0.82);font-size:0.82rem;margin:0;">وسيلة دعم شاملة للممارسين الصحيين</p>
                         </div>
                         <!-- بيانات العيادة مكان التاريخ في أقصى اليسار -->
@@ -6642,7 +6643,7 @@ window.addEventListener('resize', setTopbarHeight);
                                     </div>
                                     <div>
                                         <p class="text-xs text-gray-500 font-semibold">رقم الإصدار</p>
-                                        <p class="text-2xl font-black text-purple-600 ltr" dir="ltr">V3.1.4</p>
+                                        <p class="text-2xl font-black text-purple-600 ltr" dir="ltr">V3.1.5</p>
                                     </div>
                                 </div>
                                 <div class="bg-white px-4 py-2 rounded-xl border border-gray-200">
@@ -6950,13 +6951,9 @@ window.addEventListener('resize', setTopbarHeight);
         
         document.getElementById('settings-accounts-btn').addEventListener('click', () => {
             closeSidebarOnMobile();
-            if (typeof window.openPatientPortalPage === 'function') {
-                window.openPatientPortalPage();
-            } else {
-                renderAccountsManagementPage();
-                patientDisplayArea.classList.remove('hidden');
-                welcomeMessage.classList.add('hidden');
-            }
+            renderAccountsManagementPage();
+            patientDisplayArea.classList.remove('hidden');
+            welcomeMessage.classList.add('hidden');
         });
 
         document.getElementById('settings-cloud-sync-btn').addEventListener('click', () => {
