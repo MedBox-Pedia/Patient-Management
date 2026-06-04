@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MedBox-Pedia v 3-1-3</title>
+    <title>MedBox-Pedia v 3-1-4</title>
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -3194,7 +3194,7 @@ window.addEventListener('resize', setTopbarHeight);
                         <img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" id="dash-logo-img" alt="MedBox Logo" style="width:52px;height:52px;object-fit:contain;border-radius:10px;background:rgba(255,255,255,0.15);padding:4px;flex-shrink:0;">
                         <div style="flex:1;min-width:0;">
                             <h2 style="color:#fff;font-size:1.2rem;font-weight:800;margin:0;letter-spacing:-0.3px;">MedBox – Pedia</h2>
-                            <p style="color:rgba(255,255,255,0.55);font-size:0.72rem;margin:1px 0 2px;letter-spacing:0.5px;font-family:'Courier New',monospace;font-weight:600;">V 3-1-3 | 4-6-26</p>
+                            <p style="color:rgba(255,255,255,0.55);font-size:0.72rem;margin:1px 0 2px;letter-spacing:0.5px;font-family:'Courier New',monospace;font-weight:600;">V 3-1-4 | 5-6-26</p>
                             <p style="color:rgba(255,255,255,0.82);font-size:0.82rem;margin:0;">وسيلة دعم شاملة للممارسين الصحيين</p>
                         </div>
                         <!-- بيانات العيادة مكان التاريخ في أقصى اليسار -->
@@ -6291,6 +6291,11 @@ window.addEventListener('resize', setTopbarHeight);
                     </div>
                 </div>
                 <div>
+                    <label class="block text-xs font-semibold text-gray-600 mb-1">🔗 رابط البوابة العامة للمرضى <span class="text-gray-400">(URL المستضاف للتطبيق)</span></label>
+                    <input id="edit-cred-portalurl" type="url" placeholder="مثال: https://medbox.example.com/app.html" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#0790AC]/30 focus:outline-none" dir="ltr">
+                    <p class="text-xs text-gray-400 mt-1">يُستخدم لتوليد روابط صالحة قابلة للمشاركة مع المرضى عبر الواتساب أو SMS.</p>
+                </div>
+                <div>
                     <label class="block text-xs font-semibold text-gray-600 mb-1">كلمة المرور الجديدة <span class="text-gray-400">(اتركها فارغة إذا لا تريد تغييرها)</span></label>
                     <input id="edit-cred-password" type="password" placeholder="••••••" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#0790AC]/30 focus:outline-none">
                 </div>
@@ -6339,6 +6344,7 @@ window.addEventListener('resize', setTopbarHeight);
         document.getElementById('edit-cred-address').value = acc.address || '';
         document.getElementById('edit-cred-phone').value = acc.phone || '';
         document.getElementById('edit-cred-whatsapp').value = acc.whatsapp || '';
+        document.getElementById('edit-cred-portalurl').value = acc.portalUrl || '';
         document.getElementById('edit-cred-password').value = '';
         document.getElementById('edit-cred-password2').value = '';
         document.getElementById('edit-credentials-modal').classList.remove('hidden');
@@ -6367,6 +6373,7 @@ window.addEventListener('resize', setTopbarHeight);
         const newAddress = document.getElementById('edit-cred-address').value.trim();
         const newPhone = document.getElementById('edit-cred-phone').value.trim();
         const newWhatsapp = document.getElementById('edit-cred-whatsapp').value.trim();
+        const newPortalUrl = document.getElementById('edit-cred-portalurl').value.trim();
         const newPassword = document.getElementById('edit-cred-password').value;
         const newPassword2 = document.getElementById('edit-cred-password2').value;
 
@@ -6388,6 +6395,7 @@ window.addEventListener('resize', setTopbarHeight);
         acc.address = newAddress;
         acc.phone = newPhone;
         acc.whatsapp = newWhatsapp;
+        acc.portalUrl = newPortalUrl;
         if (newPassword) acc.password = newPassword;
 
         saveDataToLocalStorage();
@@ -6634,7 +6642,7 @@ window.addEventListener('resize', setTopbarHeight);
                                     </div>
                                     <div>
                                         <p class="text-xs text-gray-500 font-semibold">رقم الإصدار</p>
-                                        <p class="text-2xl font-black text-purple-600 ltr" dir="ltr">V3.1.3</p>
+                                        <p class="text-2xl font-black text-purple-600 ltr" dir="ltr">V3.1.4</p>
                                     </div>
                                 </div>
                                 <div class="bg-white px-4 py-2 rounded-xl border border-gray-200">
@@ -8812,9 +8820,28 @@ window.addEventListener('resize', setTopbarHeight);
         patient.national_id = visitData.personal.national_id;
         patient.id = visitData.personal.national_id;
         if (visitData.personal.phone) patient.phone = visitData.personal.phone;
+        if (visitData.personal.whatsapp) patient.whatsapp = visitData.personal.whatsapp;
         // (جديد A.c) تحديث صور الهوية للمريض
         if (visitData.personal.id_front_img) patient.id_front_img = visitData.personal.id_front_img;
         if (visitData.personal.id_back_img) patient.id_back_img = visitData.personal.id_back_img;
+
+        // (3-1-4) مزامنة البيانات الشخصية على جميع الزيارات الأخرى
+        const _personalFieldsToSync = [
+            'name_ar','name_en','national_id','age','gender','marital_status',
+            'children_count','smoking','cigarettes_per_day','alcohol','liters_per_week',
+            'financial_status','beliefs_notes','phone','whatsapp','address',
+            'id_front_img','id_back_img'
+        ];
+        patient.visits.forEach(function(v, idx) {
+            if (idx === visitIndex) return; // الزيارة الحالية ستُستبدل بالكامل أدناه
+            if (!v.personal) v.personal = {};
+            _personalFieldsToSync.forEach(function(field) {
+                var newVal = visitData.personal[field];
+                if (newVal !== undefined && newVal !== null && newVal !== '') {
+                    v.personal[field] = newVal;
+                }
+            });
+        });
 
         // استبدال بيانات الزيارة القديمة بالجديدة
         patient.visits[visitIndex] = visitData;
@@ -9645,9 +9672,22 @@ window.addEventListener('resize', setTopbarHeight);
         var patient = (window._appData && window._appData.patients || []).find(function(p){ return p.id === pid; });
         var waNum = (patient && (patient.whatsapp || patient.phone) || '').replace(/[^0-9]/g,'');
         if (!waNum) { if(typeof showToast==='function') showToast('لا يوجد رقم واتساب مسجل', 'error'); return; }
-        var base = window.location.href.split('?')[0];
-        var link = base + '?portal=' + encodeURIComponent(pid);
-        var msg = '🔗 رابط حسابك الشخصي في المنظومة الطبية:\n' + link;
+        // استخدام generatePortalLink للحصول على الرابط الصحيح (يراعي portalUrl)
+        var link = (typeof generatePortalLink === 'function')
+            ? generatePortalLink(pid)
+            : (window.location.href.split('?')[0] + '?portal=' + encodeURIComponent(pid));
+        // استخدام buildWhatsAppMessage إذا كان الحساب موجوداً
+        var accounts = (typeof getPortalAccounts === 'function') ? getPortalAccounts() : {};
+        var acc = accounts[pid];
+        var msg;
+        if (acc && acc.password) {
+            var patientName = patient ? (patient.name_ar || 'المريض') : 'المريض';
+            msg = (typeof buildWhatsAppMessage === 'function')
+                ? buildWhatsAppMessage(patientName, acc.password, link)
+                : ('🔗 رابط حسابك الشخصي:\n' + link + '\n\nاسم المستخدم: ' + patientName + '\nكلمة السر: ' + acc.password);
+        } else {
+            msg = '🔗 رابط حسابك الشخصي في المنظومة الطبية:\n' + link;
+        }
         window.open('https://wa.me/' + waNum + '?text=' + encodeURIComponent(msg), '_blank');
     };
 
@@ -9658,17 +9698,24 @@ window.addEventListener('resize', setTopbarHeight);
         var patient = (window._appData && window._appData.patients || []).find(function(p){ return p.id === pid; });
         var phone = (patient && patient.phone || '').replace(/\s/g,'');
         if (!phone) { if(typeof showToast==='function') showToast('لا يوجد رقم هاتف مسجل', 'error'); return; }
-        var base = window.location.href.split('?')[0];
-        var link = base + '?portal=' + encodeURIComponent(pid);
-        window.location.href = 'sms:' + phone + '?body=' + encodeURIComponent('رابط حسابك الطبي: ' + link);
+        var link = (typeof generatePortalLink === 'function')
+            ? generatePortalLink(pid)
+            : (window.location.href.split('?')[0] + '?portal=' + encodeURIComponent(pid));
+        var accounts = (typeof getPortalAccounts === 'function') ? getPortalAccounts() : {};
+        var acc = accounts[pid];
+        var body = acc && acc.password
+            ? ('رابط حسابك الطبي: ' + link + '\nكلمة السر: ' + acc.password)
+            : ('رابط حسابك الطبي: ' + link);
+        window.location.href = 'sms:' + phone + '?body=' + encodeURIComponent(body);
     };
 
     // 4c. نسخ الرابط
     window._sidebarLinkCopy = function(pid, evt) {
         evt && evt.stopPropagation();
         _closeAllSidebarMenus(null);
-        var base = window.location.href.split('?')[0];
-        var link = base + '?portal=' + encodeURIComponent(pid);
+        var link = (typeof generatePortalLink === 'function')
+            ? generatePortalLink(pid)
+            : (window.location.href.split('?')[0] + '?portal=' + encodeURIComponent(pid));
         try {
             navigator.clipboard.writeText(link).then(function(){
                 if(typeof showToast==='function') showToast('🔗 تم نسخ رابط الحساب الشخصي', 'success');
@@ -20562,8 +20609,26 @@ window._loadGeminiKeyFromDrive = async function() {
     }
 
     function generatePortalLink(nationalId) {
-        var base = window.location.href.split('?')[0];
-        return base + '?portal=' + encodeURIComponent(nationalId);
+        // محاولة الحصول على رابط البوابة المُعيَّن يدوياً في إعدادات الحساب
+        var portalBase = '';
+        try {
+            var acc = null;
+            if (window._appData && window._appData.currentAccountId) {
+                var accounts = window._appData.accounts || [];
+                acc = accounts.find(function(a){ return a.id === window._appData.currentAccountId; }) || null;
+            }
+            if (!acc && window._appData && window._appData.currentUser && window._appData.accounts) {
+                acc = window._appData.accounts.find(function(a){ return a.username === window._appData.currentUser; }) || null;
+            }
+            if (acc && acc.portalUrl && acc.portalUrl.trim()) {
+                portalBase = acc.portalUrl.trim().replace(/\?.*$/, '').replace(/\/$/, '');
+            }
+        } catch(e) {}
+        // إذا لم يكن هناك رابط مُعيَّن، استخدم الرابط الحالي للصفحة
+        if (!portalBase) {
+            portalBase = window.location.href.split('?')[0];
+        }
+        return portalBase + '?portal=' + encodeURIComponent(nationalId);
     }
 
     // ── تحقق من رابط البوابة عند التحميل ──
@@ -20642,26 +20707,28 @@ window._loadGeminiKeyFromDrive = async function() {
         var lines = [];
         lines.push('🌟 مرحباً ' + patientName + '،');
         lines.push('');
-        lines.push('يسعدنا إبلاغكم بأنه تم إنشاء حسابكم في بوابة متابعة نتائجكم الطبية عبر نظام MedBox-Pedia.');
+        lines.push('يسعدنا إبلاغكم بأنه تم إنشاء حسابكم الشخصي في بوابة متابعة نتائجكم الطبية عبر نظام MedBox-Pedia.');
         lines.push('');
-        if (t) {
-            lines.push('👨‍⚕️ معلومات المعالج:');
-            if (t.fullName)  lines.push('• الاسم: ' + t.fullName);
-            if (t.specialty) lines.push('• الاختصاص: ' + t.specialty);
-            if (t.clinic)    lines.push('• العيادة: ' + t.clinic);
-            if (t.address)   lines.push('• العنوان: ' + t.address);
-            if (t.phone)     lines.push('• الهاتف: ' + t.phone);
-            if (t.whatsapp)  lines.push('• واتساب: +' + t.whatsapp);
+        if (t && (t.fullName || t.specialty || t.clinic)) {
+            lines.push('━━━━━━━━━━━━━━━━━━');
+            lines.push('👨‍⚕️ معلومات الطبيب المعالج:');
+            if (t.fullName)   lines.push('   • الاسم: ' + t.fullName);
+            if (t.specialty)  lines.push('   • التخصص: ' + t.specialty);
+            if (t.clinic)     lines.push('   • العيادة: ' + t.clinic);
+            if (t.address)    lines.push('   • العنوان: ' + t.address);
+            if (t.phone)      lines.push('   • الهاتف: ' + t.phone);
+            if (t.whatsapp)   lines.push('   • واتساب: +' + t.whatsapp);
+            lines.push('━━━━━━━━━━━━━━━━━━');
             lines.push('');
         }
-        lines.push('🔐 بيانات تسجيل الدخول:');
-        lines.push('• الاسم: ' + patientName);
-        lines.push('• كلمة السر: ' + password);
+        lines.push('🔐 بيانات تسجيل دخولكم:');
+        lines.push('   • اسم المستخدم: ' + patientName);
+        lines.push('   • كلمة السر: ' + password);
         lines.push('');
-        lines.push('🔗 رابط البوابة:');
+        lines.push('🔗 رابط البوابة الطبية:');
         lines.push(portalLink);
         lines.push('');
-        lines.push('يمكنكم الدخول للبوابة باستخدام اسمكم الثلاثي وكلمة السر أعلاه.');
+        lines.push('📌 للدخول: افتح الرابط أعلاه واكتب اسمك وكلمة السر.');
         lines.push('نتمنى لكم الصحة والعافية 💙');
         return lines.join('\n');
     }
@@ -21053,6 +21120,11 @@ window._loadGeminiKeyFromDrive = async function() {
                '<div style="font-size:0.95rem;font-weight:800;color:#0790AC;">' + value + '</div>' +
                '</div>';
     }
+
+    // تصدير الدوال المشتركة للاستخدام من IIFEs أخرى (الشريط الجانبي)
+    window.getPortalAccounts   = getPortalAccounts;
+    window.generatePortalLink  = generatePortalLink;
+    window.buildWhatsAppMessage = buildWhatsAppMessage;
 
 })();
 </script>
