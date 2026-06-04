@@ -9416,10 +9416,27 @@ window.addEventListener('resize', setTopbarHeight);
                 <div class="flex justify-between items-center p-3 hover:bg-gray-100">
                     <div class="flex-1 flex justify-between items-center text-right pr-2 select-none">
                         <div data-id="${patient.id}" class="patient-item-name flex items-center gap-2 cursor-pointer flex-1">
-                            <div>
+                            <div style="min-width:0;">
                                 <span class="font-semibold text-[--color-primary]">${patient.name_ar}</span>
                                 <span class="block text-xs text-gray-500">${patient.national_id}</span>
                                 ${patient.phone ? `<span class="block text-xs text-[#0790AC]">📞 ${patient.phone}</span>` : ''}
+                                ${(function(){
+                                    var _pid = patient.id || patient.national_id;
+                                    var _accs = (function(){ try{ return JSON.parse(localStorage.getItem('medbox_patient_accounts')||'{}'); }catch(e){return {};} })();
+                                    var _acc = _accs[_pid];
+                                    if (!_acc) return '';
+                                    var _link = window.location.href.split('?')[0] + '?portal=' + encodeURIComponent(_pid);
+                                    var _phone = (patient.phone||'').replace(/[^0-9]/g,'');
+                                    if (_phone && _phone.startsWith('0')) _phone = '966' + _phone.substring(1);
+                                    var _msg = encodeURIComponent('مرحباً ' + patient.name_ar + ',\nرابط نتائجك الطبية:\n' + _link + '\nاسم الدخول: ' + patient.name_ar + '\nكلمة السر: ' + _acc.password + '\n— MedBox-Pedia');
+                                    var _waUrl = (_phone ? 'https://wa.me/' + _phone : 'https://wa.me') + '?text=' + _msg;
+                                    return '<div style="display:flex;align-items:center;gap:4px;margin-top:3px;flex-wrap:wrap;">'
+                                        + '<span style="font-size:0.65rem;color:#6b7280;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:120px;direction:ltr;">' + _link.replace(window.location.origin,'') + '</span>'
+                                        + '<a href="' + _waUrl + '" target="_blank" onclick="event.stopPropagation()" title="إرسال بيانات الدخول عبر واتساب" style="display:inline-flex;align-items:center;gap:2px;background:#25d366;color:#fff;border-radius:5px;padding:2px 6px;font-size:0.65rem;font-weight:700;text-decoration:none;flex-shrink:0;">'
+                                        + '<svg xmlns=\"http://www.w3.org/2000/svg\" style=\"width:10px;height:10px;\" viewBox=\"0 0 24 24\" fill=\"currentColor\"><path d=\"M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z\"/></svg>'
+                                        + ' واتساب</a>'
+                                        + '</div>';
+                                })()}
                             </div>
                         </div>
                         <div data-id="${patient.id}" class="patient-item-toggle flex-shrink-0 p-1 cursor-pointer">
@@ -20400,25 +20417,75 @@ window._loadGeminiKeyFromDrive = async function() {
                 var pid = p.id || p.national_id;
                 var acc = accounts[pid];
                 var hasAcc = !!acc;
-                html += '<div class="patient-account-row">';
+                var link = generatePortalLink(pid);
+                // محاولة الحصول على رقم الواتساب
+                var phone = p.phone || '';
+                if (!phone && p.visits && p.visits.length > 0) {
+                    var lv = p.visits[p.visits.length-1];
+                    phone = (lv.personal && (lv.personal.whatsapp || lv.personal.phone)) || '';
+                }
+
+                html += '<div class="patient-account-row" style="flex-direction:column;align-items:stretch;gap:8px;">';
+
+                // ── صف الأعلى: أيقونة + بيانات + أزرار ──
+                html += '<div style="display:flex;align-items:center;gap:10px;">';
                 html += '<div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#0790AC,#056a80);display:flex;align-items:center;justify-content:center;color:#fff;font-size:1rem;flex-shrink:0;">👤</div>';
                 html += '<div style="flex:1;min-width:0;">';
                 html += '<div style="font-weight:700;color:#374151;font-size:0.9rem;">' + (p.name_ar || 'غير محدد') + '</div>';
-                html += '<div style="font-size:0.75rem;color:#9ca3af;">رقم: ' + (p.national_id || pid) + '</div>';
+                html += '<div style="font-size:0.72rem;color:#9ca3af;">رقم: ' + (p.national_id || pid) + '</div>';
                 if (hasAcc) {
-                    html += '<div style="font-size:0.75rem;color:#16a34a;font-weight:600;margin-top:2px;">✅ كلمة السر: <span style="font-family:monospace;background:#f0fdf4;padding:1px 6px;border-radius:4px;letter-spacing:1px;">' + acc.password + '</span></div>';
+                    html += '<div style="display:flex;align-items:center;gap:6px;margin-top:3px;flex-wrap:wrap;">';
+                    html += '<span style="font-size:0.72rem;color:#16a34a;font-weight:600;">🔑 كلمة السر:</span>';
+                    html += '<code style="font-family:monospace;background:#f0fdf4;border:1px solid #bbf7d0;padding:2px 7px;border-radius:5px;font-size:0.8rem;font-weight:700;letter-spacing:1.5px;color:#15803d;">' + acc.password + '</code>';
+                    html += '</div>';
                 }
                 html += '</div>';
-                html += '<div style="display:flex;gap:6px;flex-wrap:wrap;">';
+                // أزرار التحكم
+                html += '<div style="display:flex;gap:5px;flex-shrink:0;">';
                 if (!hasAcc) {
-                    html += '<button onclick="createPatientAccount(\'' + pid + '\')" style="background:#0790AC;color:#fff;border:none;border-radius:7px;padding:6px 10px;font-family:Cairo,sans-serif;font-size:0.75rem;font-weight:700;cursor:pointer;">إنشاء حساب</button>';
+                    html += '<button onclick="createPatientAccount(\'' + pid + '\')" style="background:#0790AC;color:#fff;border:none;border-radius:7px;padding:6px 11px;font-family:Cairo,sans-serif;font-size:0.78rem;font-weight:700;cursor:pointer;">+ إنشاء حساب</button>';
                 } else {
-                    html += '<button onclick="regeneratePatientPassword(\'' + pid + '\')" style="background:#f59e0b;color:#fff;border:none;border-radius:7px;padding:6px 10px;font-family:Cairo,sans-serif;font-size:0.75rem;font-weight:700;cursor:pointer;">🔄 سر جديد</button>';
-                    html += '<button onclick="copyPortalLink(\'' + pid + '\')" style="background:#6366f1;color:#fff;border:none;border-radius:7px;padding:6px 10px;font-family:Cairo,sans-serif;font-size:0.75rem;font-weight:700;cursor:pointer;">🔗 رابط</button>';
-                    html += '<button onclick="deletePatientAccount(\'' + pid + '\')" style="background:#fee2e2;color:#dc2626;border:none;border-radius:7px;padding:6px 10px;font-family:Cairo,sans-serif;font-size:0.75rem;font-weight:700;cursor:pointer;">حذف</button>';
+                    html += '<button onclick="regeneratePatientPassword(\'' + pid + '\')" title="توليد كلمة سر جديدة" style="background:#f59e0b;color:#fff;border:none;border-radius:7px;padding:6px 9px;font-size:0.82rem;cursor:pointer;">🔄</button>';
+                    html += '<button onclick="deletePatientAccount(\'' + pid + '\')" title="حذف الحساب" style="background:#fee2e2;color:#dc2626;border:none;border-radius:7px;padding:6px 9px;font-size:0.82rem;cursor:pointer;">🗑️</button>';
                 }
                 html += '</div>';
-                html += '</div>';
+                html += '</div>'; // end top row
+
+                // ── صف الرابط + واتساب (فقط إذا الحساب موجود) ──
+                if (hasAcc) {
+                    var waPhone = phone.replace(/[^0-9]/g, '');
+                    if (waPhone && !waPhone.startsWith('966') && waPhone.startsWith('0')) {
+                        waPhone = '966' + waPhone.substring(1);
+                    }
+                    var waMsg = encodeURIComponent(
+                        'مرحباً ' + (p.name_ar || '') + '،\n' +
+                        'يمكنك الاطلاع على نتائجك الطبية عبر الرابط التالي:\n' +
+                        link + '\n\n' +
+                        'اسم الدخول: ' + (p.name_ar || '') + '\n' +
+                        'كلمة السر: ' + acc.password + '\n\n' +
+                        '— MedBox-Pedia'
+                    );
+                    var waUrl = (waPhone ? 'https://wa.me/' + waPhone : 'https://wa.me') + '?text=' + waMsg;
+
+                    html += '<div style="background:#f8fafc;border:1px solid #e0f2fe;border-radius:9px;padding:9px 11px;display:flex;flex-direction:column;gap:7px;">';
+
+                    // الرابط
+                    html += '<div style="display:flex;align-items:center;gap:7px;">';
+                    html += '<svg xmlns=\"http://www.w3.org/2000/svg\" style=\"width:13px;height:13px;color:#6366f1;flex-shrink:0;\" fill=\"none\" viewBox=\"0 0 24 24\" stroke-width=\"2\" stroke=\"currentColor\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m13.35-.622l1.757-1.757a4.5 4.5 0 00-6.364-6.364l-4.5 4.5a4.5 4.5 0 001.242 7.244\" /></svg>';
+                    html += '<span style="font-size:0.7rem;color:#6b7280;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;direction:ltr;text-align:left;">' + link + '</span>';
+                    html += '<button onclick="copyPortalLink(\'' + pid + '\')" title="نسخ الرابط" style="background:#6366f1;color:#fff;border:none;border-radius:6px;padding:3px 9px;font-family:Cairo,sans-serif;font-size:0.7rem;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0;">نسخ 🔗</button>';
+                    html += '</div>';
+
+                    // زر واتساب
+                    html += '<a href="' + waUrl + '" target="_blank" style="display:flex;align-items:center;justify-content:center;gap:7px;background:#25d366;color:#fff;border-radius:8px;padding:8px 12px;font-family:Cairo,sans-serif;font-size:0.82rem;font-weight:700;text-decoration:none;" onmouseover="this.style.background='#128c7e'" onmouseout="this.style.background='#25d366'">';
+                    html += '<svg xmlns=\"http://www.w3.org/2000/svg\" style=\"width:16px;height:16px;flex-shrink:0;\" viewBox=\"0 0 24 24\" fill=\"currentColor\"><path d=\"M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z\"/></svg>';
+                    html += 'إرسال عبر واتساب' + (waPhone ? '' : ' (بدون رقم محفوظ)');
+                    html += '</a>';
+
+                    html += '</div>'; // end link box
+                }
+
+                html += '</div>'; // end patient-account-row
             });
             html += '</div>';
         }
