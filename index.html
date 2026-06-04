@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MedBox-Pedia v 3-1-5</title>
+    <title>MedBox-Pedia v 3-1-6</title>
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -1812,29 +1812,36 @@
         /* تصميم قائمة تسجيل الدخول المنسدلة */
         #login-dropdown-menu {
             position: fixed;
-            top: 60px;
+            top: 62px;
             left: 50%;
             transform: translateX(-50%);
-            width: 90vw;
-            max-width: 320px;
+            width: 92vw;
+            max-width: 340px;
+            min-width: 280px;
             background-color: white;
             border-radius: 0.75rem;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.22);
             border: 1px solid #E5E7EB;
-            z-index: 40;
+            z-index: 10001;
+            max-height: calc(100vh - 80px);
+            overflow-y: auto;
         }
 
         @media (min-width: 640px) {
             #login-dropdown-menu {
                 position: absolute;
-                top: 100%;
-                left: 0;
+                top: calc(100% + 8px);
+                left: auto;
+                right: 0;
                 transform: none;
-                width: 288px;
+                width: 300px;
                 max-width: none;
-                margin-top: 8px;
-                border-radius: 0.5rem;
-                box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+                min-width: 280px;
+                border-radius: 0.75rem;
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
+                max-height: calc(100vh - 80px);
+                overflow-y: auto;
+                z-index: 10001;
             }
         }
 
@@ -1843,7 +1850,7 @@
             position: fixed;
             inset: 0;
             background: rgba(0,0,0,0.35);
-            z-index: 39;
+            z-index: 10000;
         }
         @media (min-width: 640px) {
             #login-dropdown-backdrop { display: none !important; }
@@ -3111,7 +3118,22 @@ window.addEventListener('resize', setTopbarHeight);
             <div id="sidebar-settings-view" class="hidden p-4 space-y-2 flex-1">
                 <h3 class="font-bold text-lg text-[--color-primary] mb-2">الإعدادات</h3>
                 <div class="space-y-2">
-                    <button id="settings-about-btn" class="w-full text-right p-3 rounded-lg hover:bg-gray-100 transition-colors">حول البرنامج</button>
+                    <!-- 1. حول البرنامج -->
+                    <button id="settings-about-btn" class="w-full text-right p-3 rounded-lg hover:bg-gray-100 transition-colors flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-[#0790AC]" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" />
+                        </svg>
+                        <span>حول البرنامج</span>
+                    </button>
+                    <!-- 2. إدارة حسابات المستخدمين -->
+                    <button id="settings-accounts-btn" class="w-full text-right p-3 rounded-lg hover:bg-gray-100 transition-colors flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-[#0790AC]" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" />
+                        </svg>
+                        <span>إدارة حسابات المستخدمين</span>
+                    </button>
+                    <!-- 3. إدارة حسابات المرضى - يُضاف برمجياً هنا -->
+                    <!-- 4. الحفظ السحابي -->
                     <button id="settings-cloud-sync-btn" class="w-full text-right p-3 rounded-lg hover:bg-gray-100 transition-colors flex items-center gap-2">
                         <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-[#0790AC]" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15a4.5 4.5 0 004.5 4.5H18a3.75 3.75 0 001.332-7.257 3 3 0 00-3.758-3.848 5.25 5.25 0 00-10.233 2.33A4.502 4.502 0 002.25 15z" />
@@ -3120,8 +3142,7 @@ window.addEventListener('resize', setTopbarHeight);
                         <span>الحفظ السحابي</span>
                         <span id="cloud-sync-status-dot" class="mr-auto w-2.5 h-2.5 rounded-full bg-red-400 inline-block" title="غير متصل"></span>
                     </button>
-                    <button id="settings-accounts-btn" class="w-full text-right p-3 rounded-lg hover:bg-gray-100 transition-colors">إدارة الحسابات</button>
-                    <!-- زر سجل التدقيق HIPAA -->
+                    <!-- 5. سجل التدقيق HIPAA -->
                     <button id="settings-audit-log-btn" class="w-full text-right p-3 rounded-lg hover:bg-gray-100 transition-colors flex items-center gap-2">
                         <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" style="color:#dc2626;" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25zM6.75 12h.008v.008H6.75V12zm0 3h.008v.008H6.75V15zm0 3h.008v.008H6.75V18z" />
@@ -3129,11 +3150,14 @@ window.addEventListener('resize', setTopbarHeight);
                         <span>سجل التدقيق HIPAA</span>
                         <span id="audit-log-count-badge" class="mr-auto text-xs font-bold bg-red-100 text-red-700 px-2 py-0.5 rounded-full hidden">0</span>
                     </button>
-                    <!-- (تعديل 10) تم نقل زر إدارة القيم إلى هنا وإخفاؤه افتراضياً -->
-                    <button id="manage-limits-btn" class="w-full text-right p-3 rounded-lg hover:bg-gray-100 transition-colors hidden">
-                        إدارة الحدود الطبيعية
+                    <!-- 6. إدارة الحدود الطبيعية -->
+                    <button id="manage-limits-btn" class="w-full text-right p-3 rounded-lg hover:bg-gray-100 transition-colors flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-[#0790AC]" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3v11.25A2.25 2.25 0 006 16.5h2.25M3.75 3h-1.5m1.5 0h16.5m0 0h1.5m-1.5 0v11.25A2.25 2.25 0 0118 16.5h-2.25m-7.5 0h7.5m-7.5 0l-1 3m8.5-3l1 3m0 0l.5 1.5m-.5-1.5h-9.5m0 0l-.5 1.5M9 11.25v1.5M12 9v3.75m3-6v6" />
+                        </svg>
+                        <span>إدارة الحدود الطبيعية</span>
                     </button>
-                    <!-- زر البرامج الغذائية -->
+                    <!-- 7. تفعيل البرنامج الغذائي -->
                     <div class="auto-sync-toggle" style="padding: 10px 12px; background: #f9fafb; border-radius: 10px; border: 1px solid #e5e7eb;">
                         <div>
                             <div style="font-weight:600;font-size:0.9rem;color:#374151;display:flex;align-items:center;gap:6px;">
@@ -3195,7 +3219,7 @@ window.addEventListener('resize', setTopbarHeight);
                         <img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" id="dash-logo-img" alt="MedBox Logo" style="width:52px;height:52px;object-fit:contain;border-radius:10px;background:rgba(255,255,255,0.15);padding:4px;flex-shrink:0;">
                         <div style="flex:1;min-width:0;">
                             <h2 style="color:#fff;font-size:1.2rem;font-weight:800;margin:0;letter-spacing:-0.3px;">MedBox – Pedia</h2>
-                            <p style="color:rgba(255,255,255,0.55);font-size:0.72rem;margin:1px 0 2px;letter-spacing:0.5px;font-family:'Courier New',monospace;font-weight:600;">V 3-1-5 | 5-6-26</p>
+                            <p style="color:rgba(255,255,255,0.55);font-size:0.72rem;margin:1px 0 2px;letter-spacing:0.5px;font-family:'Courier New',monospace;font-weight:600;">V 3-1-6 | 5-6-26</p>
                             <p style="color:rgba(255,255,255,0.82);font-size:0.82rem;margin:0;">وسيلة دعم شاملة للممارسين الصحيين</p>
                         </div>
                         <!-- بيانات العيادة مكان التاريخ في أقصى اليسار -->
@@ -6291,11 +6315,7 @@ window.addEventListener('resize', setTopbarHeight);
                         <input id="edit-cred-whatsapp" type="text" placeholder="مثل: 963912345678" class="w-full pr-9 pl-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-green-400/30 focus:border-green-400 focus:outline-none">
                     </div>
                 </div>
-                <div>
-                    <label class="block text-xs font-semibold text-gray-600 mb-1">🔗 رابط البوابة العامة للمرضى <span class="text-gray-400">(URL المستضاف للتطبيق)</span></label>
-                    <input id="edit-cred-portalurl" type="url" placeholder="مثال: https://medbox.example.com/app.html" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#0790AC]/30 focus:outline-none" dir="ltr">
-                    <p class="text-xs text-gray-400 mt-1">يُستخدم لتوليد روابط صالحة قابلة للمشاركة مع المرضى عبر الواتساب أو SMS.</p>
-                </div>
+
                 <div>
                     <label class="block text-xs font-semibold text-gray-600 mb-1">كلمة المرور الجديدة <span class="text-gray-400">(اتركها فارغة إذا لا تريد تغييرها)</span></label>
                     <input id="edit-cred-password" type="password" placeholder="••••••" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#0790AC]/30 focus:outline-none">
@@ -6345,7 +6365,6 @@ window.addEventListener('resize', setTopbarHeight);
         document.getElementById('edit-cred-address').value = acc.address || '';
         document.getElementById('edit-cred-phone').value = acc.phone || '';
         document.getElementById('edit-cred-whatsapp').value = acc.whatsapp || '';
-        document.getElementById('edit-cred-portalurl').value = acc.portalUrl || '';
         document.getElementById('edit-cred-password').value = '';
         document.getElementById('edit-cred-password2').value = '';
         document.getElementById('edit-credentials-modal').classList.remove('hidden');
@@ -6374,7 +6393,6 @@ window.addEventListener('resize', setTopbarHeight);
         const newAddress = document.getElementById('edit-cred-address').value.trim();
         const newPhone = document.getElementById('edit-cred-phone').value.trim();
         const newWhatsapp = document.getElementById('edit-cred-whatsapp').value.trim();
-        const newPortalUrl = document.getElementById('edit-cred-portalurl').value.trim();
         const newPassword = document.getElementById('edit-cred-password').value;
         const newPassword2 = document.getElementById('edit-cred-password2').value;
 
@@ -6396,7 +6414,6 @@ window.addEventListener('resize', setTopbarHeight);
         acc.address = newAddress;
         acc.phone = newPhone;
         acc.whatsapp = newWhatsapp;
-        acc.portalUrl = newPortalUrl;
         if (newPassword) acc.password = newPassword;
 
         saveDataToLocalStorage();
@@ -6643,7 +6660,7 @@ window.addEventListener('resize', setTopbarHeight);
                                     </div>
                                     <div>
                                         <p class="text-xs text-gray-500 font-semibold">رقم الإصدار</p>
-                                        <p class="text-2xl font-black text-purple-600 ltr" dir="ltr">V3.1.5</p>
+                                        <p class="text-2xl font-black text-purple-600 ltr" dir="ltr">V3.1.6</p>
                                     </div>
                                 </div>
                                 <div class="bg-white px-4 py-2 rounded-xl border border-gray-200">
@@ -20648,7 +20665,13 @@ window._loadGeminiKeyFromDrive = async function() {
                 btn.onmouseout  = function(){ this.style.background=''; this.style.color='#374151'; };
                 btn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" style="width:20px;height:20px;color:#0790AC;flex-shrink:0;" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15 9h3.75M15 12h3.75M15 15h3.75M4.5 19.5h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5zm6-10.125a1.875 1.875 0 11-3.75 0 1.875 1.875 0 013.75 0zm1.294 6.336a6.721 6.721 0 01-3.17.789 6.721 6.721 0 01-3.168-.789 3.376 3.376 0 016.338 0z" /></svg> إدارة حسابات المرضى';
                 btn.onclick = function() { openPatientPortalPage(); };
-                sidebarSettingsView.appendChild(btn);
+                // إدراج الزر بعد زر إدارة حسابات المستخدمين
+                var accountsBtn = document.getElementById('settings-accounts-btn');
+                if (accountsBtn && accountsBtn.parentNode) {
+                    accountsBtn.parentNode.insertBefore(btn, accountsBtn.nextSibling);
+                } else {
+                    sidebarSettingsView.querySelector('.space-y-2').insertBefore(btn, sidebarSettingsView.querySelector('#settings-cloud-sync-btn'));
+                }
                 clearInterval(addBtn);
             }
             if (attempts > 20) clearInterval(addBtn);
@@ -20833,20 +20856,20 @@ window._loadGeminiKeyFromDrive = async function() {
 
                 html += '<div class="patient-account-row" style="flex-direction:column;align-items:stretch;gap:10px;">';
                 // الصف الأول: بيانات المريض + أزرار
-                html += '<div style="display:flex;align-items:center;gap:12px;">';
+                html += '<div style="display:flex;align-items:flex-start;gap:10px;flex-wrap:wrap;">';
                 html += '<div style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,' + (hasAcc?'#0790AC,#056a80':'#9ca3af,#6b7280') + ');display:flex;align-items:center;justify-content:center;color:#fff;font-size:1.1rem;flex-shrink:0;">👤</div>';
-                html += '<div style="flex:1;min-width:0;">';
+                html += '<div style="flex:1;min-width:120px;">';
                 html += '<div style="font-weight:700;color:#1f2937;font-size:0.92rem;">' + (p.name_ar || 'غير محدد') + '</div>';
                 html += '<div style="font-size:0.73rem;color:#9ca3af;margin-top:1px;">رقم الملف: ' + (p.national_id || pid) + '</div>';
                 html += '</div>';
-                html += '<div style="display:flex;gap:6px;flex-wrap:wrap;flex-shrink:0;">';
+                html += '<div style="display:flex;gap:5px;flex-wrap:wrap;width:100%;">';
                 if (!hasAcc) {
-                    html += '<button onclick="createPatientAccount(\'' + pid + '\')" style="background:#0790AC;color:#fff;border:none;border-radius:8px;padding:7px 12px;font-family:Cairo,sans-serif;font-size:0.78rem;font-weight:700;cursor:pointer;">+ إنشاء حساب</button>';
+                    html += '<button onclick="createPatientAccount(\'' + pid + '\')" style="background:#0790AC;color:#fff;border:none;border-radius:8px;padding:7px 14px;font-family:Cairo,sans-serif;font-size:0.82rem;font-weight:700;cursor:pointer;white-space:nowrap;">+ إنشاء حساب</button>';
                 } else {
-                    html += '<button onclick="regeneratePatientPassword(\'' + pid + '\')" style="background:#f59e0b;color:#fff;border:none;border-radius:8px;padding:7px 10px;font-family:Cairo,sans-serif;font-size:0.75rem;font-weight:700;cursor:pointer;" title="توليد كلمة سر جديدة">🔄 سر جديد</button>';
-                    html += '<button onclick="copyPortalLink(\'' + pid + '\')" style="background:#6366f1;color:#fff;border:none;border-radius:8px;padding:7px 10px;font-family:Cairo,sans-serif;font-size:0.75rem;font-weight:700;cursor:pointer;" title="نسخ الرابط">🔗 نسخ الرابط</button>';
-                    html += '<button onclick="window._sendPortalWhatsApp(\'' + pid + '\')" style="background:#16a34a;color:#fff;border:none;border-radius:8px;padding:7px 10px;font-family:Cairo,sans-serif;font-size:0.75rem;font-weight:700;cursor:pointer;" title="إرسال عبر الواتساب">📲 واتساب</button>';
-                    html += '<button onclick="deletePatientAccount(\'' + pid + '\')" style="background:#fee2e2;color:#dc2626;border:none;border-radius:8px;padding:7px 10px;font-family:Cairo,sans-serif;font-size:0.75rem;font-weight:700;cursor:pointer;" title="حذف الحساب">حذف</button>';
+                    html += '<button onclick="regeneratePatientPassword(\'' + pid + '\')" style="background:#f59e0b;color:#fff;border:none;border-radius:8px;padding:7px 10px;font-family:Cairo,sans-serif;font-size:0.8rem;font-weight:700;cursor:pointer;white-space:nowrap;" title="توليد كلمة سر جديدة">🔄 سر جديد</button>';
+                    html += '<button onclick="copyPortalLink(\'' + pid + '\')" style="background:#6366f1;color:#fff;border:none;border-radius:8px;padding:7px 10px;font-family:Cairo,sans-serif;font-size:0.8rem;font-weight:700;cursor:pointer;white-space:nowrap;" title="نسخ الرابط">🔗 نسخ</button>';
+                    html += '<button onclick="window._sendPortalWhatsApp(\'' + pid + '\')" style="background:#16a34a;color:#fff;border:none;border-radius:8px;padding:7px 10px;font-family:Cairo,sans-serif;font-size:0.8rem;font-weight:700;cursor:pointer;white-space:nowrap;" title="إرسال عبر الواتساب">📲 واتساب</button>';
+                    html += '<button onclick="deletePatientAccount(\'' + pid + '\')" style="background:#fee2e2;color:#dc2626;border:1px solid #fca5a5;border-radius:8px;padding:7px 10px;font-family:Cairo,sans-serif;font-size:0.8rem;font-weight:700;cursor:pointer;white-space:nowrap;" title="حذف الحساب">🗑️ حذف</button>';
                 }
                 html += '</div>';
                 html += '</div>';
