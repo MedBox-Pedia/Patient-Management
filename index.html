@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MedBox-Pedia v 3-1-6</title>
+    <title>MedBox-Pedia v 3-1-7</title>
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -2665,7 +2665,7 @@
         }
         #notif-perm-bar.show { display: flex; }
 
-        /* ===== زر الإدخال الصوتي ===== */
+        /* ===== زر الإدخال الصوتي العائم الذكي ===== */
         .voice-btn {
             display: inline-flex;
             align-items: center;
@@ -2682,70 +2682,79 @@
             padding: 0;
         }
         .voice-btn:hover { background: #0790AC; color: #fff; }
-        .voice-btn.recording {
-            background: #ef4444;
-            color: #fff;
-            animation: voicePulse 1s ease-in-out infinite;
-        }
         @keyframes voicePulse {
             0%,100% { box-shadow: 0 0 0 0 rgba(239,68,68,0.5); }
-            50% { box-shadow: 0 0 0 6px rgba(239,68,68,0); }
+            50% { box-shadow: 0 0 0 10px rgba(239,68,68,0); }
         }
-        /* نافذة لوحة التحكم الصوتية الشاملة */
-        #voice-panel-modal {
-            display: none;
+        @keyframes voiceRipple {
+            0% { transform: scale(1); opacity: 0.6; }
+            100% { transform: scale(2.2); opacity: 0; }
+        }
+        /* الزر العائم */
+        #floating-mic-btn {
             position: fixed;
-            inset: 0;
-            z-index: 10001;
-            background: rgba(0,0,0,0.55);
-            align-items: center;
-            justify-content: center;
-        }
-        #voice-panel-modal.active { display: flex; }
-        #voice-panel-box {
-            background: #fff;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            width: 92vw;
-            max-width: 480px;
-            overflow: hidden;
-            animation: slideUpModal 0.25s ease;
-        }
-        #voice-panel-header {
-            background: linear-gradient(135deg, #0790AC 0%, #056a80 100%);
-            padding: 16px 20px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            color: #fff;
-        }
-        #voice-panel-body { padding: 20px; }
-        #voice-status-ring {
-            width: 80px; height: 80px;
+            bottom: 28px;
+            left: 28px;
+            z-index: 9990;
+            width: 56px;
+            height: 56px;
             border-radius: 50%;
-            background: #e6f4f7;
+            border: none;
+            background: linear-gradient(135deg, #0790AC 0%, #056a80 100%);
+            color: #fff;
+            cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 0 auto 12px;
-            transition: all 0.3s;
+            box-shadow: 0 4px 20px rgba(7,144,172,0.45), 0 1px 6px rgba(0,0,0,0.15);
+            transition: all 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+            outline: none;
         }
-        #voice-status-ring.recording {
-            background: #fee2e2;
+        #floating-mic-btn:hover {
+            transform: scale(1.12);
+            box-shadow: 0 8px 28px rgba(7,144,172,0.55), 0 2px 8px rgba(0,0,0,0.18);
+        }
+        #floating-mic-btn.recording {
+            background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%);
+            box-shadow: 0 4px 20px rgba(239,68,68,0.5), 0 1px 6px rgba(0,0,0,0.15);
             animation: voicePulse 1s ease-in-out infinite;
         }
-        #voice-transcript-box {
-            min-height: 56px;
-            background: #f8fafc;
-            border: 1.5px solid #e5e7eb;
-            border-radius: 10px;
-            padding: 10px 14px;
-            font-size: 0.95rem;
-            color: #374151;
-            margin: 12px 0;
-            direction: rtl;
-            line-height: 1.7;
+        #floating-mic-btn .ripple {
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            border: 2px solid rgba(239,68,68,0.5);
+            animation: voiceRipple 1.2s ease-out infinite;
+            display: none;
         }
+        #floating-mic-btn.recording .ripple { display: block; }
+        /* شريط الحالة العائم */
+        #floating-voice-toast {
+            position: fixed;
+            bottom: 96px;
+            left: 16px;
+            z-index: 9989;
+            background: #1f2937;
+            color: #fff;
+            font-family: 'Cairo', sans-serif;
+            font-size: 0.82rem;
+            font-weight: 600;
+            padding: 8px 14px;
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+            opacity: 0;
+            transform: translateY(8px);
+            transition: opacity 0.22s, transform 0.22s;
+            pointer-events: none;
+            max-width: 200px;
+            text-align: center;
+        }
+        #floating-voice-toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        /* إخفاء النافذة القديمة */
+        #voice-panel-modal { display: none !important; }
         .voice-target-select {
             width: 100%;
             padding: 8px 12px;
@@ -9446,7 +9455,10 @@ window.addEventListener('resize', setTopbarHeight);
                 }
             }
             const patientEl = document.createElement('div');
-            patientEl.className = 'bg-gray-50 rounded-lg border border-gray-200';
+            patientEl.className = 'patient-card-item';
+            patientEl.style.cssText = 'background:#fff;border-radius:12px;border:1.5px solid #e5e7eb;margin-bottom:7px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,0.05);transition:border-color 0.18s,box-shadow 0.18s;';
+            patientEl.onmouseover = function(){ this.style.borderColor='#b8dfe8';this.style.boxShadow='0 2px 10px rgba(7,144,172,0.1)'; };
+            patientEl.onmouseout = function(){ this.style.borderColor='#e5e7eb';this.style.boxShadow='0 1px 4px rgba(0,0,0,0.05)'; };
 
             let devButtons = '';
             const canAdd    = hasPermission('addPatient');
@@ -9481,72 +9493,81 @@ window.addEventListener('resize', setTopbarHeight);
             const _pWa = (patient.whatsapp || patient.phone || '').replace(/\s/g,'');
 
             patientEl.innerHTML = `
-                <div class="flex justify-between items-center p-3 hover:bg-gray-100">
-                    <div class="flex-1 flex justify-between items-start text-right pr-2 select-none">
-                        <div class="flex flex-col gap-1 flex-1">
-                            <div data-id="${patient.id}" class="patient-item-name flex items-center gap-2 cursor-pointer">
-                                <div>
-                                    <span class="font-semibold text-[--color-primary]">${patient.name_ar}</span>
-                                    <span class="block text-xs text-gray-500">${patient.national_id}</span>
-                                </div>
-                            </div>
-                            <!-- أيقونات التواصل السريع -->
-                            <div class="flex items-center gap-1 pt-0.5" onclick="event.stopPropagation()">
-                                <!-- 1. زر الاتصال -->
-                                ${_pPhone ? `<button onclick="window._sidebarCallPatient('${_pPhone}','${patient.name_ar.replace(/'/g,"\\'")}',event)" title="اتصال بـ ${patient.name_ar}" class="sidebar-contact-btn text-[#0790AC] hover:bg-[#e6f4f7] rounded-lg p-1.5 transition-all" style="line-height:0">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z"/></svg>
-                                </button>` : ''}
-                                <!-- 2. زر SMS -->
-                                ${_pPhone ? `<button onclick="window._sidebarSMSPatient('${_pPhone}',event)" title="رسالة SMS" class="sidebar-contact-btn text-purple-600 hover:bg-purple-50 rounded-lg p-1.5 transition-all" style="line-height:0">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M8.625 12a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 01-2.555-.337A5.972 5.972 0 015.41 20.97a5.969 5.969 0 01-.474-.065 4.48 4.48 0 00.978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25z"/></svg>
-                                </button>` : ''}
-                                <!-- 3. زر الواتساب مع قائمة منسدلة -->
-                                ${_pWa ? `<div class="relative" id="wa-wrap-${_pid}">
-                                    <button onclick="window._sidebarWaToggle('${_pid}',event)" title="واتساب" class="sidebar-contact-btn text-green-600 hover:bg-green-50 rounded-lg p-1.5 transition-all" style="line-height:0">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-                                    </button>
-                                    <div id="wa-menu-${_pid}" class="sidebar-dropdown-menu hidden" style="position:absolute;top:calc(100% + 4px);right:0;min-width:190px;background:#fff;border-radius:12px;box-shadow:0 8px 30px rgba(0,0,0,0.15);border:1px solid #e5e7eb;z-index:9999;overflow:hidden;">
-                                        <div style="padding:6px 10px 4px;font-size:0.68rem;font-weight:700;color:#9ca3af;background:#fafafa;border-bottom:1px solid #f3f4f6;">واتساب</div>
-                                        <button onclick="window._sidebarWaChat('${_pWa}',event)" class="sidebar-dd-item" style="display:flex;align-items:center;gap:8px;width:100%;padding:9px 14px;background:none;border:none;font-family:'Cairo',sans-serif;font-size:0.82rem;color:#374151;cursor:pointer;text-align:right;transition:background 0.15s;" onmouseover="this.style.background='#f0fdf4'" onmouseout="this.style.background='none'">
-                                            <svg class="w-4 h-4 text-green-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M8.625 9.75a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375m-13.5 3.01c0 1.6 1.123 2.994 2.707 3.227 1.087.16 2.185.283 3.293.369V21l4.184-4.183a1.14 1.14 0 01.778-.332 48.294 48.294 0 005.83-.498c1.585-.233 2.708-1.626 2.708-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z"/></svg>
-                                            بدء محادثة
-                                        </button>
-                                        <button onclick="window._sidebarWaReport('${_pid}',event)" class="sidebar-dd-item" style="display:flex;align-items:center;gap:8px;width:100%;padding:9px 14px;background:none;border:none;font-family:'Cairo',sans-serif;font-size:0.82rem;color:#374151;cursor:pointer;text-align:right;transition:background 0.15s;" onmouseover="this.style.background='#f0fdf4'" onmouseout="this.style.background='none'">
-                                            <svg class="w-4 h-4 text-green-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
-                                            إرسال تقرير زيارة
-                                        </button>
-                                    </div>
-                                </div>` : ''}
-                                <!-- 4. زر الرابط الشخصي مع قائمة منسدلة -->
-                                <div class="relative" id="link-wrap-${_pid}">
-                                    <button onclick="window._sidebarLinkToggle('${_pid}',event)" title="حساب المريض الشخصي" class="sidebar-contact-btn text-gray-500 hover:bg-gray-100 rounded-lg p-1.5 transition-all" style="line-height:0">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m13.35-.622l1.757-1.757a4.5 4.5 0 00-6.364-6.364l-4.5 4.5a4.5 4.5 0 001.242 7.244"/></svg>
-                                    </button>
-                                    <div id="link-menu-${_pid}" class="sidebar-dropdown-menu hidden" style="position:absolute;top:calc(100% + 4px);right:0;min-width:190px;background:#fff;border-radius:12px;box-shadow:0 8px 30px rgba(0,0,0,0.15);border:1px solid #e5e7eb;z-index:9999;overflow:hidden;">
-                                        <div style="padding:6px 10px 4px;font-size:0.68rem;font-weight:700;color:#9ca3af;background:#fafafa;border-bottom:1px solid #f3f4f6;">رابط الحساب الشخصي</div>
-                                        ${_pWa ? `<button onclick="window._sidebarLinkViaWa('${_pid}',event)" class="sidebar-dd-item" style="display:flex;align-items:center;gap:8px;width:100%;padding:9px 14px;background:none;border:none;font-family:'Cairo',sans-serif;font-size:0.82rem;color:#374151;cursor:pointer;text-align:right;transition:background 0.15s;" onmouseover="this.style.background='#f0fdf4'" onmouseout="this.style.background='none'">
-                                            <svg class="w-4 h-4 text-green-600 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-                                            إرسال عبر الواتساب
-                                        </button>` : ''}
-                                        ${_pPhone ? `<button onclick="window._sidebarLinkViaSMS('${_pid}',event)" class="sidebar-dd-item" style="display:flex;align-items:center;gap:8px;width:100%;padding:9px 14px;background:none;border:none;font-family:'Cairo',sans-serif;font-size:0.82rem;color:#374151;cursor:pointer;text-align:right;transition:background 0.15s;" onmouseover="this.style.background='#f0f0ff'" onmouseout="this.style.background='none'">
-                                            <svg class="w-4 h-4 text-purple-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M8.625 9.75a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375m-13.5 3.01c0 1.6 1.123 2.994 2.707 3.227 1.087.16 2.185.283 3.293.369V21l4.184-4.183a1.14 1.14 0 01.778-.332 48.294 48.294 0 005.83-.498c1.585-.233 2.708-1.626 2.708-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z"/></svg>
-                                            إرسال عبر SMS
-                                        </button>` : ''}
-                                        <button onclick="window._sidebarLinkCopy('${_pid}',event)" class="sidebar-dd-item" style="display:flex;align-items:center;gap:8px;width:100%;padding:9px 14px;background:none;border:none;font-family:'Cairo',sans-serif;font-size:0.82rem;color:#374151;cursor:pointer;text-align:right;transition:background 0.15s;" onmouseover="this.style.background='#f0f9ff'" onmouseout="this.style.background='none'">
-                                            <svg class="w-4 h-4 text-blue-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.666 3.888A2.25 2.25 0 0013.5 2.25h-3c-1.03 0-1.9.693-2.166 1.638m7.332 0c.055.194.084.4.084.612v0a.75.75 0 01-.75.75H9a.75.75 0 01-.75-.75v0c0-.212.03-.418.084-.612m7.332 0c.646.049 1.288.11 1.927.184 1.1.128 1.907 1.077 1.907 2.185V19.5a2.25 2.25 0 01-2.25 2.25H6.75A2.25 2.25 0 014.5 19.5V6.257c0-1.108.806-2.057 1.907-2.185a48.208 48.208 0 011.927-.184"/></svg>
-                                            نسخ الرابط
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
+                <div style="padding:10px 12px;">
+                    <!-- صف 1: اسم المريض + سهم عرض الزيارات -->
+                    <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:5px;">
+                        <div data-id="${patient.id}" class="patient-item-name" style="flex:1;cursor:pointer;min-width:0;">
+                            <span style="font-size:0.97rem;font-weight:700;color:#0790AC;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${patient.name_ar}</span>
                         </div>
-                        <div data-id="${patient.id}" class="patient-item-toggle flex-shrink-0 p-1 cursor-pointer self-start mt-1">
-                            <svg class="w-4 h-4 toggle-icon transition-transform duration-200" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+                        <div data-id="${patient.id}" class="patient-item-toggle" style="flex-shrink:0;cursor:pointer;display:flex;align-items:center;gap:4px;background:#f0fafc;border:1.5px solid #c7e9f1;border-radius:8px;padding:4px 10px;transition:all 0.18s;" onmouseover="this.style.background='#0790AC';this.querySelector('span').style.color='#fff';this.querySelector('svg').style.stroke='#fff';" onmouseout="this.style.background='#f0fafc';this.querySelector('span').style.color='#0790AC';this.querySelector('svg').style.stroke='#0790AC';">
+                            <span style="font-size:0.72rem;font-weight:700;color:#0790AC;white-space:nowrap;">عرض الزيارات</span>
+                            <svg class="toggle-icon transition-transform duration-200" style="width:14px;height:14px;stroke:#0790AC;fill:none;stroke-width:2.5;flex-shrink:0;" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"/></svg>
                         </div>
                     </div>
-                    ${devButtons}
+                    <!-- صف 2: الرقم الوطني -->
+                    <div style="margin-bottom:7px;">
+                        <span style="font-size:0.75rem;color:#6b7280;background:#f3f4f6;padding:2px 8px;border-radius:6px;font-variant-numeric:tabular-nums;">${patient.national_id}</span>
+                    </div>
+                    <!-- صف 3: أزرار التواصل + أزرار الإجراءات -->
+                    <div style="display:flex;align-items:center;justify-content:space-between;gap:6px;" onclick="event.stopPropagation()">
+                        <!-- أيقونات التواصل -->
+                        <div style="display:flex;align-items:center;gap:4px;">
+                            ${_pPhone ? `<button onclick="window._sidebarCallPatient('${_pPhone}','${patient.name_ar.replace(/'/g,"\\'")}',event)" title="اتصال" style="width:32px;height:32px;border-radius:9px;border:none;background:#e6f4f7;color:#0790AC;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.15s;line-height:0;" onmouseover="this.style.background='#0790AC';this.style.color='#fff';" onmouseout="this.style.background='#e6f4f7';this.style.color='#0790AC';">
+                                <svg xmlns="http://www.w3.org/2000/svg" style="width:15px;height:15px;" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z"/></svg>
+                            </button>` : ''}
+                            ${_pPhone ? `<button onclick="window._sidebarSMSPatient('${_pPhone}',event)" title="رسالة نصية" style="width:32px;height:32px;border-radius:9px;border:none;background:#f3e8ff;color:#7c3aed;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.15s;line-height:0;" onmouseover="this.style.background='#7c3aed';this.style.color='#fff';" onmouseout="this.style.background='#f3e8ff';this.style.color='#7c3aed';">
+                                <svg xmlns="http://www.w3.org/2000/svg" style="width:15px;height:15px;" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M8.625 12a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 01-2.555-.337A5.972 5.972 0 015.41 20.97a5.969 5.969 0 01-.474-.065 4.48 4.48 0 00.978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25z"/></svg>
+                            </button>` : ''}
+                            ${_pWa ? `<div class="relative" id="wa-wrap-${_pid}">
+                                <button onclick="window._sidebarWaToggle('${_pid}',event)" title="واتساب" style="width:32px;height:32px;border-radius:9px;border:none;background:#dcfce7;color:#16a34a;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.15s;line-height:0;" onmouseover="this.style.background='#16a34a';this.style.color='#fff';" onmouseout="this.style.background='#dcfce7';this.style.color='#16a34a';">
+                                    <svg xmlns="http://www.w3.org/2000/svg" style="width:15px;height:15px;" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+                                </button>
+                                <div id="wa-menu-${_pid}" class="sidebar-dropdown-menu hidden" style="position:absolute;top:calc(100% + 4px);right:0;min-width:190px;background:#fff;border-radius:12px;box-shadow:0 8px 30px rgba(0,0,0,0.15);border:1px solid #e5e7eb;z-index:9999;overflow:hidden;">
+                                    <div style="padding:6px 10px 4px;font-size:0.68rem;font-weight:700;color:#9ca3af;background:#fafafa;border-bottom:1px solid #f3f4f6;">واتساب</div>
+                                    <button onclick="window._sidebarWaChat('${_pWa}',event)" class="sidebar-dd-item" style="display:flex;align-items:center;gap:8px;width:100%;padding:9px 14px;background:none;border:none;font-family:'Cairo',sans-serif;font-size:0.82rem;color:#374151;cursor:pointer;text-align:right;transition:background 0.15s;" onmouseover="this.style.background='#f0fdf4'" onmouseout="this.style.background='none'">
+                                        <svg class="w-4 h-4 text-green-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M8.625 9.75a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375m-13.5 3.01c0 1.6 1.123 2.994 2.707 3.227 1.087.16 2.185.283 3.293.369V21l4.184-4.183a1.14 1.14 0 01.778-.332 48.294 48.294 0 005.83-.498c1.585-.233 2.708-1.626 2.708-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z"/></svg>
+                                        بدء محادثة
+                                    </button>
+                                    <button onclick="window._sidebarWaReport('${_pid}',event)" class="sidebar-dd-item" style="display:flex;align-items:center;gap:8px;width:100%;padding:9px 14px;background:none;border:none;font-family:'Cairo',sans-serif;font-size:0.82rem;color:#374151;cursor:pointer;text-align:right;transition:background 0.15s;" onmouseover="this.style.background='#f0fdf4'" onmouseout="this.style.background='none'">
+                                        <svg class="w-4 h-4 text-green-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
+                                        إرسال تقرير زيارة
+                                    </button>
+                                </div>
+                            </div>` : ''}
+                            <div class="relative" id="link-wrap-${_pid}">
+                                <button onclick="window._sidebarLinkToggle('${_pid}',event)" title="حساب المريض الشخصي" style="width:32px;height:32px;border-radius:9px;border:none;background:#f3f4f6;color:#6b7280;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.15s;line-height:0;" onmouseover="this.style.background='#6b7280';this.style.color='#fff';" onmouseout="this.style.background='#f3f4f6';this.style.color='#6b7280';">
+                                    <svg xmlns="http://www.w3.org/2000/svg" style="width:15px;height:15px;" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m13.35-.622l1.757-1.757a4.5 4.5 0 00-6.364-6.364l-4.5 4.5a4.5 4.5 0 001.242 7.244"/></svg>
+                                </button>
+                                <div id="link-menu-${_pid}" class="sidebar-dropdown-menu hidden" style="position:absolute;top:calc(100% + 4px);right:0;min-width:190px;background:#fff;border-radius:12px;box-shadow:0 8px 30px rgba(0,0,0,0.15);border:1px solid #e5e7eb;z-index:9999;overflow:hidden;">
+                                    <div style="padding:6px 10px 4px;font-size:0.68rem;font-weight:700;color:#9ca3af;background:#fafafa;border-bottom:1px solid #f3f4f6;">رابط الحساب الشخصي</div>
+                                    ${_pWa ? `<button onclick="window._sidebarLinkViaWa('${_pid}',event)" class="sidebar-dd-item" style="display:flex;align-items:center;gap:8px;width:100%;padding:9px 14px;background:none;border:none;font-family:'Cairo',sans-serif;font-size:0.82rem;color:#374151;cursor:pointer;text-align:right;transition:background 0.15s;" onmouseover="this.style.background='#f0fdf4'" onmouseout="this.style.background='none'">
+                                        <svg class="w-4 h-4 text-green-600 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+                                        إرسال عبر الواتساب
+                                    </button>` : ''}
+                                    ${_pPhone ? `<button onclick="window._sidebarLinkViaSMS('${_pid}',event)" class="sidebar-dd-item" style="display:flex;align-items:center;gap:8px;width:100%;padding:9px 14px;background:none;border:none;font-family:'Cairo',sans-serif;font-size:0.82rem;color:#374151;cursor:pointer;text-align:right;transition:background 0.15s;" onmouseover="this.style.background='#f0f0ff'" onmouseout="this.style.background='none'">
+                                        <svg class="w-4 h-4 text-purple-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M8.625 9.75a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375m-13.5 3.01c0 1.6 1.123 2.994 2.707 3.227 1.087.16 2.185.283 3.293.369V21l4.184-4.183a1.14 1.14 0 01.778-.332 48.294 48.294 0 005.83-.498c1.585-.233 2.708-1.626 2.708-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z"/></svg>
+                                        إرسال عبر SMS
+                                    </button>` : ''}
+                                    <button onclick="window._sidebarLinkCopy('${_pid}',event)" class="sidebar-dd-item" style="display:flex;align-items:center;gap:8px;width:100%;padding:9px 14px;background:none;border:none;font-family:'Cairo',sans-serif;font-size:0.82rem;color:#374151;cursor:pointer;text-align:right;transition:background 0.15s;" onmouseover="this.style.background='#f0f9ff'" onmouseout="this.style.background='none'">
+                                        <svg class="w-4 h-4 text-blue-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.666 3.888A2.25 2.25 0 0013.5 2.25h-3c-1.03 0-1.9.693-2.166 1.638m7.332 0c.055.194.084.4.084.612v0a.75.75 0 01-.75.75H9a.75.75 0 01-.75-.75v0c0-.212.03-.418.084-.612m7.332 0c.646.049 1.288.11 1.927.184 1.1.128 1.907 1.077 1.907 2.185V19.5a2.25 2.25 0 01-2.25 2.25H6.75A2.25 2.25 0 014.5 19.5V6.257c0-1.108.806-2.057 1.907-2.185a48.208 48.208 0 011.927-.184"/></svg>
+                                        نسخ الرابط
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- أزرار الإجراءات: إضافة جلسة + حذف -->
+                        <div style="display:flex;align-items:center;gap:5px;flex-shrink:0;">
+                            ${canAddVis ? `<button data-id="${patient.id}" class="add-visit-btn" title="إضافة جلسة جديدة" style="display:flex;align-items:center;gap:5px;padding:5px 10px;background:linear-gradient(135deg,#0790AC,#056a80);color:#fff;border:none;border-radius:8px;cursor:pointer;font-family:'Cairo',sans-serif;font-size:0.72rem;font-weight:700;transition:all 0.18s;box-shadow:0 2px 8px rgba(7,144,172,0.3);white-space:nowrap;" onmouseover="this.style.transform='translateY(-1px)';this.style.boxShadow='0 4px 12px rgba(7,144,172,0.4)';" onmouseout="this.style.transform='';this.style.boxShadow='0 2px 8px rgba(7,144,172,0.3)';">
+                                <svg style="width:13px;height:13px;flex-shrink:0;" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+                                جلسة
+                            </button>` : ''}
+                            ${canDelPat ? `<button data-id="${patient.id}" class="delete-patient-btn" title="حذف المريض" style="display:flex;align-items:center;justify-content:center;width:32px;height:32px;background:#fff0f0;color:#dc2626;border:1.5px solid #fca5a5;border-radius:8px;cursor:pointer;transition:all 0.18s;flex-shrink:0;" onmouseover="this.style.background='#dc2626';this.style.color='#fff';this.style.borderColor='#dc2626';" onmouseout="this.style.background='#fff0f0';this.style.color='#dc2626';this.style.borderColor='#fca5a5';">
+                                <svg style="width:14px;height:14px;" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.74-3.746A.93.93 0 0 0 13.095 4.5h-2.19c-.482 0-.898.356-1.005.824L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12.025 0A48.108 48.108 0 0 1 9.025 5.393m7.373 0a48.31 48.31 0 0 1-3.478.397m-7.373 0a48.31 48.31 0 0 0 3.478.397"/></svg>
+                            </button>` : ''}
+                        </div>
+                    </div>
                 </div>
-                <div class="visits-list hidden p-2 pl-6 bg-white border-t border-gray-200">
+                <div class="visits-list hidden" style="border-top:1px solid #e5e7eb;background:#fafafa;padding:8px 12px 8px 16px;">
                     ${patient.visits.map((visit, index) => {
                         let visitDevBtns = '';
                         if (canEdit || canDelVis) {
@@ -20302,7 +20323,22 @@ window._loadGeminiKeyFromDrive = async function() {
 })();
 </script>
 
-<!-- ========== نافذة الإدخال الصوتي الشامل ========== -->
+<!-- ========== زر الميكروفون العائم الذكي ========== -->
+<button id="floating-mic-btn" onclick="floatingMicToggle()" title="إدخال صوتي — انقر على حقل ثم انقر هنا">
+    <span class="ripple"></span>
+    <!-- أيقونة الميكروفون -->
+    <svg id="mic-icon-default" xmlns="http://www.w3.org/2000/svg" style="width:24px;height:24px;pointer-events:none;" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 01-3-3V4.5a3 3 0 116 0v8.25a3 3 0 01-3 3z" />
+    </svg>
+    <!-- أيقونة الإيقاف (تظهر أثناء التسجيل) -->
+    <svg id="mic-icon-recording" xmlns="http://www.w3.org/2000/svg" style="width:22px;height:22px;pointer-events:none;display:none;" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+        <rect x="6" y="6" width="12" height="12" rx="2" fill="currentColor"/>
+    </svg>
+</button>
+<!-- تلميح الحالة العائم -->
+<div id="floating-voice-toast"></div>
+
+<!-- ========== نافذة الإدخال الصوتي الشامل (محتفظ بها للتوافق) ========== -->
 <div id="voice-panel-modal">
   <div id="voice-panel-box">
     <div id="voice-panel-header">
@@ -20315,92 +20351,12 @@ window._loadGeminiKeyFromDrive = async function() {
       <button onclick="closeVoicePanel()" style="background:rgba(255,255,255,0.2);border:none;border-radius:50%;width:30px;height:30px;cursor:pointer;color:#fff;font-size:1.1rem;display:flex;align-items:center;justify-content:center;">✕</button>
     </div>
     <div id="voice-panel-body">
-      <!-- اختيار الحقل المستهدف -->
-      <label style="font-size:0.82rem;font-weight:700;color:#374151;display:block;margin-bottom:6px;">📋 اختر الحقل المستهدف:</label>
       <select id="voice-target-field" class="voice-target-select">
         <option value="">-- اختر الحقل --</option>
-        <optgroup label="🩺 الشكوى والتشخيص">
-          <option value="current-complaint">الشكوى الرئيسية</option>
-          <option value="medical-diagnosis">التشخيص الطبي</option>
-          <option value="chronic-diseases">الأمراض المزمنة</option>
-          <option value="surgical-history">التاريخ الجراحي</option>
-          <option value="allergies">الحساسية</option>
-          <option value="genetic-diseases">الأمراض الوراثية</option>
-        </optgroup>
-        <optgroup label="💉 العلامات الحيوية">
-          <option value="vital_bp_sys">ضغط الدم الانقباضي</option>
-          <option value="vital_bp_dias">ضغط الدم الانبساطي</option>
-          <option value="vital_pulse">النبض</option>
-          <option value="vital_resp">التنفس</option>
-          <option value="vital_temp">الحرارة</option>
-          <option value="vital_spo2">الاشباع SpO2</option>
-        </optgroup>
-        <optgroup label="⚖️ القياسات">
-          <option value="height">الطول (cm)</option>
-          <option value="weight">الوزن (kg)</option>
-          <option value="waist-circ">محيط الخصر</option>
-          <option value="arm-circ">محيط الذراع</option>
-          <option value="neck-circ">محيط الرقبة</option>
-          <option value="hip-circ">محيط الورك</option>
-        </optgroup>
-        <optgroup label="🧪 تحاليل الدم الكاملة">
-          <option value="lab_wbc">WBC</option>
-          <option value="lab_rbc">RBC</option>
-          <option value="lab_hb">HB</option>
-          <option value="lab_ht">HT</option>
-          <option value="lab_platelets">Platelets</option>
-          <option value="lab_mcv">MCV</option>
-        </optgroup>
-        <optgroup label="🩸 السكر والكلى والكبد">
-          <option value="lab_glucose_fast">سكر الصيام</option>
-          <option value="lab_glucose_random">سكر عشوائي</option>
-          <option value="lab_hba1c">HbA1c</option>
-          <option value="lab_cr">Creatinine</option>
-          <option value="lab_urea">Urea</option>
-          <option value="lab_alt">ALT</option>
-          <option value="lab_ast">AST</option>
-        </optgroup>
-        <optgroup label="📝 الملاحظات">
-          <option value="beliefs-notes">ملاحظات أخرى</option>
-          <option value="address">العنوان</option>
-        </optgroup>
       </select>
-
-      <!-- حلقة الحالة -->
-      <div style="text-align:center;">
-        <div id="voice-status-ring">
-          <svg xmlns="http://www.w3.org/2000/svg" style="width:36px;height:36px;color:#0790AC;" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 01-3-3V4.5a3 3 0 116 0v8.25a3 3 0 01-3 3z" />
-          </svg>
-        </div>
-        <p id="voice-status-text" style="font-size:0.85rem;font-weight:600;color:#6b7280;margin-bottom:8px;">اضغط "تسجيل" للبدء</p>
-      </div>
-
-      <!-- صندوق النص المنقول -->
-      <div id="voice-transcript-box" style="min-height:56px;"></div>
-
-      <!-- أزرار التحكم -->
-      <div style="display:flex;gap:10px;margin-top:12px;">
-        <button id="voice-record-btn" onclick="toggleVoiceRecording()"
-          style="flex:1;background:#0790AC;color:#fff;border:none;border-radius:10px;padding:11px;font-family:Cairo,sans-serif;font-weight:700;font-size:0.95rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;">
-          <svg xmlns="http://www.w3.org/2000/svg" style="width:18px;height:18px;" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 01-3-3V4.5a3 3 0 116 0v8.25a3 3 0 01-3 3z" />
-          </svg>
-          تسجيل
-        </button>
-        <button onclick="applyVoiceTranscript()"
-          style="flex:1;background:#16a34a;color:#fff;border:none;border-radius:10px;padding:11px;font-family:Cairo,sans-serif;font-weight:700;font-size:0.95rem;cursor:pointer;">
-          ✓ تطبيق
-        </button>
-        <button onclick="clearVoiceTranscript()"
-          style="background:#f3f4f6;color:#374151;border:none;border-radius:10px;padding:11px 14px;font-family:Cairo,sans-serif;font-weight:700;cursor:pointer;">
-          مسح
-        </button>
-      </div>
-
-      <!-- تنبيه المتصفح -->
+      <div id="voice-transcript-box" style="min-height:56px;background:#f8fafc;border:1.5px solid #e5e7eb;border-radius:10px;padding:10px 14px;font-size:0.95rem;color:#374151;margin:12px 0;direction:rtl;line-height:1.7;"></div>
       <div id="voice-browser-warn" style="display:none;margin-top:10px;padding:8px 12px;background:#fef3c7;border:1px solid #fde68a;border-radius:8px;font-size:0.8rem;color:#92400e;">
-        ⚠️ متصفحك لا يدعم التعرف على الصوت، أو لم يُمنح الإذن. يُوصى باستخدام Chrome أو Edge.
+        ⚠️ متصفحك لا يدعم التعرف على الصوت. يُوصى باستخدام Chrome أو Edge.
       </div>
     </div>
   </div>
@@ -20479,40 +20435,105 @@ window._loadGeminiKeyFromDrive = async function() {
 
 <script>
 // =============================================
-// ===== 1. نظام الإدخال الصوتي (Voice Input) ====
+// ===== 1. نظام الإدخال الصوتي العائم الذكي ====
 // =============================================
 (function() {
     var recognition = null;
     var isRecording = false;
     var transcript = '';
+    var lastFocusedField = null; // آخر حقل نشط
+
+    // تتبع آخر حقل نشط في الصفحة
+    document.addEventListener('focusin', function(e) {
+        var el = e.target;
+        if (el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.tagName === 'SELECT')) {
+            // تجاهل عناصر البحث والإدخال غير الطبية
+            if (el.id && el.id !== 'patient-search' && el.id !== 'portal-login-name' && el.id !== 'portal-login-pass') {
+                lastFocusedField = el;
+            } else if (!el.id && el.tagName === 'TEXTAREA') {
+                lastFocusedField = el;
+            } else if (!el.id && el.tagName === 'INPUT' && el.type !== 'search') {
+                lastFocusedField = el;
+            }
+        }
+    }, true);
 
     function isSupported() {
         return !!(window.SpeechRecognition || window.webkitSpeechRecognition);
     }
 
-    window.openVoicePanel = function() {
-        document.getElementById('voice-panel-modal').classList.add('active');
-        document.getElementById('voice-transcript-box').textContent = '';
-        document.getElementById('voice-status-text').textContent = 'اضغط "تسجيل" للبدء';
-        document.getElementById('voice-status-ring').classList.remove('recording');
-        document.getElementById('voice-browser-warn').style.display = isSupported() ? 'none' : 'block';
-        transcript = '';
-    };
+    function showFloatingToast(msg, duration) {
+        var toast = document.getElementById('floating-voice-toast');
+        if (!toast) return;
+        toast.textContent = msg;
+        toast.classList.add('show');
+        if (duration) {
+            setTimeout(function() { toast.classList.remove('show'); }, duration);
+        }
+    }
+    function hideFloatingToast() {
+        var toast = document.getElementById('floating-voice-toast');
+        if (toast) toast.classList.remove('show');
+    }
 
-    window.closeVoicePanel = function() {
-        stopVoice();
-        document.getElementById('voice-panel-modal').classList.remove('active');
-    };
+    function setMicState(recording) {
+        var btn = document.getElementById('floating-mic-btn');
+        var iconDefault = document.getElementById('mic-icon-default');
+        var iconRec = document.getElementById('mic-icon-recording');
+        if (!btn) return;
+        if (recording) {
+            btn.classList.add('recording');
+            if (iconDefault) iconDefault.style.display = 'none';
+            if (iconRec) iconRec.style.display = '';
+        } else {
+            btn.classList.remove('recording');
+            if (iconDefault) iconDefault.style.display = '';
+            if (iconRec) iconRec.style.display = 'none';
+        }
+    }
 
-    window.toggleVoiceRecording = function() {
-        if (isRecording) { stopVoice(); } else { startVoice(); }
-    };
+    function applyTextToField(text) {
+        if (!lastFocusedField) {
+            if (typeof showToast === 'function') showToast('انقر على الحقل الذي تريد الكتابة فيه أولاً', 'error');
+            return false;
+        }
+        var el = lastFocusedField;
+        if (!document.body.contains(el)) {
+            if (typeof showToast === 'function') showToast('الحقل لم يعد متاحاً، انقر على حقل جديد', 'error');
+            lastFocusedField = null;
+            return false;
+        }
+        if (el.type === 'number') {
+            var nums = text.replace(/[^\d.٠-٩]/g, '').replace(/[٠-٩]/g, function(d){ return d.charCodeAt(0)-1632; });
+            if (nums) {
+                el.value = nums;
+                el.dispatchEvent(new Event('input',{bubbles:true}));
+                el.dispatchEvent(new Event('change',{bubbles:true}));
+            }
+        } else {
+            el.value = el.value ? (el.value + '\n' + text) : text;
+            el.dispatchEvent(new Event('input',{bubbles:true}));
+        }
+        // تأثير بصري
+        el.style.transition = 'background 0.4s';
+        el.style.background = '#d1fae5';
+        setTimeout(function(){ el.style.background = ''; }, 1400);
+        el.focus();
+        return true;
+    }
 
     function startVoice() {
         if (!isSupported()) {
-            document.getElementById('voice-browser-warn').style.display = 'block';
+            var warn = document.getElementById('voice-browser-warn');
+            if (warn) warn.style.display = 'block';
+            showFloatingToast('⚠️ المتصفح لا يدعم التعرف على الصوت', 3000);
             return;
         }
+        if (!lastFocusedField || !document.body.contains(lastFocusedField)) {
+            showFloatingToast('📝 انقر على حقل أولاً ثم اضغط الميكروفون', 3000);
+            return;
+        }
+        transcript = '';
         var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
         recognition = new SR();
         recognition.lang = 'ar-SA';
@@ -20521,10 +20542,8 @@ window._loadGeminiKeyFromDrive = async function() {
 
         recognition.onstart = function() {
             isRecording = true;
-            document.getElementById('voice-status-text').textContent = '🔴 جاري الاستماع...';
-            document.getElementById('voice-status-ring').classList.add('recording');
-            document.getElementById('voice-record-btn').innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" style="width:18px;height:18px;" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><rect x="6" y="6" width="12" height="12" rx="2" fill="currentColor"/></svg> إيقاف';
-            document.getElementById('voice-record-btn').style.background = '#ef4444';
+            setMicState(true);
+            showFloatingToast('🔴 جاري الاستماع...');
         };
 
         recognition.onresult = function(e) {
@@ -20535,13 +20554,13 @@ window._loadGeminiKeyFromDrive = async function() {
                 else { interim += e.results[i][0].transcript; }
             }
             transcript += final;
-            document.getElementById('voice-transcript-box').textContent = transcript + interim;
+            if (interim) showFloatingToast('🎙️ ' + (transcript + interim).slice(-30) + '…');
         };
 
         recognition.onerror = function(e) {
-            stopVoice();
+            stopVoice(false);
             if (e.error === 'not-allowed') {
-                document.getElementById('voice-browser-warn').style.display = 'block';
+                showFloatingToast('⚠️ لم يُمنح إذن الميكروفون', 3000);
             }
         };
 
@@ -20552,44 +20571,40 @@ window._loadGeminiKeyFromDrive = async function() {
         recognition.start();
     }
 
-    function stopVoice() {
+    function stopVoice(apply) {
         isRecording = false;
         if (recognition) { recognition.onend = null; recognition.stop(); recognition = null; }
-        document.getElementById('voice-status-text').textContent = 'تم الإيقاف — يمكنك تعديل النص أو تطبيقه';
-        document.getElementById('voice-status-ring').classList.remove('recording');
-        document.getElementById('voice-record-btn').innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" style="width:18px;height:18px;" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 01-3-3V4.5a3 3 0 116 0v8.25a3 3 0 01-3 3z" /></svg> تسجيل';
-        document.getElementById('voice-record-btn').style.background = '#0790AC';
+        setMicState(false);
+        if (apply && transcript.trim()) {
+            var ok = applyTextToField(transcript.trim());
+            if (ok) {
+                if (typeof showToast === 'function') showToast('✅ تم إدراج النص في الحقل', 'success');
+                showFloatingToast('✅ تم الحفظ', 2000);
+            }
+        } else if (apply) {
+            showFloatingToast('لا يوجد نص مسجل', 2000);
+        } else {
+            hideFloatingToast();
+        }
+        transcript = '';
     }
 
-    window.applyVoiceTranscript = function() {
-        var fieldId = document.getElementById('voice-target-field').value;
-        var text = document.getElementById('voice-transcript-box').textContent.trim();
-        if (!fieldId) { if (typeof showToast === 'function') showToast('اختر الحقل المستهدف أولاً', 'error'); return; }
-        if (!text) { if (typeof showToast === 'function') showToast('لا يوجد نص لتطبيقه', 'error'); return; }
-        var el = document.getElementById(fieldId);
-        if (!el) { if (typeof showToast === 'function') showToast('الحقل غير موجود في النموذج الحالي', 'error'); return; }
-        // للحقول الرقمية، نحاول استخراج الرقم
-        if (el.type === 'number') {
-            var nums = text.replace(/[^\d.٠-٩]/g, '').replace(/[٠-٩]/g, function(d){ return d.charCodeAt(0)-1632; });
-            if (nums) { el.value = nums; el.dispatchEvent(new Event('input',{bubbles:true})); el.dispatchEvent(new Event('change',{bubbles:true})); }
+    window.floatingMicToggle = function() {
+        if (isRecording) {
+            stopVoice(true);
         } else {
-            el.value = el.value ? (el.value + '\n' + text) : text;
-            el.dispatchEvent(new Event('input',{bubbles:true}));
+            startVoice();
         }
-        // تأثير بصري
-        el.style.transition = 'background 0.4s';
-        el.style.background = '#d1fae5';
-        setTimeout(function(){ el.style.background = ''; }, 1400);
-        if (typeof showToast === 'function') showToast('✅ تم تطبيق النص على الحقل', 'success');
-        closeVoicePanel();
     };
 
-    window.clearVoiceTranscript = function() {
-        transcript = '';
-        document.getElementById('voice-transcript-box').textContent = '';
-    };
+    // دوال التوافق مع الكود القديم
+    window.openVoicePanel = function() { startVoice(); };
+    window.closeVoicePanel = function() { stopVoice(false); };
+    window.toggleVoiceRecording = function() { window.floatingMicToggle(); };
+    window.applyVoiceTranscript = function() { stopVoice(true); };
+    window.clearVoiceTranscript = function() { transcript = ''; };
 
-    // زر الإدخال الصوتي تم نقله إلى قائمة إجراءات الزيارة (print-menu-dropdown)
+    // زر الإدخال الصوتي تم نقله إلى زر عائم ذكي
 })();
 
 // =============================================
