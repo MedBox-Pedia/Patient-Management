@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MedBox-Pedia v 3-1-7</title>
+    <title>MedBox-Pedia v 3-1-9</title>
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -588,59 +588,58 @@
         
 
         /* ===== زر إضافة مريض في شريط البحث ===== */
-        /* ===== زر إضافة مريض جديد (عصري) ===== */
         #header-add-patient-btn {
-            display: none;
+            display: none; /* مخفي افتراضياً، يظهر عند تسجيل الدخول */
             align-items: center;
             justify-content: center;
-            gap: 5px;
-            padding: 0 12px;
+            width: 32px;
             height: 32px;
-            background: linear-gradient(135deg, #059669 0%, #0d9488 100%);
+            background: linear-gradient(135deg, #059669, #047857);
             color: #fff;
             border: none;
-            border-radius: 20px;
+            border-radius: 8px;
             cursor: pointer;
-            font-family: 'Cairo', sans-serif;
-            font-size: 0.72rem;
-            font-weight: 700;
+            font-size: 1.1rem;
+            font-weight: 800;
             flex-shrink: 0;
-            transition: all 0.2s cubic-bezier(.4,0,.2,1);
-            box-shadow: 0 2px 10px rgba(5,150,105,0.35), inset 0 1px 0 rgba(255,255,255,0.2);
-            white-space: nowrap;
-            letter-spacing: 0.01em;
-            position: relative;
-            overflow: hidden;
-        }
-        #header-add-patient-btn::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(135deg, rgba(255,255,255,0.15) 0%, transparent 60%);
-            border-radius: inherit;
+            transition: all 0.18s;
+            box-shadow: 0 2px 8px rgba(5,150,105,0.35);
         }
         #header-add-patient-btn:hover {
-            transform: translateY(-1px) scale(1.02);
-            box-shadow: 0 5px 18px rgba(5,150,105,0.45), inset 0 1px 0 rgba(255,255,255,0.2);
-            background: linear-gradient(135deg, #047857 0%, #0f766e 100%);
-        }
-        #header-add-patient-btn:active {
-            transform: translateY(0) scale(0.98);
-            box-shadow: 0 2px 8px rgba(5,150,105,0.3);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 14px rgba(5,150,105,0.45);
+            background: linear-gradient(135deg, #047857, #065f46);
         }
         #header-add-patient-btn.visible {
             display: flex;
         }
-        /* على الموبايل: أيقونة + فقط */
-        @media (max-width: 480px) {
-            #header-add-patient-btn span.btn-label {
-                display: none;
-            }
-            #header-add-patient-btn {
-                padding: 0;
-                width: 32px;
-                border-radius: 10px;
-            }
+
+        /* ===== زر إضافة مريض في شريط البحث ===== */
+        #header-add-patient-btn {
+            display: none;
+            align-items: center;
+            justify-content: center;
+            width: 30px;
+            height: 30px;
+            background: linear-gradient(135deg, #059669, #047857);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.15rem;
+            font-weight: 800;
+            flex-shrink: 0;
+            transition: all 0.18s;
+            box-shadow: 0 2px 8px rgba(5,150,105,0.35);
+            line-height: 1;
+        }
+        #header-add-patient-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 14px rgba(5,150,105,0.45);
+            background: linear-gradient(135deg, #047857, #065f46);
+        }
+        #header-add-patient-btn.visible {
+            display: flex;
         }
 
         /* ===== القائمة الجانبية ذات حواف منحنية ===== */
@@ -3180,13 +3179,8 @@ window.addEventListener('resize', setTopbarHeight);
                     <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
                 </svg>
             </div>
-            <!-- زر إضافة مريض جديد (عصري) -->
-            <button id="header-add-patient-btn" title="إضافة مريض جديد">
-                <svg style="width:13px;height:13px;flex-shrink:0;" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M18 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0ZM3 19.235v-.11a6.375 6.375 0 0 1 12.75 0v.109A12.318 12.318 0 0 1 9.374 21c-2.331 0-4.512-.645-6.374-1.766Z"/>
-                </svg>
-                <span class="btn-label">مريض جديد</span>
-            </button>
+            <!-- زر إضافة مريض جديد (في الهيدر) -->
+            <button id="header-add-patient-btn" title="إضافة مريض جديد">+</button>
             <!-- زر الإغلاق -->
             <button id="sidebar-close-btn" onclick="toggleSidebar()" title="إغلاق القائمة">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
@@ -3311,7 +3305,7 @@ window.addEventListener('resize', setTopbarHeight);
                         <img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" id="dash-logo-img" alt="MedBox Logo" style="width:52px;height:52px;object-fit:contain;border-radius:10px;background:rgba(255,255,255,0.15);padding:4px;flex-shrink:0;">
                         <div style="flex:1;min-width:0;">
                             <h2 style="color:#fff;font-size:1.2rem;font-weight:800;margin:0;letter-spacing:-0.3px;">MedBox – Pedia</h2>
-                            <p style="color:rgba(255,255,255,0.55);font-size:0.72rem;margin:1px 0 2px;letter-spacing:0.5px;font-family:'Courier New',monospace;font-weight:600;">V 3-1-6 | 5-6-26</p>
+                            <p style="color:rgba(255,255,255,0.55);font-size:0.72rem;margin:1px 0 2px;letter-spacing:0.5px;font-family:'Courier New',monospace;font-weight:600;">V 3-1-9 | 5-6-26</p>
                             <p style="color:rgba(255,255,255,0.82);font-size:0.82rem;margin:0;">وسيلة دعم شاملة للممارسين الصحيين</p>
                         </div>
                         <!-- بيانات العيادة مكان التاريخ في أقصى اليسار -->
@@ -5849,6 +5843,7 @@ window.addEventListener('resize', setTopbarHeight);
         patients: [], // سيتم تخزين المرضى هنا
         appointments: [], // (جديد) المواعيد والتذكيرات {id, patientId, patientName, date, time, note, dismissed}
         auditLog: [], // (HIPAA) سجل التدقيق — لا يُحذف ولا يُعدَّل أبدا
+        patientAccounts: {}, // (3-1-9) حسابات بوابة المرضى — يُزامَن مع Google Drive
         encyclopedia: {
             anatomy: [],
             diseases: [],
@@ -6764,7 +6759,7 @@ window.addEventListener('resize', setTopbarHeight);
                                     </div>
                                     <div>
                                         <p class="text-xs text-gray-500 font-semibold">رقم الإصدار</p>
-                                        <p class="text-2xl font-black text-purple-600 ltr" dir="ltr">V3.1.6</p>
+                                        <p class="text-2xl font-black text-purple-600 ltr" dir="ltr">V3.1.9</p>
                                     </div>
                                 </div>
                                 <div class="bg-white px-4 py-2 rounded-xl border border-gray-200">
@@ -7615,7 +7610,6 @@ window.addEventListener('resize', setTopbarHeight);
                 Object.assign(appData, data);
                 window._appData = appData;
                 if (!Array.isArray(appData.appointments)) appData.appointments = [];
-                if (!appData.portalAccounts || typeof appData.portalAccounts !== 'object') appData.portalAccounts = {};
 
                 // استعادة الجلسة إن وُجدت
                 if (_savedUser && typeof getAccounts === 'function') {
@@ -14415,8 +14409,13 @@ window.addEventListener('resize', setTopbarHeight);
                 if (!Array.isArray(appData.appointments)) appData.appointments = [];
                 // (HIPAA Audit) ضمان استمرارية سجل التدقيق دون إعادة تعيينه
                 if (!Array.isArray(appData.auditLog)) appData.auditLog = [];
-                // ضمان وجود portalAccounts دائماً
-                if (!appData.portalAccounts || typeof appData.portalAccounts !== 'object') appData.portalAccounts = {};
+                // (3-1-9) ترحيل حسابات المرضى من localStorage إلى appData إن لم تكن موجودة
+                if (!appData.patientAccounts || typeof appData.patientAccounts !== 'object') {
+                    try {
+                        var legacyAccounts = JSON.parse(localStorage.getItem('medbox_patient_accounts') || '{}');
+                        appData.patientAccounts = legacyAccounts;
+                    } catch(e) { appData.patientAccounts = {}; }
+                }
                 _updateAuditBadge();
                 getAccounts();
                 // (إصلاح) استعادة الجلسة المحفوظة عند تحديث الصفحة
@@ -17330,6 +17329,10 @@ async function loadFromDrivePrompt() {
             Object.assign(appData, data);
             window._appData = appData;
             if (!Array.isArray(appData.appointments)) appData.appointments = [];
+            // (3-1-9) ضمان وجود patientAccounts بعد التحميل من Drive
+            if (!appData.patientAccounts || typeof appData.patientAccounts !== 'object') {
+                appData.patientAccounts = {};
+            }
 
             // (إصلاح) إعادة تطبيق بيانات الجلسة بعد تحميل بيانات Drive
             if (_savedCurrentUser2) {
@@ -17416,6 +17419,10 @@ async function loadFromDrivePromptSilent(accountName) {
             Object.assign(appData, data);
             window._appData = appData;
             if (!Array.isArray(appData.appointments)) appData.appointments = [];
+            // (3-1-9) ضمان وجود patientAccounts بعد التحميل التلقائي من Drive
+            if (!appData.patientAccounts || typeof appData.patientAccounts !== 'object') {
+                appData.patientAccounts = {};
+            }
 
             // (إصلاح) إعادة تطبيق بيانات الجلسة بعد تحميل بيانات Drive
             if (_savedCurrentUser) {
@@ -17767,6 +17774,10 @@ async function downloadFromGoogleDrive() {
                 Object.assign(appData, data);
                 window._appData = appData;
                 if (!Array.isArray(appData.appointments)) appData.appointments = [];
+                // (3-1-9) ضمان وجود patientAccounts بعد التحميل من Drive
+                if (!appData.patientAccounts || typeof appData.patientAccounts !== 'object') {
+                    appData.patientAccounts = {};
+                }
                 if (typeof getAccounts === 'function') getAccounts();
                 if (typeof saveDataToLocalStorage === 'function') saveDataToLocalStorage();
                 if (typeof updateUI === 'function') updateUI();
@@ -20885,42 +20896,27 @@ window._loadGeminiKeyFromDrive = async function() {
 // =============================================
 (function() {
 
-    var PORTAL_KEY = 'medbox_patient_accounts'; // محجوز للترحيل من النسخ القديمة فقط
+    var PORTAL_KEY = 'medbox_patient_accounts';
 
-    // ── قراءة الحسابات من appData (مزامنة مع Drive) ──
+    // ── قراءة الحسابات من appData (مع الرجوع إلى localStorage كاحتياط) ──
     function getPortalAccounts() {
-        // المصدر الأساسي: appData.portalAccounts (يُزامَن مع Google Drive)
-        if (window._appData && window._appData.portalAccounts && typeof window._appData.portalAccounts === 'object') {
-            return window._appData.portalAccounts;
+        // المصدر الأول: appData (يُزامَن مع Google Drive)
+        if (window._appData && window._appData.patientAccounts && typeof window._appData.patientAccounts === 'object') {
+            return window._appData.patientAccounts;
         }
-        // ترحيل تلقائي من localStorage القديم عند أول استخدام
-        try {
-            var legacy = JSON.parse(localStorage.getItem(PORTAL_KEY) || '{}');
-            if (Object.keys(legacy).length > 0 && window._appData) {
-                window._appData.portalAccounts = legacy;
-                localStorage.removeItem(PORTAL_KEY); // حذف النسخة القديمة بعد الترحيل
-                if (typeof saveDataToLocalStorage === 'function') saveDataToLocalStorage();
-                console.log('[MedBox Portal] تم ترحيل ' + Object.keys(legacy).length + ' حساب من localStorage إلى appData');
-                return legacy;
-            }
-        } catch(e) {}
-        // إنشاء كائن فارغ في appData إن لم يوجد
-        if (window._appData) window._appData.portalAccounts = {};
-        return {};
+        // الرجوع إلى localStorage (للبيانات القديمة أو عند عدم تحميل appData)
+        try { return JSON.parse(localStorage.getItem(PORTAL_KEY) || '{}'); } catch(e) { return {}; }
     }
-
     function savePortalAccounts(accounts) {
-        // الحفظ في appData أولاً (مصدر الحقيقة)
-        if (window._appData) window._appData.portalAccounts = accounts;
-        // الحفظ في IndexedDB (محلي)
-        if (typeof saveDataToLocalStorage === 'function') saveDataToLocalStorage();
-        // مزامنة فورية مع Google Drive إن كان متصلاً
-        if (typeof uploadToGoogleDrive === 'function' &&
-            typeof _cloudAccessToken !== 'undefined' && _cloudAccessToken &&
-            typeof _cloudTokenExpiry !== 'undefined' && Date.now() < _cloudTokenExpiry) {
-            uploadToGoogleDrive(true).catch(function(e) {
-                console.warn('[MedBox Portal] فشل رفع حسابات المرضى إلى Drive:', e);
-            });
+        // الحفظ في appData لضمان المزامنة مع Google Drive
+        if (window._appData) {
+            window._appData.patientAccounts = accounts;
+        }
+        // حفظ احتياطي في localStorage أيضاً
+        localStorage.setItem(PORTAL_KEY, JSON.stringify(accounts));
+        // حفظ فوري في IndexedDB وتحديد البيانات كـ "تحتاج مزامنة"
+        if (typeof saveDataToLocalStorage === 'function') {
+            saveDataToLocalStorage();
         }
     }
 
