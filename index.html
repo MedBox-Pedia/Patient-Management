@@ -587,6 +587,71 @@
         }
         
 
+        /* ===== زر إضافة مريض في شريط البحث ===== */
+        #header-add-patient-btn {
+            display: none; /* مخفي افتراضياً، يظهر عند تسجيل الدخول */
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, #059669, #047857);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: 800;
+            flex-shrink: 0;
+            transition: all 0.18s;
+            box-shadow: 0 2px 8px rgba(5,150,105,0.35);
+        }
+        #header-add-patient-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 14px rgba(5,150,105,0.45);
+            background: linear-gradient(135deg, #047857, #065f46);
+        }
+        #header-add-patient-btn.visible {
+            display: flex;
+        }
+
+        /* ===== زر إضافة مريض في شريط البحث ===== */
+        #header-add-patient-btn {
+            display: none;
+            align-items: center;
+            justify-content: center;
+            width: 30px;
+            height: 30px;
+            background: linear-gradient(135deg, #059669, #047857);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.15rem;
+            font-weight: 800;
+            flex-shrink: 0;
+            transition: all 0.18s;
+            box-shadow: 0 2px 8px rgba(5,150,105,0.35);
+            line-height: 1;
+        }
+        #header-add-patient-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 14px rgba(5,150,105,0.45);
+            background: linear-gradient(135deg, #047857, #065f46);
+        }
+        #header-add-patient-btn.visible {
+            display: flex;
+        }
+
+        /* ===== القائمة الجانبية ذات حواف منحنية ===== */
+        #sidebar > div {
+            border-radius: 0 0 0 20px;
+        }
+        @media (min-width: 1024px) {
+            #sidebar > div {
+                border-radius: 0 0 20px 20px;
+            }
+        }
+
         /* ===== أنميشن القائمة الجانبية العصرية ===== */
         #sidebar {
             transition: transform 0.4s cubic-bezier(0.32, 0.72, 0, 1), margin-right 0.4s cubic-bezier(0.32, 0.72, 0, 1);
@@ -665,16 +730,17 @@
         #patient-sort-select {
             appearance: none;
             -webkit-appearance: none;
-            padding: 6px 26px 6px 8px;
+            padding: 5px 22px 5px 7px;
             border: 1.5px solid rgba(255,255,255,0.35);
             border-radius: 8px;
             font-family: 'Cairo', sans-serif;
-            font-size: 0.78rem;
+            font-size: 0.72rem;
             color: #fff;
             background: rgba(255,255,255,0.15);
             cursor: pointer;
             outline: none;
             transition: border-color 0.2s;
+            max-width: 90px;
         }
         #patient-sort-select option {
             color: #374151;
@@ -685,12 +751,12 @@
         }
         .sidebar-sort-arrow {
             position: absolute;
-            left: 6px;
+            left: 5px;
             top: 50%;
             transform: translateY(-50%);
             pointer-events: none;
-            width: 13px;
-            height: 13px;
+            width: 11px;
+            height: 11px;
             color: rgba(255,255,255,0.8);
         }
         #sidebar-close-btn {
@@ -3094,7 +3160,7 @@ window.addEventListener('resize', setTopbarHeight);
         
         <aside id="sidebar" class="w-72 md:w-80 flex-shrink-0 z-20 flex flex-col h-full relative" style="transform:translateX(100%);will-change:transform;overflow:hidden;margin-right:-18rem;transition:transform 0.4s cubic-bezier(0.32,0.72,0,1),margin-right 0.4s cubic-bezier(0.32,0.72,0,1);">
         <!-- Sidebar inner: fixed header + scrollable body -->
-        <div style="position:relative;height:100%;display:flex;flex-direction:column;overflow:hidden;background:linear-gradient(165deg,#f0fafc 0%,#ffffff 40%,#f8fdff 100%);border-left:1.5px solid rgba(7,144,172,0.12);box-shadow:-8px 0 40px rgba(7,144,172,0.18),-2px 0 12px rgba(0,0,0,0.08);">
+        <div style="position:relative;height:100%;display:flex;flex-direction:column;overflow:hidden;background:linear-gradient(165deg,#f0fafc 0%,#ffffff 40%,#f8fdff 100%);border-left:1.5px solid rgba(7,144,172,0.12);border-radius:0 0 0 20px;box-shadow:-8px 0 40px rgba(7,144,172,0.18),-2px 0 12px rgba(0,0,0,0.08);">
         <!-- شريط البحث + الفرز + الإغلاق (ثابت دائماً في الأعلى) -->
         <div id="sidebar-search-header">
             <!-- حقل البحث -->
@@ -3105,11 +3171,16 @@ window.addEventListener('resize', setTopbarHeight);
                     <option value="alpha">أ → ي</option>
                     <option value="newest">الأحدث أولاً</option>
                     <option value="oldest">الأقدم أولاً</option>
+                    <option value="last_day">مرضى اليوم</option>
+                    <option value="last_week">مرضى آخر أسبوع</option>
+                    <option value="last_month">مرضى آخر شهر</option>
                 </select>
                 <svg class="sidebar-sort-arrow" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
                 </svg>
             </div>
+            <!-- زر إضافة مريض جديد (في الهيدر) -->
+            <button id="header-add-patient-btn" title="إضافة مريض جديد">+</button>
             <!-- زر الإغلاق -->
             <button id="sidebar-close-btn" onclick="toggleSidebar()" title="إغلاق القائمة">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
@@ -3127,43 +3198,14 @@ window.addEventListener('resize', setTopbarHeight);
             <div id="sidebar-patient-list-view" class="hidden flex-1" style="display:none;flex-direction:column;">
                 <!-- هيدر عصري لقائمة المرضى -->
                 <div id="patient-list-header" style="padding:14px 14px 10px;background:#fff;border-bottom:1px solid rgba(7,144,172,0.1);flex-shrink:0;">
-                    <!-- صف العنوان + زر الإضافة -->
-                    <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px;">
-                        <div style="display:flex;align-items:center;gap:8px;">
-                            <div style="width:32px;height:32px;background:linear-gradient(135deg,#0790AC,#056a80);border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-                                <svg xmlns="http://www.w3.org/2000/svg" style="width:17px;height:17px;stroke:#fff;" fill="none" viewBox="0 0 24 24" stroke-width="2.2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z"/></svg>
-                            </div>
-                            <div>
-                                <div style="font-size:0.95rem;font-weight:800;color:#0f172a;line-height:1.2;">المرضى</div>
-                                <div id="patients-count-label" style="font-size:0.7rem;color:#94a3b8;font-weight:500;line-height:1.2;">جاري التحميل...</div>
-                            </div>
-                        </div>
-                        <!-- زر إضافة مريض جديد (مدمج في الهيدر) -->
-                        <div id="add-menu-section" class="hidden">
-                            <button id="add-menu-btn" title="إضافة مريض جديد"
-                                style="display:flex;align-items:center;gap:6px;padding:7px 13px;background:linear-gradient(135deg,#059669,#047857);color:#fff;border:none;border-radius:10px;cursor:pointer;font-family:'Cairo',sans-serif;font-size:0.8rem;font-weight:700;transition:all 0.2s;box-shadow:0 2px 8px rgba(5,150,105,0.35);white-space:nowrap;"
-                                onmouseover="this.style.transform='translateY(-1px)';this.style.boxShadow='0 4px 14px rgba(5,150,105,0.45)';"
-                                onmouseout="this.style.transform='';this.style.boxShadow='0 2px 8px rgba(5,150,105,0.35)';">
-                                <svg xmlns="http://www.w3.org/2000/svg" style="width:15px;height:15px;flex-shrink:0;" viewBox="0 0 20 20" fill="currentColor"><path d="M8 9a3 3 0 100-6 3 3 0 000 6zM8 11a6 6 0 016 6H2a6 6 0 016-6zM16 11a1 1 0 10-2 0v1h-1a1 1 0 100 2h1v1a1 1 0 102 0v-1h1a1 1 0 100-2h-1v-1z"/></svg>
-                                <span>مريض جديد</span>
-                            </button>
-                        </div>
+                    <!-- عناصر مخفية للحفاظ على الـ JS -->
+                    <div id="add-menu-section" class="hidden" style="display:none!important;"></div>
+                    <div id="patients-stats-strip" style="display:none!important;">
+                        <div id="stat-strip-total">0</div>
+                        <div id="stat-strip-today">0</div>
+                        <div id="stat-strip-week">0</div>
                     </div>
-                    <!-- شريط إحصائي صغير -->
-                    <div id="patients-stats-strip" style="display:flex;gap:6px;">
-                        <div style="flex:1;background:#f0f9ff;border:1px solid #bae6fd;border-radius:8px;padding:5px 8px;text-align:center;">
-                            <div id="stat-strip-total" style="font-size:1rem;font-weight:800;color:#0790AC;line-height:1;">0</div>
-                            <div style="font-size:0.62rem;color:#0369a1;font-weight:600;margin-top:1px;">الكل</div>
-                        </div>
-                        <div style="flex:1;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:5px 8px;text-align:center;">
-                            <div id="stat-strip-today" style="font-size:1rem;font-weight:800;color:#16a34a;line-height:1;">0</div>
-                            <div style="font-size:0.62rem;color:#15803d;font-weight:600;margin-top:1px;">اليوم</div>
-                        </div>
-                        <div style="flex:1;background:#fefce8;border:1px solid #fde68a;border-radius:8px;padding:5px 8px;text-align:center;">
-                            <div id="stat-strip-week" style="font-size:1rem;font-weight:800;color:#ca8a04;line-height:1;">0</div>
-                            <div style="font-size:0.62rem;color:#a16207;font-weight:600;margin-top:1px;">الأسبوع</div>
-                        </div>
-                    </div>
+                    <div id="patients-count-label" style="display:none!important;">جاري التحميل...</div>
                 </div>
                 <!-- حاوية بطاقات المرضى -->
                 <div style="flex:1;overflow-y:auto;padding:10px 12px;" id="patient-list-scroll-area">
@@ -7064,7 +7106,33 @@ window.addEventListener('resize', setTopbarHeight);
             topbarAutoSyncToggle.checked = !!_autoSyncTimer;
         }
 
+        // ربط زر إضافة مريض في شريط البحث
+        const headerAddPatientBtn = document.getElementById('header-add-patient-btn');
+        if (headerAddPatientBtn) {
+            headerAddPatientBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                if (hasPermission('addPatient')) {
+                    openAddPatientModal();
+                } else {
+                    showToast('لا تملك صلاحية إضافة مريض', 'error');
+                }
+            });
+        }
+
         // ربط حدث تحميل البيانات (يُستدعى من قسم الإعدادات)
+        // ربط زر إضافة مريض في شريط البحث
+        const headerAddPatientBtn = document.getElementById('header-add-patient-btn');
+        if (headerAddPatientBtn) {
+            headerAddPatientBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                if (hasPermission('addPatient')) {
+                    openAddPatientModal();
+                } else {
+                    showToast('لا تملك صلاحية إضافة مريض', 'error');
+                }
+            });
+        }
+
         loadDataInput.addEventListener('change', loadDataFromFile);
 
         // ربط زر طباعة الوصفة الطبية
@@ -7906,8 +7974,12 @@ window.addEventListener('resize', setTopbarHeight);
             // إظهار زر الإضافة حسب صلاحية addPatient
             if (hasPermission('addPatient')) {
                 addMenuSection.classList.remove('hidden');
+                const hBtn = document.getElementById('header-add-patient-btn');
+                if (hBtn) hBtn.classList.add('visible');
             } else {
                 addMenuSection.classList.add('hidden');
+                const hBtn = document.getElementById('header-add-patient-btn');
+                if (hBtn) hBtn.classList.remove('visible');
             }
 
             // إظهار زر إدارة القيم للمطور فقط
@@ -7929,6 +8001,8 @@ window.addEventListener('resize', setTopbarHeight);
 
             addMenuSection.classList.add('hidden');
             manageLimitsBtn.classList.add('hidden');
+            const hBtn = document.getElementById('header-add-patient-btn');
+            if (hBtn) hBtn.classList.remove('visible');
 
             // مسح بيانات العيادة عند تسجيل الخروج
             if (typeof updateDashClinicInfo === 'function') updateDashClinicInfo();
@@ -9511,13 +9585,9 @@ window.addEventListener('resize', setTopbarHeight);
             if (canAddVis || canDelPat) {
                 devButtons = `
                     <div class="flex-shrink-0 flex items-center space-x-1">
-                        ${canAddVis ? `<button data-id="${patient.id}" class="add-visit-btn text-xs text-green-600 hover:text-green-800 p-1" title="إضافة مراجعة">
-                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clip-rule="evenodd"></path></svg>
-                        </button>` : ''}
-                        ${canDelPat ? `<button data-id="${patient.id}" class="delete-patient-btn text-xs text-red-600 hover:text-red-800 p-1" title="حذف المريض">
-                            <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                              <path stroke-linecap="round" stroke-linejoin="round" d="M15 12H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                            </svg>
+                        ${canAddVis ? `<button data-id="${patient.id}" class="add-visit-btn" title="إضافة زيارة جديدة" style="display:flex;align-items:center;justify-content:center;width:28px;height:28px;background:linear-gradient(135deg,#0790AC,#056a80);color:#fff;border:none;border-radius:8px;cursor:pointer;font-family:'Cairo',sans-serif;font-size:1rem;font-weight:800;transition:all 0.18s;box-shadow:0 2px 8px rgba(7,144,172,0.3);flex-shrink:0;" onmouseover="this.style.transform='translateY(-1px)';this.style.boxShadow='0 4px 12px rgba(7,144,172,0.4)';" onmouseout="this.style.transform='';this.style.boxShadow='0 2px 8px rgba(7,144,172,0.3)';">+</button>` : ''}
+                        ${canDelPat ? `<button data-id="${patient.id}" class="delete-patient-btn" title="حذف المريض" style="display:flex;align-items:center;justify-content:center;width:28px;height:28px;background:#fff0f0;color:#dc2626;border:1.5px solid #fca5a5;border-radius:8px;cursor:pointer;transition:all 0.18s;flex-shrink:0;" onmouseover="this.style.background='#dc2626';this.style.color='#fff';this.style.borderColor='#dc2626';" onmouseout="this.style.background='#fff0f0';this.style.color='#dc2626';this.style.borderColor='#fca5a5';">
+                            <svg style="width:13px;height:13px;" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.74-3.746A.93.93 0 0 0 13.095 4.5h-2.19c-.482 0-.898.356-1.005.824L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12.025 0A48.108 48.108 0 0 1 9.025 5.393m7.373 0a48.31 48.31 0 0 1-3.478.397m-7.373 0a48.31 48.31 0 0 0 3.478.397"/></svg>
                         </button>` : ''}
                     </div>
                 `;
@@ -9597,42 +9667,54 @@ window.addEventListener('resize', setTopbarHeight);
                                 </div>
                             </div>
                         </div>
-                        <!-- أزرار الإجراءات: إضافة جلسة + حذف -->
+                        <!-- أزرار الإجراءات: إضافة زيارة + حذف -->
                         <div style="display:flex;align-items:center;gap:5px;flex-shrink:0;">
-                            ${canAddVis ? `<button data-id="${patient.id}" class="add-visit-btn" title="إضافة جلسة جديدة" style="display:flex;align-items:center;gap:5px;padding:5px 10px;background:linear-gradient(135deg,#0790AC,#056a80);color:#fff;border:none;border-radius:8px;cursor:pointer;font-family:'Cairo',sans-serif;font-size:0.72rem;font-weight:700;transition:all 0.18s;box-shadow:0 2px 8px rgba(7,144,172,0.3);white-space:nowrap;" onmouseover="this.style.transform='translateY(-1px)';this.style.boxShadow='0 4px 12px rgba(7,144,172,0.4)';" onmouseout="this.style.transform='';this.style.boxShadow='0 2px 8px rgba(7,144,172,0.3)';">
-                                <svg style="width:13px;height:13px;flex-shrink:0;" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
-                                جلسة
-                            </button>` : ''}
+                            ${canAddVis ? `<button data-id="${patient.id}" class="add-visit-btn" title="إضافة زيارة جديدة" style="display:flex;align-items:center;justify-content:center;width:30px;height:30px;background:linear-gradient(135deg,#0790AC,#056a80);color:#fff;border:none;border-radius:9px;cursor:pointer;font-family:'Cairo',sans-serif;font-size:1.1rem;font-weight:800;transition:all 0.18s;box-shadow:0 2px 8px rgba(7,144,172,0.3);flex-shrink:0;line-height:1;" onmouseover="this.style.transform='translateY(-1px)';this.style.boxShadow='0 4px 12px rgba(7,144,172,0.4)';" onmouseout="this.style.transform='';this.style.boxShadow='0 2px 8px rgba(7,144,172,0.3)';">+</button>` : ''}
                             ${canDelPat ? `<button data-id="${patient.id}" class="delete-patient-btn" title="حذف المريض" style="display:flex;align-items:center;justify-content:center;width:32px;height:32px;background:#fff0f0;color:#dc2626;border:1.5px solid #fca5a5;border-radius:8px;cursor:pointer;transition:all 0.18s;flex-shrink:0;" onmouseover="this.style.background='#dc2626';this.style.color='#fff';this.style.borderColor='#dc2626';" onmouseout="this.style.background='#fff0f0';this.style.color='#dc2626';this.style.borderColor='#fca5a5';">
                                 <svg style="width:14px;height:14px;" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.74-3.746A.93.93 0 0 0 13.095 4.5h-2.19c-.482 0-.898.356-1.005.824L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12.025 0A48.108 48.108 0 0 1 9.025 5.393m7.373 0a48.31 48.31 0 0 1-3.478.397m-7.373 0a48.31 48.31 0 0 0 3.478.397"/></svg>
                             </button>` : ''}
                         </div>
                     </div>
                 </div>
-                <div class="visits-list hidden" style="border-top:1px solid #e5e7eb;background:#fafafa;padding:8px 12px 8px 16px;">
-                    ${patient.visits.map((visit, index) => {
-                        let visitDevBtns = '';
-                        if (canEdit || canDelVis) {
-                            visitDevBtns = `
-                                ${canEdit ? `<button data-id="${patient.id}" data-vindex="${index}" class="edit-visit-btn text-xs text-blue-600 hover:text-blue-800" title="تعديل">
-                                    <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                                      <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l .8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
-                                    </svg>
-                                </button>` : ''}
-                                ${canDelVis ? `<button data-id="${patient.id}" data-vindex="${index}" class="delete-visit-btn text-xs text-red-600 hover:text-red-800" title="حذف مراجعة">
-                                    <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                                      <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.74-3.746A.93.93 0 0 0 13.095 4.5h-2.19c-.482 0-.898.356-1.005.824L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12.025 0A48.108 48.108 0 0 1 9.025 5.393m7.373 0a48.31 48.31 0 0 1-3.478.397m-7.373 0a48.31 48.31 0 0 0 3.478.397" />
-                                    </svg>
-                                </button>` : ''}
-                            `;
+                <div class="visits-list hidden" style="border-top:1.5px solid rgba(7,144,172,0.12);background:linear-gradient(180deg,#f8fdff 0%,#f0fafc 100%);padding:6px 10px 8px;">
+                    ${patient.visits.length === 0 ? `
+                    <div style="text-align:center;padding:12px;color:#9ca3af;font-size:0.8rem;">لا توجد زيارات مسجلة</div>
+                    ` : patient.visits.map((visit, index) => {
+                        let editBtn = '';
+                        let delBtn = '';
+                        if (canEdit) {
+                            editBtn = `<button data-id="${patient.id}" data-vindex="${index}" class="edit-visit-btn" title="تعديل الزيارة"
+                                style="display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;background:#eff6ff;color:#2563eb;border:1px solid #bfdbfe;border-radius:7px;cursor:pointer;transition:all 0.15s;flex-shrink:0;"
+                                onmouseover="this.style.background='#2563eb';this.style.color='#fff';this.style.borderColor='#2563eb';"
+                                onmouseout="this.style.background='#eff6ff';this.style.color='#2563eb';this.style.borderColor='#bfdbfe';">
+                                <svg style="width:13px;height:13px;" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                                  <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Z"/>
+                                </svg>
+                            </button>`;
                         }
+                        if (canDelVis) {
+                            delBtn = `<button data-id="${patient.id}" data-vindex="${index}" class="delete-visit-btn" title="حذف الزيارة"
+                                style="display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;background:#fff0f0;color:#dc2626;border:1px solid #fca5a5;border-radius:7px;cursor:pointer;transition:all 0.15s;flex-shrink:0;"
+                                onmouseover="this.style.background='#dc2626';this.style.color='#fff';this.style.borderColor='#dc2626';"
+                                onmouseout="this.style.background='#fff0f0';this.style.color='#dc2626';this.style.borderColor='#fca5a5';">
+                                <svg style="width:13px;height:13px;" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                                  <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.74-3.746A.93.93 0 0 0 13.095 4.5h-2.19c-.482 0-.898.356-1.005.824L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12.025 0A48.108 48.108 0 0 1 9.025 5.393m7.373 0a48.31 48.31 0 0 1-3.478.397m-7.373 0a48.31 48.31 0 0 0 3.478.397"/>
+                                </svg>
+                            </button>`;
+                        }
+                        const visitNum = patient.visits.length - index;
                         return `
-                        <div class="flex justify-between items-center py-1">
-                            <button data-id="${patient.id}" data-vindex="${index}" class="visit-item-btn text-sm text-gray-700 hover:text-[--color-primary]">
-                                مراجعة تاريخ: ${visit.date}
+                        <div style="display:flex;align-items:center;gap:6px;padding:5px 4px;border-radius:8px;transition:background 0.15s;margin-bottom:3px;"
+                             onmouseover="this.style.background='rgba(7,144,172,0.06)'"
+                             onmouseout="this.style.background='transparent'">
+                            <div style="width:22px;height:22px;background:linear-gradient(135deg,#0790AC,#056a80);border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:0.6rem;font-weight:800;color:#fff;">${visitNum}</div>
+                            <button data-id="${patient.id}" data-vindex="${index}" class="visit-item-btn" style="flex:1;min-width:0;text-align:right;background:none;border:none;cursor:pointer;font-family:'Cairo',sans-serif;font-size:0.8rem;font-weight:600;color:#374151;padding:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;transition:color 0.15s;"
+                                onmouseover="this.style.color='#0790AC'"
+                                onmouseout="this.style.color='#374151'">
+                                <span style="color:#0790AC;margin-left:4px;">📅</span>${visit.date || '—'}
                             </button>
-                            <div class="flex items-center space-x-1">
-                                ${visitDevBtns}
+                            <div style="display:flex;align-items:center;gap:4px;flex-shrink:0;">
+                                ${editBtn}${delBtn}
                             </div>
                         </div>
                         `;
@@ -9869,6 +9951,45 @@ window.addEventListener('resize', setTopbarHeight);
                 const dateA = a.visits && a.visits.length ? a.visits[0].date : '';
                 const dateB = b.visits && b.visits.length ? b.visits[0].date : '';
                 return dateA.localeCompare(dateB);
+            });
+        } else if (sortMode === 'last_day') {
+            // مرضى آخر يوم: من راجعوا اليوم
+            const today = new Date().toISOString().slice(0, 10);
+            _lazyPatients = _lazyPatients.filter(p => {
+                if (!p.visits || !p.visits.length) return false;
+                const lastDate = p.visits[p.visits.length - 1].date || '';
+                return lastDate === today;
+            });
+            _lazyPatients.sort((a, b) => {
+                const dateA = a.visits && a.visits.length ? a.visits[a.visits.length - 1].date : '';
+                const dateB = b.visits && b.visits.length ? b.visits[b.visits.length - 1].date : '';
+                return dateB.localeCompare(dateA);
+            });
+        } else if (sortMode === 'last_week') {
+            // مرضى آخر أسبوع: من راجعوا في آخر 7 أيام
+            const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+            _lazyPatients = _lazyPatients.filter(p => {
+                if (!p.visits || !p.visits.length) return false;
+                const lastDate = p.visits[p.visits.length - 1].date || '';
+                return lastDate >= weekAgo;
+            });
+            _lazyPatients.sort((a, b) => {
+                const dateA = a.visits && a.visits.length ? a.visits[a.visits.length - 1].date : '';
+                const dateB = b.visits && b.visits.length ? b.visits[b.visits.length - 1].date : '';
+                return dateB.localeCompare(dateA);
+            });
+        } else if (sortMode === 'last_month') {
+            // مرضى آخر شهر: من راجعوا في آخر 30 يوماً
+            const monthAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+            _lazyPatients = _lazyPatients.filter(p => {
+                if (!p.visits || !p.visits.length) return false;
+                const lastDate = p.visits[p.visits.length - 1].date || '';
+                return lastDate >= monthAgo;
+            });
+            _lazyPatients.sort((a, b) => {
+                const dateA = a.visits && a.visits.length ? a.visits[a.visits.length - 1].date : '';
+                const dateB = b.visits && b.visits.length ? b.visits[b.visits.length - 1].date : '';
+                return dateB.localeCompare(dateA);
             });
         }
 
@@ -10216,11 +10337,37 @@ window.addEventListener('resize', setTopbarHeight);
                 const icon = btn.querySelector('.toggle-icon');
                 if (visitsList) {
                     visitsList.classList.toggle('hidden');
+                    // تفعيل/تعطيل أزرار واتساب والرابط بناءً على حالة قائمة الزيارات
+                    const isOpen = !visitsList.classList.contains('hidden');
+                    const waWrap = document.getElementById('wa-wrap-' + patientId);
+                    const linkWrap = document.getElementById('link-wrap-' + patientId);
+                    const waBtn = waWrap ? waWrap.querySelector('button') : null;
+                    const linkBtn = linkWrap ? linkWrap.querySelector('button') : null;
+                    if (waBtn) {
+                        waBtn.disabled = !isOpen;
+                        waBtn.style.opacity = isOpen ? '1' : '0.35';
+                        waBtn.style.cursor = isOpen ? 'pointer' : 'not-allowed';
+                    }
+                    if (linkBtn) {
+                        linkBtn.disabled = !isOpen;
+                        linkBtn.style.opacity = isOpen ? '1' : '0.35';
+                        linkBtn.style.cursor = isOpen ? 'pointer' : 'not-allowed';
+                    }
                 }
                 if (icon) {
                     icon.classList.toggle('rotate-180');
                 }
             });
+        });
+
+        // تعطيل أزرار واتساب والرابط افتراضياً عند البناء الأولي (قائمة الزيارات مغلقة)
+        document.querySelectorAll('[id^="wa-wrap-"], [id^="link-wrap-"]').forEach(wrap => {
+            const btn = wrap.querySelector('button');
+            if (btn) {
+                btn.disabled = true;
+                btn.style.opacity = '0.35';
+                btn.style.cursor = 'not-allowed';
+            }
         });
 
         // الضغط على اسم المريض: عرض ملخصه + إغلاق القائمة على الموبايل
@@ -16951,6 +17098,18 @@ function clearSyncLog() {
 function updateCloudUI() {
     const isConnected = !!_cloudAccessToken && Date.now() < _cloudTokenExpiry;
 
+    // تشغيل المزامنة التلقائية إذا كانت مفعلة في localStorage وتم الاتصال
+    if (isConnected && localStorage.getItem('medbox_auto_sync') === '1' && !_autoSyncTimer) {
+        setTimeout(function() { if (typeof startAutoSync === 'function') startAutoSync(); }, 500);
+    }
+
+    // تحديث الـ checkbox بناءً على حالة _autoSyncTimer
+    var topToggle = document.getElementById('topbar-auto-sync-toggle');
+    var mainToggle = document.getElementById('auto-sync-toggle');
+    var autoSyncOn = localStorage.getItem('medbox_auto_sync') === '1';
+    if (topToggle) topToggle.checked = autoSyncOn;
+    if (mainToggle) mainToggle.checked = !!(autoSyncOn && _autoSyncTimer);
+
     // تحميل تلقائي من Drive عند إعادة تحميل الصفحة (بدون سؤال)
     if (isConnected && window._checkReloadSyncOnConnect) {
         window._checkReloadSyncOnConnect = false;
@@ -17689,6 +17848,18 @@ document.addEventListener('DOMContentLoaded', function() {
     } else {
         applyNutritionProgramVisibility(false);
     }
+
+    // تفعيل المزامنة التلقائية افتراضياً إذا لم يتم تعطيلها صراحةً
+    var autoSyncDisabled = localStorage.getItem('medbox_auto_sync_disabled');
+    if (autoSyncDisabled !== '1') {
+        // ضبط الـ checkbox إلى checked بشكل بصري
+        var topToggle = document.getElementById('topbar-auto-sync-toggle');
+        if (topToggle) topToggle.checked = true;
+        var mainToggle = document.getElementById('auto-sync-toggle');
+        if (mainToggle) mainToggle.checked = true;
+        // المزامنة ستبدأ عند الاتصال بـ Google (عبر updateCloudUI)
+        localStorage.setItem('medbox_auto_sync', '1');
+    }
 });
 
 // --- الحفظ التلقائي كل 5 دقائق ---
@@ -17704,9 +17875,11 @@ function toggleAutoSync(enabled) {
         }
         startAutoSync();
         localStorage.setItem('medbox_auto_sync', '1');
+        localStorage.removeItem('medbox_auto_sync_disabled');
     } else {
         stopAutoSync();
         localStorage.removeItem('medbox_auto_sync');
+        localStorage.setItem('medbox_auto_sync_disabled', '1');
     }
     // مزامنة السويتشين معاً
     const toggle = document.getElementById('auto-sync-toggle');
