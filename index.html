@@ -9600,7 +9600,7 @@ window.addEventListener('resize', setTopbarHeight);
                             <span style="font-size:0.97rem;font-weight:700;color:#0790AC;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${patient.name_ar}</span>
                         </div>
                         <div data-id="${patient.id}" class="patient-item-toggle" style="flex-shrink:0;cursor:pointer;display:flex;align-items:center;gap:4px;background:#f0fafc;border:1.5px solid #c7e9f1;border-radius:8px;padding:4px 10px;transition:all 0.18s;" onmouseover="this.style.background='#0790AC';this.querySelector('span').style.color='#fff';this.querySelector('svg').style.stroke='#fff';" onmouseout="this.style.background='#f0fafc';this.querySelector('span').style.color='#0790AC';this.querySelector('svg').style.stroke='#0790AC';">
-                            <span style="font-size:0.72rem;font-weight:700;color:#0790AC;white-space:nowrap;">عرض الزيارات</span>
+                            <span style="font-size:0.72rem;font-weight:700;color:#0790AC;white-space:nowrap;">المراجعات</span>
                             <svg class="toggle-icon transition-transform duration-200" style="width:14px;height:14px;stroke:#0790AC;fill:none;stroke-width:2.5;flex-shrink:0;" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"/></svg>
                         </div>
                     </div>
@@ -9714,6 +9714,40 @@ window.addEventListener('resize', setTopbarHeight);
 
     // ===== وظائف أيقونات التواصل السريع في القائمة الجانبية =====
 
+    // ── تحديد اتجاه القائمة المنسدلة بناءً على المساحة المتاحة ──
+    function _adjustDropdownDirection(menu, anchor) {
+        // إعادة الوضع الافتراضي أولاً
+        menu.style.top = '';
+        menu.style.bottom = '';
+        menu.style.maxHeight = '';
+        menu.style.overflowY = '';
+
+        if (!anchor) return;
+        var anchorRect = anchor.getBoundingClientRect();
+        var menuHeight = menu.scrollHeight || 160; // تقدير ارتفاع القائمة
+        var spaceBelow = window.innerHeight - anchorRect.bottom;
+        var spaceAbove = anchorRect.top;
+        var sidebar = anchor.closest('#sidebar') || anchor.closest('[id^="sidebar"]');
+        var containerBottom = sidebar ? sidebar.getBoundingClientRect().bottom : window.innerHeight;
+        var spaceInContainer = containerBottom - anchorRect.bottom;
+
+        if (spaceInContainer < menuHeight && spaceAbove > menuHeight) {
+            // عرض القائمة للأعلى
+            menu.style.top = 'auto';
+            menu.style.bottom = 'calc(100% + 4px)';
+        } else if (spaceInContainer < menuHeight) {
+            // مساحة ضيقة: تقليص القائمة مع إضافة تمرير داخلي
+            menu.style.top = 'calc(100% + 4px)';
+            menu.style.bottom = 'auto';
+            var maxH = Math.max(spaceInContainer - 8, spaceAbove - 8, 100);
+            menu.style.maxHeight = maxH + 'px';
+            menu.style.overflowY = 'auto';
+        } else {
+            menu.style.top = 'calc(100% + 4px)';
+            menu.style.bottom = 'auto';
+        }
+    }
+
     // إغلاق جميع القوائم المنسدلة في الشريط الجانبي
     function _closeAllSidebarMenus(exceptId) {
         document.querySelectorAll('.sidebar-dropdown-menu').forEach(function(el) {
@@ -9743,11 +9777,15 @@ window.addEventListener('resize', setTopbarHeight);
     // 3. تبديل قائمة الواتساب
     window._sidebarWaToggle = function(pid, evt) {
         evt && evt.stopPropagation();
+        var wrap = document.getElementById('wa-wrap-' + pid);
         var menu = document.getElementById('wa-menu-' + pid);
         if (!menu) return;
         var wasHidden = menu.classList.contains('hidden');
         _closeAllSidebarMenus(null);
-        if (wasHidden) menu.classList.remove('hidden');
+        if (wasHidden) {
+            menu.classList.remove('hidden');
+            _adjustDropdownDirection(menu, wrap);
+        }
     };
 
     // 3a. بدء محادثة واتساب
@@ -9817,11 +9855,15 @@ window.addEventListener('resize', setTopbarHeight);
     // 4. تبديل قائمة الرابط الشخصي
     window._sidebarLinkToggle = function(pid, evt) {
         evt && evt.stopPropagation();
+        var wrap = document.getElementById('link-wrap-' + pid);
         var menu = document.getElementById('link-menu-' + pid);
         if (!menu) return;
         var wasHidden = menu.classList.contains('hidden');
         _closeAllSidebarMenus(null);
-        if (wasHidden) menu.classList.remove('hidden');
+        if (wasHidden) {
+            menu.classList.remove('hidden');
+            _adjustDropdownDirection(menu, wrap);
+        }
     };
 
     // 4a. إرسال الرابط عبر الواتساب
@@ -10319,43 +10361,16 @@ window.addEventListener('resize', setTopbarHeight);
             btn.addEventListener('click', (e) => {
                 e.stopPropagation();
                 const patientId = btn.dataset.id;
-                // إصلاح: البحث عن الحاوية الصحيحة patient-card-item بدلاً من bg-gray-50
                 const patientEl = btn.closest('.patient-card-item') || btn.closest('.bg-gray-50');
                 const visitsList = patientEl ? patientEl.querySelector('.visits-list') : null;
                 const icon = btn.querySelector('.toggle-icon');
                 if (visitsList) {
                     visitsList.classList.toggle('hidden');
-                    // تفعيل/تعطيل أزرار واتساب والرابط بناءً على حالة قائمة الزيارات
-                    const isOpen = !visitsList.classList.contains('hidden');
-                    const waWrap = document.getElementById('wa-wrap-' + patientId);
-                    const linkWrap = document.getElementById('link-wrap-' + patientId);
-                    const waBtn = waWrap ? waWrap.querySelector('button') : null;
-                    const linkBtn = linkWrap ? linkWrap.querySelector('button') : null;
-                    if (waBtn) {
-                        waBtn.disabled = !isOpen;
-                        waBtn.style.opacity = isOpen ? '1' : '0.35';
-                        waBtn.style.cursor = isOpen ? 'pointer' : 'not-allowed';
-                    }
-                    if (linkBtn) {
-                        linkBtn.disabled = !isOpen;
-                        linkBtn.style.opacity = isOpen ? '1' : '0.35';
-                        linkBtn.style.cursor = isOpen ? 'pointer' : 'not-allowed';
-                    }
                 }
                 if (icon) {
                     icon.classList.toggle('rotate-180');
                 }
             });
-        });
-
-        // تعطيل أزرار واتساب والرابط افتراضياً عند البناء الأولي (قائمة الزيارات مغلقة)
-        document.querySelectorAll('[id^="wa-wrap-"], [id^="link-wrap-"]').forEach(wrap => {
-            const btn = wrap.querySelector('button');
-            if (btn) {
-                btn.disabled = true;
-                btn.style.opacity = '0.35';
-                btn.style.cursor = 'not-allowed';
-            }
         });
 
         // الضغط على اسم المريض: عرض ملخصه + إغلاق القائمة على الموبايل
