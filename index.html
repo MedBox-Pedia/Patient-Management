@@ -2695,7 +2695,7 @@
             position: fixed;
             bottom: 28px;
             left: 28px;
-            z-index: 9990;
+            z-index: 8500;
             width: 56px;
             height: 56px;
             border-radius: 50%;
@@ -2707,11 +2707,19 @@
             align-items: center;
             justify-content: center;
             box-shadow: 0 4px 20px rgba(7,144,172,0.45), 0 1px 6px rgba(0,0,0,0.15);
-            transition: all 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+            transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
             outline: none;
+            opacity: 0;
+            transform: scale(0.7) translateY(12px);
+            pointer-events: none;
+        }
+        #floating-mic-btn.mic-visible {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+            pointer-events: auto;
         }
         #floating-mic-btn:hover {
-            transform: scale(1.12);
+            transform: scale(1.12) translateY(0);
             box-shadow: 0 8px 28px rgba(7,144,172,0.55), 0 2px 8px rgba(0,0,0,0.18);
         }
         #floating-mic-btn.recording {
@@ -3116,10 +3124,52 @@ window.addEventListener('resize', setTopbarHeight);
             <div id="sidebar-tools-view" class="flex-shrink-0" style="display:none!important;height:0;overflow:hidden;"></div>
 
             <!-- قسم قائمة المرضى -->
-            <div id="sidebar-patient-list-view" class="hidden p-4 space-y-2 flex-1">
-                <h3 class="font-bold text-lg text-[--color-primary] mb-2">قائمة المرضى</h3>
-                <div id="patient-list-container" class="space-y-2">
-                    <!-- سيتم ملء قائمة المرضى هنا -->
+            <div id="sidebar-patient-list-view" class="hidden flex-1" style="display:none;flex-direction:column;">
+                <!-- هيدر عصري لقائمة المرضى -->
+                <div id="patient-list-header" style="padding:14px 14px 10px;background:#fff;border-bottom:1px solid rgba(7,144,172,0.1);flex-shrink:0;">
+                    <!-- صف العنوان + زر الإضافة -->
+                    <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px;">
+                        <div style="display:flex;align-items:center;gap:8px;">
+                            <div style="width:32px;height:32px;background:linear-gradient(135deg,#0790AC,#056a80);border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                                <svg xmlns="http://www.w3.org/2000/svg" style="width:17px;height:17px;stroke:#fff;" fill="none" viewBox="0 0 24 24" stroke-width="2.2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z"/></svg>
+                            </div>
+                            <div>
+                                <div style="font-size:0.95rem;font-weight:800;color:#0f172a;line-height:1.2;">المرضى</div>
+                                <div id="patients-count-label" style="font-size:0.7rem;color:#94a3b8;font-weight:500;line-height:1.2;">جاري التحميل...</div>
+                            </div>
+                        </div>
+                        <!-- زر إضافة مريض جديد (مدمج في الهيدر) -->
+                        <div id="add-menu-section" class="hidden">
+                            <button id="add-menu-btn" title="إضافة مريض جديد"
+                                style="display:flex;align-items:center;gap:6px;padding:7px 13px;background:linear-gradient(135deg,#059669,#047857);color:#fff;border:none;border-radius:10px;cursor:pointer;font-family:'Cairo',sans-serif;font-size:0.8rem;font-weight:700;transition:all 0.2s;box-shadow:0 2px 8px rgba(5,150,105,0.35);white-space:nowrap;"
+                                onmouseover="this.style.transform='translateY(-1px)';this.style.boxShadow='0 4px 14px rgba(5,150,105,0.45)';"
+                                onmouseout="this.style.transform='';this.style.boxShadow='0 2px 8px rgba(5,150,105,0.35)';">
+                                <svg xmlns="http://www.w3.org/2000/svg" style="width:15px;height:15px;flex-shrink:0;" viewBox="0 0 20 20" fill="currentColor"><path d="M8 9a3 3 0 100-6 3 3 0 000 6zM8 11a6 6 0 016 6H2a6 6 0 016-6zM16 11a1 1 0 10-2 0v1h-1a1 1 0 100 2h1v1a1 1 0 102 0v-1h1a1 1 0 100-2h-1v-1z"/></svg>
+                                <span>مريض جديد</span>
+                            </button>
+                        </div>
+                    </div>
+                    <!-- شريط إحصائي صغير -->
+                    <div id="patients-stats-strip" style="display:flex;gap:6px;">
+                        <div style="flex:1;background:#f0f9ff;border:1px solid #bae6fd;border-radius:8px;padding:5px 8px;text-align:center;">
+                            <div id="stat-strip-total" style="font-size:1rem;font-weight:800;color:#0790AC;line-height:1;">0</div>
+                            <div style="font-size:0.62rem;color:#0369a1;font-weight:600;margin-top:1px;">الكل</div>
+                        </div>
+                        <div style="flex:1;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:5px 8px;text-align:center;">
+                            <div id="stat-strip-today" style="font-size:1rem;font-weight:800;color:#16a34a;line-height:1;">0</div>
+                            <div style="font-size:0.62rem;color:#15803d;font-weight:600;margin-top:1px;">اليوم</div>
+                        </div>
+                        <div style="flex:1;background:#fefce8;border:1px solid #fde68a;border-radius:8px;padding:5px 8px;text-align:center;">
+                            <div id="stat-strip-week" style="font-size:1rem;font-weight:800;color:#ca8a04;line-height:1;">0</div>
+                            <div style="font-size:0.62rem;color:#a16207;font-weight:600;margin-top:1px;">الأسبوع</div>
+                        </div>
+                    </div>
+                </div>
+                <!-- حاوية بطاقات المرضى -->
+                <div style="flex:1;overflow-y:auto;padding:10px 12px;" id="patient-list-scroll-area">
+                    <div id="patient-list-container" class="space-y-2">
+                        <!-- سيتم ملء قائمة المرضى هنا -->
+                    </div>
                 </div>
             </div>
             
@@ -3188,23 +3238,8 @@ window.addEventListener('resize', setTopbarHeight);
 
             <!-- قسم الأدوات السفلي (تم تعديله: إزالة تسجيل الدخول وأزرار الحفظ/التحميل) -->
             <div id="sidebar-bottom-tools" class="mt-auto p-4 space-y-4 border-t border-gray-200 flex-shrink-0">
-                
-                <!-- (إصلاح 4: تم تعديل زر الإضافة) -->
-                <div id="add-menu-section" class="hidden p-4 border-t border-gray-200 flex-shrink-0">
-                    <div class="relative">
-                        <button id="add-menu-btn" class="group relative w-full bg-green-600 text-white py-2.5 rounded-lg font-semibold hover:bg-green-700 transition duration-200 flex items-center justify-center">
-                            <!-- (إصلاح 4: أيقونة إضافة شخص) -->
-                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 20 20" fill="currentColor">
-                                <path d="M8 9a3 3 0 100-6 3 3 0 000 6zM8 11a6 6 0 016 6H2a6 6 0 016-6zM16 11a1 1 0 10-2 0v1h-1a1 1 0 100 2h1v1a1 1 0 102 0v-1h1a1 1 0 100-2h-1v-1z" />
-                            </svg>
-                            <!-- (إصلاح 4: تغيير التلميح) -->
-                            <span class="absolute bottom-full mb-2 w-max px-2 py-1 bg-gray-700 text-white text-xs rounded-md shadow-lg scale-0 group-hover:scale-100 transition-transform origin-bottom">
-                                إضافة مريض جديد
-                            </span>
-                        </button>
-                        <!-- (إصلاح 4: تم حذف القائمة المنسدلة) -->
-                    </div>
-                </div>
+                <!-- زر الإضافة تم نقله إلى هيدر قائمة المرضى -->
+                <div id="add-menu-section-legacy" class="hidden"></div>
             </div>
         </div><!-- end sidebar-scrollable-body -->
                        
@@ -9125,6 +9160,7 @@ window.addEventListener('resize', setTopbarHeight);
         patientDisplayArea.classList.add('hidden');
         sidebarToolsView.classList.remove('hidden');
         sidebarPatientListView.classList.add('hidden');
+        sidebarPatientListView.style.display = 'none';
         sidebarSettingsView.classList.add('hidden'); // (جديد 5)
         // (إصلاح 4: إخفاء زر الإضافة)
         addMenuSection.classList.add('hidden');
@@ -9144,7 +9180,12 @@ window.addEventListener('resize', setTopbarHeight);
         patientDisplayArea.classList.add('hidden');
         
         sidebarToolsView.classList.remove('hidden'); 
-        sidebarPatientListView.classList.remove('hidden');
+        // إظهار قائمة المرضى مع الفلكس
+        const spv = document.getElementById('sidebar-patient-list-view');
+        if (spv) {
+            spv.classList.remove('hidden');
+            spv.style.display = 'flex';
+        }
         sidebarSettingsView.classList.add('hidden');
         
         // إظهار زر الإضافة بناءً على صلاحية addPatient
@@ -9177,6 +9218,7 @@ window.addEventListener('resize', setTopbarHeight);
         // تحديث محتوى القائمة الجانبية
         sidebarToolsView.classList.add('hidden');
         sidebarPatientListView.classList.add('hidden');
+        sidebarPatientListView.style.display = 'none';
         sidebarSettingsView.classList.remove('hidden');
         addMenuSection.classList.add('hidden');
 
@@ -9832,6 +9874,7 @@ window.addEventListener('resize', setTopbarHeight);
 
         if (_lazyPatients.length === 0) {
             patientListContainer.innerHTML = `<p class="text-gray-500 text-center">لا يوجد مرضى</p>`;
+            _updatePatientListHeaderStats();
             return;
         }
 
@@ -9842,6 +9885,34 @@ window.addEventListener('resize', setTopbarHeight);
 
         // تحميل الدفعة الأولى فوراً
         loadMorePatients();
+        _updatePatientListHeaderStats();
+    }
+
+    // ── تحديث إحصائيات هيدر قائمة المرضى ──
+    function _updatePatientListHeaderStats() {
+        try {
+            const total = appData.patients ? appData.patients.length : 0;
+            const today = new Date().toISOString().slice(0,10);
+            const weekAgo = new Date(Date.now() - 7*24*60*60*1000).toISOString().slice(0,10);
+
+            let todayCount = 0, weekCount = 0;
+            (appData.patients || []).forEach(function(p) {
+                if (!p.visits || !p.visits.length) return;
+                const lastVisitDate = p.visits[p.visits.length - 1].date || '';
+                if (lastVisitDate === today) todayCount++;
+                if (lastVisitDate >= weekAgo) weekCount++;
+            });
+
+            const elTotal = document.getElementById('stat-strip-total');
+            const elToday = document.getElementById('stat-strip-today');
+            const elWeek  = document.getElementById('stat-strip-week');
+            const elLabel = document.getElementById('patients-count-label');
+
+            if (elTotal) elTotal.textContent = total;
+            if (elToday) elToday.textContent = todayCount;
+            if (elWeek)  elWeek.textContent  = weekCount;
+            if (elLabel) elLabel.textContent  = total + ' مريض مسجّل';
+        } catch(e) {}
     }
 
     // ========== دالة عرض ملخص المريض مع الخطوط البيانية ==========
@@ -10139,7 +10210,8 @@ window.addEventListener('resize', setTopbarHeight);
             btn.addEventListener('click', (e) => {
                 e.stopPropagation();
                 const patientId = btn.dataset.id;
-                const patientEl = btn.closest('.bg-gray-50');
+                // إصلاح: البحث عن الحاوية الصحيحة patient-card-item بدلاً من bg-gray-50
+                const patientEl = btn.closest('.patient-card-item') || btn.closest('.bg-gray-50');
                 const visitsList = patientEl ? patientEl.querySelector('.visits-list') : null;
                 const icon = btn.querySelector('.toggle-icon');
                 if (visitsList) {
@@ -20443,18 +20515,48 @@ window._loadGeminiKeyFromDrive = async function() {
     var transcript = '';
     var lastFocusedField = null; // آخر حقل نشط
 
-    // تتبع آخر حقل نشط في الصفحة
+    // تتبع آخر حقل نشط في الصفحة + إظهار/إخفاء زر الميكروفون
+    var _micHideTimer = null;
+
+    function _showMicBtn() {
+        var btn = document.getElementById('floating-mic-btn');
+        if (!btn) return;
+        if (_micHideTimer) { clearTimeout(_micHideTimer); _micHideTimer = null; }
+        btn.classList.add('mic-visible');
+    }
+    function _hideMicBtn() {
+        var btn = document.getElementById('floating-mic-btn');
+        if (!btn) return;
+        // تأخير بسيط لتجنب الاختفاء عند الضغط على الزر نفسه
+        _micHideTimer = setTimeout(function() {
+            if (!isRecording) {
+                btn.classList.remove('mic-visible');
+            }
+        }, 300);
+    }
+
     document.addEventListener('focusin', function(e) {
         var el = e.target;
         if (el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.tagName === 'SELECT')) {
             // تجاهل عناصر البحث والإدخال غير الطبية
             if (el.id && el.id !== 'patient-search' && el.id !== 'portal-login-name' && el.id !== 'portal-login-pass') {
                 lastFocusedField = el;
+                // إظهار زر الميكروفون فقط للحقول النصية وليس للـ SELECT
+                if (el.tagName !== 'SELECT') _showMicBtn();
             } else if (!el.id && el.tagName === 'TEXTAREA') {
                 lastFocusedField = el;
+                _showMicBtn();
             } else if (!el.id && el.tagName === 'INPUT' && el.type !== 'search') {
                 lastFocusedField = el;
+                _showMicBtn();
             }
+        }
+    }, true);
+
+    document.addEventListener('focusout', function(e) {
+        var el = e.target;
+        if (el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA')) {
+            _hideMicBtn();
         }
     }, true);
 
@@ -20483,6 +20585,8 @@ window._loadGeminiKeyFromDrive = async function() {
         if (!btn) return;
         if (recording) {
             btn.classList.add('recording');
+            btn.classList.add('mic-visible'); // يبقى ظاهراً أثناء التسجيل
+            if (_micHideTimer) { clearTimeout(_micHideTimer); _micHideTimer = null; }
             if (iconDefault) iconDefault.style.display = 'none';
             if (iconRec) iconRec.style.display = '';
         } else {
