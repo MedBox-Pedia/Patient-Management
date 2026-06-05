@@ -7112,7 +7112,7 @@ window.addEventListener('resize', setTopbarHeight);
             headerAddPatientBtn.addEventListener('click', function(e) {
                 e.stopPropagation();
                 if (hasPermission('addPatient')) {
-                    openAddPatientModal();
+                    openNewPatientModal();
                 } else {
                     showToast('لا تملك صلاحية إضافة مريض', 'error');
                 }
@@ -7120,19 +7120,6 @@ window.addEventListener('resize', setTopbarHeight);
         }
 
         // ربط حدث تحميل البيانات (يُستدعى من قسم الإعدادات)
-        // ربط زر إضافة مريض في شريط البحث
-        const headerAddPatientBtn = document.getElementById('header-add-patient-btn');
-        if (headerAddPatientBtn) {
-            headerAddPatientBtn.addEventListener('click', function(e) {
-                e.stopPropagation();
-                if (hasPermission('addPatient')) {
-                    openAddPatientModal();
-                } else {
-                    showToast('لا تملك صلاحية إضافة مريض', 'error');
-                }
-            });
-        }
-
         loadDataInput.addEventListener('change', loadDataFromFile);
 
         // ربط زر طباعة الوصفة الطبية
