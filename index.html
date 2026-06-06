@@ -9883,7 +9883,7 @@ window.addEventListener('resize', setTopbarHeight);
 
                     <!-- صف 3: جميع الأزرار بحجم موحّد -->
                     <div style="display:flex;align-items:center;justify-content:space-between;gap:5px;" onclick="event.stopPropagation()">
-                        <!-- أزرار التواصل -->
+                        <!-- أزرار التواصل (يمين) -->
                         <div style="display:flex;align-items:center;gap:4px;flex-wrap:wrap;">
 
                             ${_pPhone ? `<!-- زر الاتصال -->
@@ -9917,7 +9917,10 @@ window.addEventListener('resize', setTopbarHeight);
                                 onmouseout="${BTN_GLASS_HOVER_OUT_NORMAL}">
                                 <svg xmlns="http://www.w3.org/2000/svg" style="width:15px;height:15px;" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m13.35-.622l1.757-1.757a4.5 4.5 0 00-6.364-6.364l-4.5 4.5a4.5 4.5 0 001.242 7.244"/></svg>
                             </button>
+                        </div>
 
+                        <!-- أزرار الإجراءات: إضافة مراجعة + حذف (أقصى اليسار) -->
+                        <div style="display:flex;align-items:center;gap:4px;flex-shrink:0;margin-right:auto;margin-left:0;">
                             ${canAddVis ? `<button data-id="${patient.id}" class="add-visit-btn" title="إضافة مراجعة جديدة"
                                 style="${BTN_GLASS}background:rgba(255,255,255,0.22);"
                                 onmouseover="this.style.background='rgba(255,255,255,0.38)';this.style.borderColor='rgba(255,255,255,0.6)';"
