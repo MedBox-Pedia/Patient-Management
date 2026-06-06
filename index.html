@@ -589,38 +589,11 @@
 
         /* ===== زر إضافة مريض في شريط البحث ===== */
         #header-add-patient-btn {
-            display: none; /* مخفي افتراضياً، يظهر عند تسجيل الدخول */
+            display: none;
             align-items: center;
             justify-content: center;
             width: 32px;
             height: 32px;
-            background: linear-gradient(135deg, #059669, #047857);
-            color: #fff;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 1.1rem;
-            font-weight: 800;
-            flex-shrink: 0;
-            transition: all 0.18s;
-            box-shadow: 0 2px 8px rgba(5,150,105,0.35);
-        }
-        #header-add-patient-btn:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 14px rgba(5,150,105,0.45);
-            background: linear-gradient(135deg, #047857, #065f46);
-        }
-        #header-add-patient-btn.visible {
-            display: flex;
-        }
-
-        /* ===== زر إضافة مريض في شريط البحث ===== */
-        #header-add-patient-btn {
-            display: none;
-            align-items: center;
-            justify-content: center;
-            width: 30px;
-            height: 30px;
             background: linear-gradient(135deg, #059669, #047857);
             color: #fff;
             border: none;
@@ -5289,24 +5262,6 @@ window.addEventListener('resize', setTopbarHeight);
                             }
                         };
 
-                        // حذف كل صور الإجراء (للتوافق مع الكود القديم)
-                        window.removeDiagImage = function(key) {
-                            diagImages[key] = [];
-                            var m = diagMap[key];
-                            if (!m) return;
-                            var imgEl = document.getElementById(m.imgId);
-                            if (imgEl) {
-                                imgEl.src = '';
-                                imgEl.classList.remove('visible', 'image-preview-horizontal', 'image-preview-vertical');
-                            }
-                            var storageMap = { xray:'diag_xray_img', echo:'diag_us_img', ct:'diag_ct_img', mri:'diag_mri_img', ecg:'diag_ecg_img' };
-                            if (storageMap[key]) {
-                                try { localStorage.removeItem(storageMap[key]); } catch(e) {}
-                            }
-                            renderGallery(key);
-                            updateDiagStatus(key);
-                        };
-
                         // مسح التقرير
                         window.clearDiagReport = function(fieldId, key) {
                             var el = document.getElementById(fieldId);
@@ -5937,7 +5892,8 @@ window.addEventListener('resize', setTopbarHeight);
     let currentViewVisit   = null; // الزيارة المعروضة حالياً
     let currentView = 'welcome'; // 'welcome', 'patient_management', 'encyclopedia', 'settings'
     let currentEdit = null; // { patientId: '...', visitIndex: 0 }
-    let isDataDirty = false; // (جديد D) لتتبع التغييرات غير المحفوظة
+    let isDataDirty = false; // لتتبع التغييرات غير المحفوظة
+    Object.defineProperty(window, '_isDataDirty', { get: () => isDataDirty, set: (v) => { isDataDirty = v; } });
     
     // --- محددات عناصر الواجهة (DOM Selectors) ---
     const sidebar = document.getElementById('sidebar');
@@ -17658,6 +17614,7 @@ async function uploadToGoogleDrive(silent) {
             _cloudDriveFileId = created.id;
             addSyncLog('تم حفظ البيانات المشفرة بنجاح ✓', 'success');
             if (!silent && typeof showToast === 'function') showToast('تم حفظ البيانات المشفرة إلى Google Drive ✓', 'success');
+            window._isDataDirty = false;
             return;
         }
 
@@ -17675,6 +17632,7 @@ async function uploadToGoogleDrive(silent) {
         }
         addSyncLog('تم حفظ البيانات المشفرة بنجاح ✓', 'success');
         if (!silent && typeof showToast === 'function') showToast('تم حفظ البيانات المشفرة إلى Google Drive ✓', 'success');
+        window._isDataDirty = false;
 
     } catch (e) {
         addSyncLog('فشل الحفظ: ' + e.message, 'error');
@@ -17868,6 +17826,8 @@ function startAutoSync() {
             updateCloudUI();
             return;
         }
+        // تخطي الرفع إذا لم تطرأ أي تغييرات على البيانات
+        if (!window._isDataDirty) return;
         addSyncLog('حفظ تلقائي...', 'info');
         await uploadToGoogleDrive();
     }, AUTO_SYNC_INTERVAL_MS);
@@ -20932,6 +20892,12 @@ window._loadGeminiKeyFromDrive = async function() {
         if (welcomeMessage) welcomeMessage.classList.add('hidden');
         // إغلاق الشريط الجانبي على الموبايل
         if (window.innerWidth < 1024 && typeof closeSidebar === 'function') closeSidebar();
+    };
+
+    // ── إغلاق نافذة إدارة حسابات المرضى ──
+    window.closePatientPortalModal = function() {
+        var modal = document.getElementById('patient-portal-modal');
+        if (modal) modal.classList.remove('active');
     };
 
     // ── استخراج معلومات المعالج من الحساب الحالي ──
