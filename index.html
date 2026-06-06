@@ -9703,133 +9703,24 @@ window.addEventListener('resize', setTopbarHeight);
 
             const label = fdaData?.results?.[0] || null;
 
-            // ── الخطوة 3: استخراج وتنظيف النصوص ──────────────────────
-            function cleanFDA(arr, maxLen = 1200) {
+            // ── الخطوة 3: استخراج حقل نصي وتنظيفه ──────────────────────
+            function cleanFDA(arr) {
                 if (!arr || !arr.length) return null;
                 return arr[0]
                     .replace(/\n+/g, ' ')
                     .replace(/\s{2,}/g, ' ')
                     .replace(/•|·|·/g, '')
-                    .replace(/\(See (Table|Figure)[^)]*\)/gi, '')
-                    .replace(/\(Table \d+\)/gi, '')
                     .trim()
-                    .substring(0, maxLen);
+                    .substring(0, 800);
             }
             function splitToList(text, maxItems = 8) {
                 if (!text) return [];
+                // Split on numbered list, bullets, or sentences
                 let items = text
                     .split(/(?:\d+\.\s+|•\s+|;\s*|\. (?=[A-Z]))/)
                     .map(s => s.trim())
                     .filter(s => s.length > 8 && s.length < 300);
                 return items.slice(0, maxItems);
-            }
-
-            // ── تحليل الجرعات الذكي ──────────────────────────────────────
-            function parseDosageRows(raw, formsAndStrengths) {
-                if (!raw) return [];
-
-                const rows = [];
-
-                // خريطة الكلمات المفتاحية للتصنيف
-                const categories = [
-                    { label: 'البالغين',       regex: /(adult|adults|grown[\-\s]up)/i },
-                    { label: 'الأطفال',         regex: /(pediatric|children|child|infant|neonates?)/i },
-                    { label: 'كبار السن',        regex: /(geriatric|elderly|older adults?|senior)/i },
-                    { label: 'قصور الكلية',      regex: /(renal impairment|renal insufficiency|kidney)/i },
-                    { label: 'قصور الكبد',       regex: /(hepatic impairment|liver|hepatic)/i },
-                    { label: 'الحوامل',          regex: /(pregnant|pregnancy|obstetric)/i },
-                ];
-
-                // تعبير اصطياد الجرعة: رقم + وحدة
-                const dosePattern = /(\d[\d.,]*\s*(?:mg|mcg|µg|g|ml|mL|units?|IU|mmol|mEq)(?:\s*\/\s*(?:kg|day|dose|hour|hr|min|week|lb))*(?:\s*\d[\d.,]*\s*(?:mg|mcg|g|ml|units?|IU))*)/gi;
-
-                // تعبير اصطياد التكرار
-                const freqPattern = /((?:once|twice|three times?|four times?|every\s+\d+\s+hours?|q\s*\d+h|qd|bid|tid|qid|daily|weekly|monthly|every\s+(?:other\s+)?day|at bedtime|at night|in the morning|with meals?|before meals?|after meals?|\d+\s*times?\s*(?:a\s+)?(?:day|daily|week)))/gi;
-
-                // قسّم النص إلى جمل/فقرات
-                const sentences = raw
-                    .split(/(?<=\.)\s+(?=[A-Z])|(?:\.\s+)|(?:\:\s+)/)
-                    .map(s => s.trim())
-                    .filter(s => s.length > 10);
-
-                for (const sentence of sentences) {
-                    const doses = [...sentence.matchAll(dosePattern)].map(m => m[0].trim());
-                    if (!doses.length) continue;
-
-                    const freqs = [...sentence.matchAll(freqPattern)].map(m => m[0].trim());
-
-                    // أي تصنيف ينطبق؟
-                    let category = '';
-                    for (const cat of categories) {
-                        if (cat.regex.test(sentence)) { category = cat.label; break; }
-                    }
-                    if (!category && rows.length === 0) category = 'الجرعة المعتادة';
-                    if (!category) continue; // تجاهل السطر إن لم ينطبق تصنيف
-
-                    // اشكال الدواء من الجملة
-                    const formMatch = sentence.match(/(tablet|capsule|oral solution|injection|infusion|syrup|suspension|cream|ointment|patch|inhaler|drops?|suppository|spray)/i);
-                    const form = formMatch ? translateForm(formMatch[0]) : category;
-
-                    rows.push({
-                        form:      form,
-                        dose:      doses.slice(0, 3).join(' — '),
-                        frequency: freqs.slice(0, 2).join(' / ') || '—',
-                        notes:     ''
-                    });
-
-                    if (rows.length >= 6) break;
-                }
-
-                // fallback: إن لم يُستخرج شيء — استخدم forms & strengths من openfda
-                if (rows.length === 0 && formsAndStrengths && formsAndStrengths.length) {
-                    formsAndStrengths.slice(0, 4).forEach(fs => {
-                        // كل عنصر قد يكون "Tablet: 500 mg, 250 mg" أو مجرد قائمة
-                        const doseMatches = [...fs.matchAll(dosePattern)].map(m => m[0]);
-                        rows.push({
-                            form:      fs.split(':')[0].trim(),
-                            dose:      doseMatches.length ? doseMatches.join(' / ') : fs,
-                            frequency: 'راجع نشرة الدواء',
-                            notes:     ''
-                        });
-                    });
-                }
-
-                return rows;
-            }
-
-            function translateForm(en) {
-                const map = {
-                    tablet:'أقراص', capsule:'كبسولات', 'oral solution':'محلول فموي',
-                    injection:'حقن', infusion:'تسريب وريدي', syrup:'شراب',
-                    suspension:'معلّق', cream:'كريم', ointment:'مرهم',
-                    patch:'لصقة جلدية', inhaler:'بخّاخ', drops:'قطرات',
-                    drop:'قطرات', suppository:'تحاميل', spray:'رذاذ'
-                };
-                return map[en.toLowerCase()] || en;
-            }
-
-            // ── استخراج الأشكال الدوائية مع التركيزات ──────────────────
-            function parseAvailableForms(label) {
-                // 1) dosage_forms_and_strengths أفضل مصدر
-                const raw = label?.dosage_forms_and_strengths?.[0];
-                if (raw) {
-                    // نظّف وقسّم على الفاصلة أو السطر
-                    return raw
-                        .replace(/
-+/g, '; ')
-                        .replace(/\s{2,}/g, ' ')
-                        .split(/[;,]/)
-                        .map(s => s.trim())
-                        .filter(s => s.length > 2 && s.length < 120)
-                        .slice(0, 8);
-                }
-                // 2) openfda.dosage_form مع openfda.product_ndc
-                const forms = label?.openfda?.dosage_form || [];
-                const strengths = label?.openfda?.strength || [];
-                if (forms.length) {
-                    return forms.slice(0, 4).map((f, i) => strengths[i] ? `${f} ${strengths[i]}` : f);
-                }
-                return [];
             }
 
             // ── الخطوة 4: استخراج بيانات RxNav Properties ─────────────
@@ -9854,18 +9745,28 @@ window.addEventListener('resize', setTopbarHeight);
             const indicationsRaw = cleanFDA(label?.indications_and_usage);
             const warningsRaw    = cleanFDA(label?.warnings_and_cautions || label?.warnings);
             const adverseRaw     = cleanFDA(label?.adverse_reactions);
+            const dosageRaw      = cleanFDA(label?.dosage_and_administration);
             const contraindicRaw = cleanFDA(label?.contraindications);
             const interactRaw    = cleanFDA(label?.drug_interactions);
             const storageRaw     = cleanFDA(label?.storage_and_handling);
             const mechRaw        = cleanFDA(label?.mechanism_of_action || label?.clinical_pharmacology);
 
-            // Dosage: استخدام المحلّل الذكي الجديد
-            const dosageRowsRaw = cleanFDA(label?.dosage_and_administration, 3000);
-            const formsStrengths = label?.dosage_forms_and_strengths || [];
-            const dosageRows = parseDosageRows(dosageRowsRaw, formsStrengths);
+            // Dosage: parse into structured rows
+            let dosageRows = [];
+            if (dosageRaw) {
+                // Try to detect adult dose
+                const adultMatch = dosageRaw.match(/(?:adult|adults)[^.]*?(\d[^.]*?\.)/i);
+                const pedMatch   = dosageRaw.match(/(?:pediatric|children)[^.]*?(\d[^.]*?\.)/i);
+                if (adultMatch || pedMatch) {
+                    if (adultMatch) dosageRows.push({ form: 'للبالغين', dose: adultMatch[1].trim(), frequency: '', notes: '' });
+                    if (pedMatch)   dosageRows.push({ form: 'للأطفال',  dose: pedMatch[1].trim(),  frequency: '', notes: '' });
+                } else {
+                    dosageRows = [{ form: 'حسب الشكل الصيدلاني', dose: dosageRaw.substring(0, 200), frequency: 'راجع الدواعي', notes: '' }];
+                }
+            }
 
-            // Available forms: استخدام المحلّل الذكي الجديد
-            const availForms = parseAvailableForms(label);
+            // Available forms
+            const availForms = label?.openfda?.dosage_form || label?.dosage_forms_and_strengths || [];
 
             const info = {
                 name_ar:            drugName,
@@ -9875,7 +9776,7 @@ window.addEventListener('resize', setTopbarHeight);
                 mechanism:          mechRaw || 'راجع نشرة الدواء للاطلاع على آلية العمل',
                 indications:        indicationsRaw ? splitToList(indicationsRaw, 8) : ['راجع نشرة الدواء'],
                 contraindications:  contraindicRaw ? splitToList(contraindicRaw, 6) : ['راجع نشرة الدواء'],
-                dosage:             dosageRows.length ? dosageRows : [{ form: 'عام', dose: 'راجع نشرة الدواء', frequency: 'راجع نشرة الدواء', notes: '' }],
+                dosage:             dosageRows.length ? dosageRows : [{ form: 'عام', dose: 'راجع نشرة الدواء', frequency: '', notes: dosageRaw || '' }],
                 side_effects: {
                     common:  adverseRaw  ? splitToList(adverseRaw, 8)  : ['راجع نشرة الدواء'],
                     serious: warningsRaw ? splitToList(warningsRaw, 5) : []
@@ -9946,22 +9847,13 @@ window.addEventListener('resize', setTopbarHeight);
         const pregCat = (info.pregnancy_category || '').replace(/[^A-Za-z]/g,'').toUpperCase();
         const pregColor = pregColors[pregCat] || '#6b7280';
 
-        // Dosage table — نظّف النص من مراجع الجداول قبل العرض
-        function cleanDoseText(t) {
-            if (!t) return '—';
-            return t
-                .replace(/\(See\s+(Table|Figure)[^)]*\)/gi, '')
-                .replace(/\(Table\s*\d+\)/gi, '')
-                .replace(/\(see\s+[^)]*\)/gi, '')
-                .replace(/\s{2,}/g, ' ')
-                .trim() || '—';
-        }
+        // Dosage table
         const dosageRows = (info.dosage || []).map(d => `
-            <tr style="border-bottom:1px solid rgba(37,99,235,0.08);">
-                <td style="padding:9px 12px;font-weight:700;font-size:0.83rem;color:#1e3a5f;white-space:nowrap;">${cleanDoseText(d.form)}</td>
-                <td style="padding:9px 12px;font-size:0.83rem;color:#2563eb;font-weight:700;direction:ltr;text-align:left;">${cleanDoseText(d.dose)}</td>
-                <td style="padding:9px 12px;font-size:0.82rem;color:#374151;">${cleanDoseText(d.frequency)}</td>
-                <td style="padding:9px 12px;font-size:0.78rem;color:#6b7280;">${cleanDoseText(d.notes)}</td>
+            <tr style="border-bottom:1px solid rgba(7,144,172,0.1);">
+                <td style="padding:8px 10px;font-weight:600;font-size:0.85rem;">${d.form || '—'}</td>
+                <td style="padding:8px 10px;font-size:0.85rem;color:#0790AC;font-weight:700;">${d.dose || '—'}</td>
+                <td style="padding:8px 10px;font-size:0.85rem;">${d.frequency || '—'}</td>
+                <td style="padding:8px 10px;font-size:0.8rem;color:#6b7280;">${d.notes || '—'}</td>
             </tr>`).join('');
 
         const html = `
@@ -10070,24 +9962,16 @@ window.addEventListener('resize', setTopbarHeight);
             <div class="drug-info-section" style="margin-bottom:0;">
                 <div class="drug-info-section-header" style="font-size:0.82rem;">
                     ${glassIcon('<rect width="8" height="14" x="8" y="5" rx="4"/><path d="M8 13h8"/>')}
-                    الأشكال الدوائية المتوفرة
+                    الأشكال المتوفرة
                 </div>
-                <div style="display:flex;flex-direction:column;gap:4px;">
-                    ${(info.available_forms && info.available_forms.length)
-                        ? info.available_forms.map(f => `
-                            <div style="display:flex;align-items:center;gap:7px;padding:5px 8px;border-radius:8px;background:rgba(7,144,172,0.06);border:1px solid rgba(7,144,172,0.12);font-size:0.82rem;">
-                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#0790AC" stroke-width="2.2" stroke-linecap="round"><rect width="8" height="14" x="8" y="5" rx="4"/><path d="M8 13h8"/></svg>
-                                <span style="color:#1e3a5f;font-weight:500;">${f}</span>
-                            </div>`).join('')
-                        : '<span style="color:#9ca3af;font-size:0.82rem;">غير متوفر</span>'}
-                </div>
+                <div>${tags(info.available_forms)}</div>
             </div>
             <div class="drug-info-section" style="margin-bottom:0;">
                 <div class="drug-info-section-header" style="font-size:0.82rem;">
                     ${glassIcon('<path d="M20 7h-9"/><path d="M14 17H5"/><circle cx="17" cy="17" r="3"/><circle cx="7" cy="7" r="3"/>')}
                     شروط الحفظ
                 </div>
-                <p style="font-size:0.85rem;color:#374151;margin:0;line-height:1.6;">${info.storage || 'يحفظ في مكان جاف بعيداً عن الضوء والرطوبة'}</p>
+                <p style="font-size:0.85rem;color:#374151;margin:0;">${info.storage || 'غير متوفر'}</p>
             </div>
         </div>
 
