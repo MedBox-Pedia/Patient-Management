@@ -2827,21 +2827,6 @@
             opacity: 1;
             transform: translateY(0);
         }
-        /* إخفاء النافذة القديمة */
-        #voice-panel-modal { display: none !important; }
-        .voice-target-select {
-            width: 100%;
-            padding: 8px 12px;
-            border: 1.5px solid #e5e7eb;
-            border-radius: 8px;
-            font-family: 'Cairo', sans-serif;
-            font-size: 0.9rem;
-            background: #f9fafb;
-            color: #374151;
-            margin-bottom: 12px;
-            outline: none;
-        }
-        .voice-target-select:focus { border-color: #0790AC; }
         /* ===== نظام حسابات المرضى ===== */
         #patient-portal-modal {
             display: none;
@@ -3144,8 +3129,6 @@ window.addEventListener('resize', setTopbarHeight);
             </div>
 
         </div>
-    <!-- مؤشر الحفظ (مخفي، للحفاظ على وظيفة JS) -->
-    <span id="cloud-sync-indicator" class="hidden" style="display:none!important;"></span>
     </header>
 
     <div class="flex flex-1 overflow-hidden relative"> <!-- (إصلاح 2: إضافة relative) -->
@@ -3198,14 +3181,7 @@ window.addEventListener('resize', setTopbarHeight);
             <div id="sidebar-patient-list-view" class="hidden flex-1" style="display:none;flex-direction:column;">
                 <!-- هيدر عصري لقائمة المرضى -->
                 <div id="patient-list-header" style="padding:14px 14px 10px;background:#fff;border-bottom:1px solid rgba(7,144,172,0.1);flex-shrink:0;">
-                    <!-- عناصر مخفية للحفاظ على الـ JS -->
                     <div id="add-menu-section" class="hidden" style="display:none!important;"></div>
-                    <div id="patients-stats-strip" style="display:none!important;">
-                        <div id="stat-strip-total">0</div>
-                        <div id="stat-strip-today">0</div>
-                        <div id="stat-strip-week">0</div>
-                    </div>
-                    <div id="patients-count-label" style="display:none!important;">جاري التحميل...</div>
                 </div>
                 <!-- حاوية بطاقات المرضى -->
                 <div style="flex:1;overflow-y:auto;padding:10px 12px;" id="patient-list-scroll-area">
@@ -3278,16 +3254,7 @@ window.addEventListener('resize', setTopbarHeight);
             </div>
 
 
-            <!-- قسم الأدوات السفلي (تم تعديله: إزالة تسجيل الدخول وأزرار الحفظ/التحميل) -->
-            <div id="sidebar-bottom-tools" class="mt-auto p-4 space-y-4 border-t border-gray-200 flex-shrink-0">
-                <!-- زر الإضافة تم نقله إلى هيدر قائمة المرضى -->
-                <div id="add-menu-section-legacy" class="hidden"></div>
-            </div>
         </div><!-- end sidebar-scrollable-body -->
-                       
-            
-            <!-- (تعديل 2) تم نقل هذا القسم إلى الأعلى -->
-            
         </div><!-- end sidebar inner -->
         </aside>
 
@@ -5797,7 +5764,7 @@ window.addEventListener('resize', setTopbarHeight);
     </div>
 </div>
 
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9fcdc673683cb8a2',t:'MTc3ODk3MDA4NA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
+
     <script>
     // نسخ شعار الهيدر إلى شعار الداش بورد
     (function() {
@@ -5974,7 +5941,7 @@ window.addEventListener('resize', setTopbarHeight);
     
     // --- محددات عناصر الواجهة (DOM Selectors) ---
     const sidebar = document.getElementById('sidebar');
-    // const sidebarToggleBtn = document.getElementById('sidebar-toggle-btn'); // (تعديل 2) تم حذفه
+
     const mainContent = document.getElementById('main-content');
     const encyclopediaBtn = document.getElementById('medical-encyclopedia-btn');
     const encyclopediaDropdown = document.getElementById('encyclopedia-dropdown');
@@ -5986,16 +5953,11 @@ window.addEventListener('resize', setTopbarHeight);
     const loginSection = document.getElementById('login-section');
     const userInfoSection = document.getElementById('user-info-section');
     const loggedInUsername = document.getElementById('logged-in-username');
-    const loggedInUsernameIcon = document.getElementById('logged-in-username-icon'); // (جديد)
-    const loginIcon = document.getElementById('login-icon'); // (جديد)
+    const loginIcon = document.getElementById('login-icon');
     const logoutBtn = document.getElementById('logout-btn');
-    const settingsBtn = document.getElementById('settings-btn'); // (جديد 5)
-    
-    // (إصلاح 4: تعديل متغيرات زر الإضافة)
+    const settingsBtn = document.getElementById('settings-btn');
     const addMenuSection = document.getElementById('add-menu-section');
     const addMenuBtn = document.getElementById('add-menu-btn');
-    // const addMenuDropdown = document.getElementById('add-menu-dropdown'); // (إصلاح 4: تم حذف القائمة)
-    // const addNewPatientBtn = document.getElementById('add-new-patient-btn'); // (إصلاح 4: تم حذفه)
 
     const patientModal = document.getElementById('patient-modal');
     const patientModalCloseBtn = document.getElementById('patient-modal-close-btn');
@@ -6595,7 +6557,6 @@ window.addEventListener('resize', setTopbarHeight);
 صمم ليكون وسيلة دعم شاملة لجميع الممارسين الصحيين.`, 'welcome', 6000);
 
         // ربط الأحداث
-        // sidebarToggleBtn.addEventListener('click', toggleSidebar); // (تعديل 2) تم حذفه
         encyclopediaBtn.addEventListener('click', (e) => {
             e.stopPropagation(); // منع الإغلاق الفوري
             encyclopediaDropdown.classList.toggle('hidden');
@@ -6625,9 +6586,6 @@ window.addEventListener('resize', setTopbarHeight);
                 if (backdrop) backdrop.classList.add('hidden');
             }
             // (إصلاح 4: تعديل الشرط)
-            if (appData.currentUser === 'developer' && addMenuBtn && !addMenuBtn.contains(e.target)) {
-                // addMenuDropdown.classList.add('hidden'); // (إصلاح 4: تم حذف القائمة)
-            }
         });
         
         // (إصلاح 4: تعديل ربط حدث زر الإضافة)
@@ -6635,7 +6593,6 @@ window.addEventListener('resize', setTopbarHeight);
             addMenuBtn.addEventListener('click', openNewPatientModal);
         }
         
-        // addNewPatientBtn.addEventListener('click', openNewPatientModal); // (إصلاح 4: تم حذفه)
         patientModalCloseBtn?.addEventListener('click', closePatientModal);
         patientModalCancelBtn?.addEventListener('click', cancelNewPatient);
         patientModalCancelEditsBtn?.addEventListener('click', closePatientModal);
@@ -7948,9 +7905,6 @@ window.addEventListener('resize', setTopbarHeight);
             updateGoogleUserDisplay();
 
             loginIcon.classList.add('hidden');
-            // اسم المستخدم مخفي عمداً من الشريط العلوي
-            // loggedInUsernameIcon.textContent = usernameText;
-            // loggedInUsernameIcon.classList.remove('hidden');
             loginToggleBtn.classList.remove('w-10');
             loginToggleBtn.classList.add('px-3');
             loginToggleBtn.querySelector('.tooltip').textContent = "عرض معلومات الحساب";
@@ -7981,8 +7935,6 @@ window.addEventListener('resize', setTopbarHeight);
             userInfoSection.classList.add('hidden');
 
             loginIcon.classList.remove('hidden');
-            loggedInUsernameIcon.classList.add('hidden');
-            loggedInUsernameIcon.textContent = '';
             loginToggleBtn.classList.add('w-10');
             loginToggleBtn.classList.remove('px-3');
             loginToggleBtn.querySelector('.tooltip').textContent = "تسجيل الدخول";
@@ -14410,7 +14362,6 @@ window.addEventListener('resize', setTopbarHeight);
                 const parsed = JSON.parse(oldData);
                 idbSet('medboxPediaData', parsed).then(() => {
                     localStorage.removeItem('medboxPediaData');
-                    console.log('تم ترحيل البيانات من localStorage إلى IndexedDB');
                 });
             } catch(e) { /* تجاهل أخطاء الترحيل */ }
         }
@@ -16992,12 +16943,7 @@ function printQRCard(patient, qrData) {
             </div>
         </div>
 
-        <!-- إعداد Client ID - مخفي، Client ID مدمج في الكود -->
-        <div class="cloud-sync-section" style="display:none;">
-            <input type="text" id="google-client-id-input" />
-        </div>
 
-        <!-- رفع وتحميل يدوي -->
         <div class="cloud-sync-section">
             <div class="cloud-sync-section-title">حفظ يدوي</div>
             <div style="display:flex;gap:10px;flex-wrap:wrap;">
@@ -17067,13 +17013,7 @@ window._autoSyncTimer = null;
 window._autoSyncCountdownTimer = null;
 window._autoSyncNextTime = null;
 
-// تعريف اختصارات محلية (للتوافق مع الكود القديم)
-var _cloudAccessToken = null;
-var _cloudTokenExpiry = 0;
-var _cloudDriveFileId = null;
-var _autoSyncTimer = null;
-var _autoSyncCountdownTimer = null;
-var _autoSyncNextTime = null;
+
 // Client ID مدمج مباشرة - لا يحتاج المستخدم لإدخاله
 const GOOGLE_CLIENT_ID = '1049301571727-tm4auv4jokbft18df4agboi80h7hb47m.apps.googleusercontent.com';
 let _googleClientId = GOOGLE_CLIENT_ID;
@@ -17188,11 +17128,7 @@ function updateCloudUI() {
     }
 }
 
-function saveClientId() {
-    // Client ID مدمج في الكود، لا حاجة للحفظ
-}
 
-// --- OAuth 2.0 بـ Google Identity Services ---
 function connectGoogleDrive() {
     // إذا كان المستخدم مسجلاً بالفعل عبر Google Auth الرئيسي، لا نحتاج تسجيل دخول مجدد
     if (_googleAuthUser && _cloudAccessToken && Date.now() < _cloudTokenExpiry) {
@@ -17654,13 +17590,11 @@ async function findOrCreateDriveFile() {
             const d1 = await r1.json();
             if (d1.files && d1.files.length > 0) {
                 _cloudDriveFileId = d1.files[0].id;
-                console.log('[MedBox] ملف Drive موجود:', _cloudDriveFileId);
                 return _cloudDriveFileId;
             }
         }
     } catch(e) { console.warn('[MedBox] خطأ في البحث:', e); }
 
-    console.log('[MedBox] لا يوجد ملف محفوظ في Drive');
     return null;
 }
 
@@ -18003,8 +17937,7 @@ function renderCloudSyncPage() {
                 <div id="cloud-user-info" class="${isConnected ? '' : 'hidden'}" style="padding:10px;background:#f0fafc;border-radius:10px;font-size:0.85rem;color:#374151;">
                     <span id="cloud-user-name">👤 ${_cloudUserEmail || 'مستخدم Google'}</span>
                 </div>
-                <!-- مخفي مطلوب للـ JS -->
-                <input type="text" id="google-client-id-input" style="display:none;" />
+
             </div>
         </div>
 
@@ -18099,7 +18032,6 @@ function triggerAutoGoogleDriveSync(triggerLabel) {
     if (expiry) window._cloudTokenExpiry = expiry;
     // التحقق من وجود توكن Google صالح
     if (!token || !expiry || Date.now() >= expiry) {
-        console.log('[MedBox] لا يوجد توكن Google صالح — تم تخطي الحفظ التلقائي');
         return; // غير متصل — لا نُظهر أي خطأ
     }
 
@@ -18328,7 +18260,6 @@ async function getQRImageHTMLForPrint(patient, size) {
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('./sw.js')
-      .then(reg => console.log('MedBox SW registered:', reg.scope))
       .catch(err => console.warn('SW registration failed:', err));
   });
 }
@@ -20096,7 +20027,6 @@ window._loadGeminiKeyFromDrive = async function() {
 
             // responseMimeType قد لا يدعمه بعض النماذج القديمة — نتعامل مع ذلك في _callGeminiWithBestModel
             var { response, model: usedModel } = await _callGeminiWithBestModel(apiKey, requestBody);
-            console.log('[OCR] تم استخدام النموذج:', usedModel);
 
             var data = await response.json();
             var rawText = (data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts)
@@ -20605,30 +20535,6 @@ window._loadGeminiKeyFromDrive = async function() {
 <!-- تلميح الحالة العائم -->
 <div id="floating-voice-toast"></div>
 
-<!-- ========== نافذة الإدخال الصوتي الشامل (محتفظ بها للتوافق) ========== -->
-<div id="voice-panel-modal">
-  <div id="voice-panel-box">
-    <div id="voice-panel-header">
-      <div style="display:flex;align-items:center;gap:10px;">
-        <svg xmlns="http://www.w3.org/2000/svg" style="width:22px;height:22px;" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 01-3-3V4.5a3 3 0 116 0v8.25a3 3 0 01-3 3z" />
-        </svg>
-        <span style="font-size:1.05rem;font-weight:700;">الإدخال الصوتي</span>
-      </div>
-      <button onclick="closeVoicePanel()" style="background:rgba(255,255,255,0.2);border:none;border-radius:50%;width:30px;height:30px;cursor:pointer;color:#fff;font-size:1.1rem;display:flex;align-items:center;justify-content:center;">✕</button>
-    </div>
-    <div id="voice-panel-body">
-      <select id="voice-target-field" class="voice-target-select">
-        <option value="">-- اختر الحقل --</option>
-      </select>
-      <div id="voice-transcript-box" style="min-height:56px;background:#f8fafc;border:1.5px solid #e5e7eb;border-radius:10px;padding:10px 14px;font-size:0.95rem;color:#374151;margin:12px 0;direction:rtl;line-height:1.7;"></div>
-      <div id="voice-browser-warn" style="display:none;margin-top:10px;padding:8px 12px;background:#fef3c7;border:1px solid #fde68a;border-radius:8px;font-size:0.8rem;color:#92400e;">
-        ⚠️ متصفحك لا يدعم التعرف على الصوت. يُوصى باستخدام Chrome أو Edge.
-      </div>
-    </div>
-  </div>
-</div>
-
 <!-- ========== صفحة دخول المريض (Patient Portal Login) ========== -->
 <div id="patient-login-page">
   <div style="max-width:440px;margin:0 auto;padding:40px 20px;">
@@ -21028,10 +20934,6 @@ window._loadGeminiKeyFromDrive = async function() {
         if (window.innerWidth < 1024 && typeof closeSidebar === 'function') closeSidebar();
     };
 
-    // للتوافق مع الكود القديم (الزر القديم openPatientPortalModal)
-    window.openPatientPortalModal = function() { window.openPatientPortalPage(); };
-    window.closePatientPortalModal = function() {};
-
     // ── استخراج معلومات المعالج من الحساب الحالي ──
     function getTherapistInfo() {
         var acc = null;
@@ -21341,12 +21243,6 @@ window._loadGeminiKeyFromDrive = async function() {
         if (container && container.querySelector('#portal-page-search')) renderPortalPage(container);
         if (typeof showToast === 'function') showToast('تم حذف الحساب', 'info');
     };
-
-    // ── ربط زر renderPortalModal (للتوافق مع الكود القديم الذي يستدعيه) ──
-    function renderPortalModal() {
-        var container = document.getElementById('patient-display-area');
-        if (container && container.querySelector('#portal-page-search')) renderPortalPage(container);
-    }
 
     // ── تسجيل دخول المريض ──
     window.patientPortalLogin = function() {
