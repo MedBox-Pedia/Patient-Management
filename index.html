@@ -9769,26 +9769,50 @@ window.addEventListener('resize', setTopbarHeight);
         _encDebounce = setTimeout(function(){ _encFetchSuggestions(val.trim()); }, 280);
     }
 
+    // ── استخراج الاسم الجنيسي النقي من اسم RxTerms ──────────────────
+    // مثال: "Amoxicillin 500 MG Oral Capsule [Amoxil]" → "Amoxicillin"
+    // مثال: "Metformin Hydrochloride 500 MG"            → "Metformin Hydrochloride"
+    function _extractGenericName(rxName) {
+        if (!rxName) return rxName;
+        // إزالة أي شيء بين قوسين مربعين (الاسم التجاري)
+        var s = rxName.replace(/\s*\[[^\]]*\]/g, '').trim();
+        // إزالة الجرعة والشكل: رقم + وحدة وما بعدها
+        s = s.replace(/\s+\d[\d.,]*\s*(MG|MCG|MEQ|MMOL|UNIT|IU|ML|G).*$/i, '').trim();
+        return s || rxName;
+    }
+
     function _encFetchSuggestions(q) {
         var loading = document.getElementById('drug-enc-search-loading');
         var sug     = document.getElementById('drug-enc-suggestions');
         if (loading) loading.style.display = 'block';
 
-        fetch('https://clinicaltables.nlm.nih.gov/api/rxterms/v3/search?terms=' + encodeURIComponent(q) + '&ef=STRENGTHS_AND_FORMS&maxList=10')
+        fetch('https://clinicaltables.nlm.nih.gov/api/rxterms/v3/search?terms=' + encodeURIComponent(q) + '&ef=STRENGTHS_AND_FORMS&maxList=15')
         .then(function(r){ return r.json(); })
         .then(function(data) {
-            var names = data[1] || [];
-            _encItems = names;
+            var rawNames = data[1] || [];
+
+            // استخراج الأسماء الجنيسية النقية وإزالة المكررات
+            var seen = {};
+            var uniqueItems = []; // { display, generic }
+            rawNames.forEach(function(name) {
+                var generic = _extractGenericName(name);
+                if (!seen[generic.toLowerCase()]) {
+                    seen[generic.toLowerCase()] = true;
+                    uniqueItems.push({ display: generic, generic: generic });
+                }
+            });
+
+            _encItems = uniqueItems.map(function(x){ return x.generic; });
             _encActiveIdx = -1;
             if (!sug) return;
             sug.innerHTML = '';
-            if (!names.length) {
+            if (!uniqueItems.length) {
                 sug.innerHTML = '<li style="padding:10px 14px;color:#9ca3af;font-size:0.85rem;">لا توجد نتائج</li>';
             } else {
-                names.forEach(function(name) {
+                uniqueItems.forEach(function(item) {
                     var li = document.createElement('li');
-                    li.innerHTML = '<span class="enc-drug-name">' + name + '</span><span class="enc-badge">RxTerms</span>';
-                    li.addEventListener('mousedown', function(){ selectDrugEncItem(name); });
+                    li.innerHTML = '<span class="enc-drug-name">' + item.display + '</span><span class="enc-badge">RxTerms</span>';
+                    li.addEventListener('mousedown', function(){ selectDrugEncItem(item.generic); });
                     sug.appendChild(li);
                 });
             }
@@ -9857,9 +9881,7 @@ window.addEventListener('resize', setTopbarHeight);
             if (rxRelated?.relatedGroup?.conceptGroup) {
                 rxRelated.relatedGroup.conceptGroup.forEach(function(g) {
                     (g.conceptProperties || []).forEach(function(cp) {
-                        // اسم cp.name يكون مثل: "Amoxicillin 500 MG Oral Capsule"
                         var name = cp.name || '';
-                        // استخرج الجرعة والشكل من الاسم المنظّم
                         var parsed = _parseRxNormName(name);
                         if (parsed && !dosageForms.find(function(x){ return x.dose === parsed.dose && x.form === parsed.form; })) {
                             dosageForms.push(parsed);
@@ -9868,20 +9890,31 @@ window.addEventListener('resize', setTopbarHeight);
                 });
             }
 
-            // 4) بناء المعلومات
-            function clean(arr) {
-                if (!arr?.length) return null;
-                return arr[0].replace(/\n+/g,' ').replace(/\s{2,}/g,' ')
-                    .replace(/\(See\s+(?:Table|Figure|Section)[^)]*\)/gi,'')
-                    .replace(/\(Table\s*\d+[^)]*\)/gi,'')
-                    .replace(/\(see\s+[^)]*\)/gi,'')
-                    .replace(/[•·]/g,'').trim().substring(0, 900);
+            // ── دوال معالجة البيانات بدون أي حذف أو اقتصار ──────────────
+
+            // تنظيف أساسي: فقط تنسيق الفراغات وإزالة إشارات الجداول المرجعية
+            // بدون أي substring أو slice — النص الكامل محفوظ
+            function cleanFull(arr) {
+                if (!arr || !arr.length) return null;
+                // دمج جميع عناصر المصفوفة (ليس فقط arr[0])
+                return arr.join('\n\n')
+                    .replace(/\n{3,}/g, '\n\n')
+                    .replace(/\s{2,}/g, ' ')
+                    .replace(/\(See\s+(?:Table|Figure|Section)[^)]*\)/gi, '')
+                    .replace(/\(Table\s*\d+[^)]*\)/gi, '')
+                    .replace(/\(see\s+[^)]*\)/gi, '')
+                    .replace(/[•·]/g, '')
+                    .trim();
             }
-            function toList(txt, max) {
+
+            // تحويل النص إلى قائمة نقاط — بدون حد أقصى للعدد، بدون حذف
+            function toFullList(txt) {
                 if (!txt) return [];
-                max = max || 7;
-                return txt.split(/(?:\d+\.\s+|;\s*|(?<=[a-z])\.\s+(?=[A-Z]))/)
-                    .map(s=>s.trim()).filter(s=>s.length>8&&s.length<250).slice(0,max);
+                // تقسيم على: أرقام مرتّبة، أو فاصلة منقوطة، أو سطر جديد، أو نقطة تلي حرف صغير وتسبق حرف كبير
+                var items = txt.split(/(?:\r?\n\s*\d+\.\s+|\r?\n+|;\s*(?=[A-Z])|(?<=[a-z]{2})\.\s+(?=[A-Z][a-z]))/)
+                    .map(function(s){ return s.replace(/^\d+\.\s*/, '').trim(); })
+                    .filter(function(s){ return s.length > 5; }); // فقط حذف الجمل قصيرة جداً (أقل من 5 أحرف)
+                return items;
             }
 
             var brandNames  = label?.openfda?.brand_name  || [];
@@ -9892,20 +9925,56 @@ window.addEventListener('resize', setTopbarHeight);
                 name_ar:           drugName,
                 name_en:           brandNames[0] || genericName,
                 generic_name:      (genericName !== brandNames[0]) ? genericName : '',
+                brand_names_all:   brandNames,  // جميع الأسماء التجارية
                 drug_class:        pharmClass,
-                mechanism:         clean(label?.mechanism_of_action || label?.clinical_pharmacology) || 'راجع نشرة الدواء',
-                indications:       toList(clean(label?.indications_and_usage), 8)       || ['راجع نشرة الدواء'],
-                contraindications: toList(clean(label?.contraindications), 6)            || ['راجع نشرة الدواء'],
-                dosage_forms:      dosageForms,   // من RxNav — منظّم
-                dosage_text:       clean(label?.dosage_and_administration, 800),         // نص خام للعرض الاحتياطي
+
+                // آلية العمل — كاملة
+                mechanism:         cleanFull(label?.mechanism_of_action || label?.clinical_pharmacology) || 'راجع نشرة الدواء',
+
+                // الحركية الدوائية — حقل جديد
+                pharmacokinetics:  cleanFull(label?.pharmacokinetics || label?.clinical_pharmacology_section) || null,
+
+                // الاستطبابات — كاملة بلا حد
+                indications:       toFullList(cleanFull(label?.indications_and_usage)),
+
+                // موانع الاستعمال — كاملة بلا حد
+                contraindications: toFullList(cleanFull(label?.contraindications)),
+
+                // الجرعة والإعطاء — كاملة لجميع الفئات
+                dosage_forms:      dosageForms,
+                dosage_text:       cleanFull(label?.dosage_and_administration),
+
+                // التأثيرات الجانبية — كاملة
                 side_effects: {
-                    common:  toList(clean(label?.adverse_reactions), 7)       || ['راجع نشرة الدواء'],
-                    serious: toList(clean(label?.warnings_and_cautions || label?.warnings), 4) || []
+                    common:  toFullList(cleanFull(label?.adverse_reactions)),
+                    serious: toFullList(cleanFull(label?.warnings_and_cautions || label?.warnings))
                 },
-                interactions:      toList(clean(label?.drug_interactions), 6)            || ['راجع نشرة الدواء'],
-                storage:           clean(label?.storage_and_handling)                    || 'يحفظ بعيداً عن الضوء والرطوبة',
-                special_warnings:  toList(clean(label?.boxed_warning || label?.warnings_and_cautions), 3) || [],
-                pregnancy_category: (label?.pregnancy_category?.[0] || 'غير محدد'),
+
+                // التفاعلات الدوائية — كاملة
+                interactions:      toFullList(cleanFull(label?.drug_interactions)),
+
+                // شروط الحفظ — كاملة
+                storage:           cleanFull(label?.storage_and_handling) || 'يحفظ بعيداً عن الضوء والرطوبة',
+
+                // تحذيرات Boxed Warning — كاملة
+                special_warnings:  toFullList(cleanFull(label?.boxed_warning)),
+
+                // تحذيرات الحمل
+                pregnancy_category: (label?.pregnancy_category?.[0] || label?.teratogenic_effects?.[0] || 'غير محدد'),
+                pregnancy_text:    cleanFull(label?.pregnancy || label?.teratogenic_effects),
+
+                // تحذيرات الرضاعة
+                nursing_text:      cleanFull(label?.nursing_mothers),
+
+                // الاستخدام لدى الفئات الخاصة — حقل جديد شامل
+                special_populations: cleanFull(label?.use_in_specific_populations),
+
+                // الاستخدام لدى الأطفال
+                pediatric_text:    cleanFull(label?.pediatric_use),
+
+                // الاستخدام لدى المسنين
+                geriatric_text:    cleanFull(label?.geriatric_use),
+
                 _rxcui:  rxcui,
                 _source: label ? 'OpenFDA + RxNorm' : (rxcui ? 'RxNorm فقط' : null)
             };
@@ -9979,7 +10048,7 @@ window.addEventListener('resize', setTopbarHeight);
     // ── رسم نتيجة الدواء ─────────────────────────────────────────────
     function renderDrugEncResult(info) {
         document.getElementById('drug-enc-loading').style.display = 'none';
-        window._lastDrugEncInfo = info; // حفظ للرجوع عند إلغاء الترجمة
+        window._lastDrugEncInfo = info;
 
         if (info._not_found) {
             document.getElementById('drug-enc-result').style.display = 'block';
@@ -9999,30 +10068,43 @@ window.addEventListener('resize', setTopbarHeight);
                 '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' + path + '</svg></span>';
         }
 
-        // قائمة عناصر
+        // قائمة نقاط — تعرض النص كاملاً
         function mkList(arr, color) {
             color = color || '#0790AC';
             if (!arr || !arr.length) return '<span style="color:#9ca3af;font-size:0.82rem;">غير متوفر</span>';
             return arr.map(function(item){
-                return '<div style="padding:5px 0;display:flex;gap:8px;align-items:flex-start;font-size:0.855rem;line-height:1.55;border-bottom:1px dashed rgba(0,0,0,0.06);">' +
+                return '<div style="padding:5px 0;display:flex;gap:8px;align-items:flex-start;font-size:0.855rem;line-height:1.65;border-bottom:1px dashed rgba(0,0,0,0.06);">' +
                     '<span style="color:' + color + ';flex-shrink:0;margin-top:3px;font-size:0.7rem;">◈</span>' +
-                    '<span>' + item + '</span></div>';
+                    '<span style="direction:ltr;text-align:left;flex:1;">' + item + '</span></div>';
             }).join('');
         }
 
-        // ── جدول الأشكال الدوائية من RxNorm (منظّم) ──────────────────
+        // فقرة نصية كاملة مع الحفاظ على فواصل الأسطر
+        function mkParagraph(txt, color) {
+            if (!txt) return '<span style="color:#9ca3af;font-size:0.82rem;">غير متوفر</span>';
+            color = color || '#374151';
+            return '<p style="font-size:0.855rem;color:' + color + ';line-height:1.75;margin:0;direction:ltr;text-align:left;white-space:pre-wrap;">' + txt + '</p>';
+        }
+
+        // قسم فرعي داخل قسم رئيسي
+        function mkSubSection(title, content, color) {
+            if (!content) return '';
+            color = color || '#0790AC';
+            return '<div style="margin-top:10px;padding-top:8px;border-top:1px dashed rgba(0,0,0,0.08);">' +
+                '<div style="font-size:0.75rem;font-weight:800;color:' + color + ';margin-bottom:6px;text-transform:uppercase;letter-spacing:0.04em;">' + title + '</div>' +
+                content + '</div>';
+        }
+
+        // ── جدول الأشكال الدوائية من RxNorm ──────────────────
         var formsSection = '';
         if (info.dosage_forms && info.dosage_forms.length) {
-            // تجميع حسب الشكل
             var grouped = {};
             info.dosage_forms.forEach(function(f){
                 if (!grouped[f.form]) grouped[f.form] = [];
                 grouped[f.form].push(f.dose);
             });
             var rows = Object.keys(grouped).map(function(form){
-                var doses = grouped[form].sort(function(a,b){
-                    return parseFloat(a) - parseFloat(b);
-                });
+                var doses = grouped[form].sort(function(a,b){ return parseFloat(a) - parseFloat(b); });
                 return '<tr style="border-bottom:1px solid rgba(37,99,235,0.08);">' +
                     '<td style="padding:9px 12px;font-weight:700;font-size:0.84rem;color:#1e3a5f;">' + form + '</td>' +
                     '<td style="padding:9px 12px;direction:ltr;text-align:left;">' +
@@ -10031,25 +10113,49 @@ window.addEventListener('resize', setTopbarHeight);
             }).join('');
 
             formsSection =
-                '<div class="drug-info-section" style="border-color:rgba(37,99,235,0.2);background:rgba(37,99,235,0.04);margin-bottom:10px;">' +
+                '<div class="drug-info-section" style="border-color:rgba(37,99,235,0.2);background:rgba(37,99,235,0.04);">' +
                 '<div class="drug-info-section-header" style="color:#2563eb;">' +
                 gi('<rect width="8" height="14" x="8" y="5" rx="4"/><path d="M8 13h8"/>', '#2563eb') +
                 'الأشكال الدوائية والتركيزات المتوفرة</div>' +
-                '<div style="overflow-x:auto;border-radius:8px;border:1px solid rgba(37,99,235,0.15);">' +
+                '<div style="overflow-x:auto;border-radius:8px;border:1px solid rgba(37,99,235,0.15);margin-bottom:' + (info.dosage_text ? '12px' : '0') + ';">' +
                 '<table style="width:100%;border-collapse:collapse;font-family:Cairo,sans-serif;">' +
                 '<thead style="background:rgba(37,99,235,0.08);">' +
                 '<tr><th style="padding:8px 12px;text-align:right;font-size:0.78rem;color:#2563eb;font-weight:700;">الشكل الدوائي</th>' +
                 '<th style="padding:8px 12px;text-align:left;font-size:0.78rem;color:#2563eb;font-weight:700;">التركيزات المتاحة</th></tr>' +
-                '</thead><tbody>' + rows + '</tbody></table></div></div>';
+                '</thead><tbody>' + rows + '</tbody></table></div>';
+
+            // إضافة نص الجرعة الكامل بعد الجدول إن وُجد
+            if (info.dosage_text) {
+                formsSection +=
+                    '<div style="font-size:0.74rem;font-weight:800;color:#2563eb;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.04em;">تعليمات الجرعة والإعطاء — كاملة</div>' +
+                    mkParagraph(info.dosage_text, '#1e3a5f');
+            }
+            formsSection += '</div>';
 
         } else if (info.dosage_text) {
-            // fallback: النص الخام منظّم بشكل أفضل
             formsSection =
-                '<div class="drug-info-section" style="border-color:rgba(37,99,235,0.2);background:rgba(37,99,235,0.04);margin-bottom:10px;">' +
+                '<div class="drug-info-section" style="border-color:rgba(37,99,235,0.2);background:rgba(37,99,235,0.04);">' +
                 '<div class="drug-info-section-header" style="color:#2563eb;">' +
                 gi('<rect width="8" height="14" x="8" y="5" rx="4"/>', '#2563eb') +
                 'الجرعة والإعطاء</div>' +
-                '<p style="font-size:0.855rem;color:#374151;line-height:1.7;margin:0;direction:ltr;text-align:left;">' + info.dosage_text + '</p></div>';
+                mkParagraph(info.dosage_text, '#1e3a5f') + '</div>';
+        }
+
+        // ── قسم الفئات الخاصة (أطفال / مسنّون / حمل / رضاعة / قصور كلوي) ──
+        var specialPopSection = '';
+        var popContent = '';
+        if (info.pediatric_text)       popContent += mkSubSection('🧒 الجرعة لدى الأطفال (Pediatric Use)', mkParagraph(info.pediatric_text, '#1e3a5f'), '#2563eb');
+        if (info.geriatric_text)       popContent += mkSubSection('👴 الجرعة لدى المسنّين (Geriatric Use)', mkParagraph(info.geriatric_text, '#1e3a5f'), '#7c3aed');
+        if (info.special_populations)  popContent += mkSubSection('🏥 الفئات الخاصة (قصور الكلى / الكبد / إلخ)', mkParagraph(info.special_populations, '#1e3a5f'), '#0790AC');
+        if (info.pregnancy_text)       popContent += mkSubSection('🤰 الحمل', mkParagraph(info.pregnancy_text, '#1e3a5f'), '#dc2626');
+        if (info.nursing_text)         popContent += mkSubSection('🤱 الرضاعة', mkParagraph(info.nursing_text, '#1e3a5f'), '#d97706');
+        if (popContent) {
+            specialPopSection =
+                '<div class="drug-info-section" style="border-color:rgba(124,58,237,0.2);background:rgba(124,58,237,0.03);">' +
+                '<div class="drug-info-section-header" style="color:#7c3aed;">' +
+                gi('<path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/>', '#7c3aed') +
+                'الجرعات في الفئات السكانية الخاصة</div>' +
+                popContent + '</div>';
         }
 
         // pregnancy color
@@ -10057,8 +10163,16 @@ window.addEventListener('resize', setTopbarHeight);
         var pc = (info.pregnancy_category||'').replace(/[^A-Za-z]/g,'').toUpperCase();
         var pregColor = pregColors[pc] || '#6b7280';
 
+        // الأسماء التجارية المتعددة
+        var brandBadges = '';
+        if (info.brand_names_all && info.brand_names_all.length > 0) {
+            brandBadges = info.brand_names_all.map(function(b){
+                return '<span style="background:rgba(7,144,172,0.1);color:#0790AC;border:1px solid rgba(7,144,172,0.25);border-radius:999px;padding:2px 9px;font-size:0.72rem;font-weight:700;">' + b + '</span>';
+            }).join(' ');
+        }
+
         var html =
-            // ── شريط أدوات النتيجة (toolbar) ──
+            // ── شريط أدوات النتيجة ──
             '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:8px;">' +
             '<span style="font-size:0.78rem;color:#6b7280;font-weight:600;">📋 نتيجة البحث</span>' +
             '<button id="drug-enc-translate-result-btn" onclick="translateDrugResult(this)" title="ترجمة النتائج إلى العربية">' +
@@ -10067,7 +10181,7 @@ window.addEventListener('resize', setTopbarHeight);
             'ترجمة النتائج إلى العربية' +
             '</button></div>' +
 
-            // Header
+            // ── Header ──
             '<div style="background:linear-gradient(135deg,#f0fafc,#e6f4f7);border-radius:14px;padding:16px 20px;border:1.5px solid rgba(7,144,172,0.2);margin-bottom:12px;display:flex;align-items:flex-start;gap:14px;">' +
             '<div style="width:52px;height:52px;background:linear-gradient(135deg,#0790AC,#056a80);border-radius:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 4px 12px rgba(7,144,172,0.3);">' +
             '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0016.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 002 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>' +
@@ -10075,57 +10189,74 @@ window.addEventListener('resize', setTopbarHeight);
             '<div style="flex:1;min-width:0;">' +
             '<h3 style="margin:0;font-size:1.15rem;font-weight:800;color:#0790AC;">' + info.name_ar + '</h3>' +
             (info.name_en ? '<div style="color:#6b7280;font-size:0.82rem;margin-top:2px;">' + info.name_en + (info.generic_name ? ' · <em>' + info.generic_name + '</em>' : '') + '</div>' : '') +
+            (brandBadges ? '<div style="margin-top:6px;display:flex;flex-wrap:wrap;gap:4px;"><span style="font-size:0.7rem;color:#9ca3af;margin-left:4px;align-self:center;">الأسماء التجارية:</span>' + brandBadges + '</div>' : '') +
             '<div style="margin-top:8px;display:flex;flex-wrap:wrap;gap:6px;">' +
             (info.drug_class ? '<span style="background:rgba(7,144,172,0.1);color:#0790AC;border:1px solid rgba(7,144,172,0.25);border-radius:999px;padding:2px 10px;font-size:0.74rem;font-weight:700;">' + info.drug_class + '</span>' : '') +
             (pc ? '<span style="background:' + pregColor + '1a;color:' + pregColor + ';border:1px solid ' + pregColor + '33;border-radius:999px;padding:2px 10px;font-size:0.74rem;font-weight:700;">حمل: ' + info.pregnancy_category + '</span>' : '') +
             (info._source ? '<span style="background:#f3f4f6;color:#6b7280;border:1px solid #e5e7eb;border-radius:999px;padding:2px 10px;font-size:0.7rem;">' + info._source + '</span>' : '') +
             '</div></div></div>' +
 
-            // Mechanism
-            '<div class="drug-info-section">' +
-            '<div class="drug-info-section-header">' + gi('<circle cx="12" cy="12" r="4"/><path d="M12 3v1M12 20v1M4.22 4.22l.7.7M19.07 19.07l.71.71M3 12h1M20 12h1M4.22 19.78l.7-.7M19.07 4.93l.71-.71"/>') + 'آلية العمل</div>' +
-            '<p style="font-size:0.865rem;color:#374151;line-height:1.7;margin:0;">' + info.mechanism + '</p></div>' +
-
-            // Indications
-            '<div class="drug-info-section" style="border-color:rgba(22,163,74,0.2);background:rgba(22,163,74,0.04);">' +
-            '<div class="drug-info-section-header" style="color:#16a34a;">' + gi('<path d="M20 6 9 17l-5-5"/>', '#16a34a') + 'الاستطبابات</div>' +
-            mkList(info.indications, '#16a34a') + '</div>' +
-
-            // Contraindications
-            '<div class="drug-info-section" style="border-color:rgba(220,38,38,0.2);background:rgba(220,38,38,0.04);">' +
-            '<div class="drug-info-section-header" style="color:#dc2626;">' + gi('<circle cx="12" cy="12" r="10"/><path d="m4.9 4.9 14.2 14.2"/>', '#dc2626') + 'موانع الاستعمال</div>' +
-            mkList(info.contraindications, '#dc2626') + '</div>' +
-
-            // ── الأشكال الدوائية والجرعات (RxNorm) ──
-            formsSection +
-
-            // Side Effects
-            '<div class="drug-info-section" style="border-color:rgba(217,119,6,0.2);background:rgba(217,119,6,0.04);">' +
-            '<div class="drug-info-section-header" style="color:#d97706;">' + gi('<path d="m21.73 18-8-14a2 2 0 00-3.48 0l-8 14A2 2 0 004 21h16a2 2 0 001.73-3Z"/><path d="M12 9v4M12 17h.01"/>', '#d97706') + 'التأثيرات الجانبية</div>' +
-            (info.side_effects.common.length ? '<div style="font-size:0.75rem;font-weight:700;color:#d97706;margin-bottom:5px;">شائعة:</div>' + mkList(info.side_effects.common, '#d97706') : '') +
-            (info.side_effects.serious.length ?
-                '<div style="margin-top:10px;padding-top:8px;border-top:1px dashed rgba(220,38,38,0.2);">' +
-                '<div style="font-size:0.75rem;font-weight:700;color:#dc2626;margin-bottom:5px;">خطيرة / تحذيرات:</div>' +
-                mkList(info.side_effects.serious, '#dc2626') + '</div>' : '') +
-            '</div>' +
-
-            // Interactions
-            '<div class="drug-info-section" style="border-color:rgba(124,58,237,0.2);background:rgba(124,58,237,0.04);">' +
-            '<div class="drug-info-section-header" style="color:#7c3aed;">' + gi('<path d="m8 3 4 8 5-5 5 15H2L8 3z"/>', '#7c3aed') + 'التفاعلات الدوائية</div>' +
-            mkList(info.interactions, '#7c3aed') + '</div>' +
-
-            // Storage
-            '<div class="drug-info-section">' +
-            '<div class="drug-info-section-header">' + gi('<path d="M20 7h-9"/><path d="M14 17H5"/><circle cx="17" cy="17" r="3"/><circle cx="7" cy="7" r="3"/>') + 'شروط الحفظ</div>' +
-            '<p style="font-size:0.855rem;color:#374151;margin:0;">' + info.storage + '</p></div>' +
-
-            // Special Warnings (if any)
+            // ── تحذيرات Boxed Warning — أولاً لأهميتها ──
             (info.special_warnings && info.special_warnings.length ?
-                '<div class="drug-info-section" style="border-color:rgba(220,38,38,0.35);background:rgba(220,38,38,0.05);border-width:1.5px;">' +
-                '<div class="drug-info-section-header" style="color:#dc2626;">' + gi('<path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/>', '#dc2626') + 'تحذيرات خاصة (Black Box)</div>' +
+                '<div class="drug-info-section" style="border-color:rgba(220,38,38,0.45);background:rgba(220,38,38,0.06);border-width:2px;">' +
+                '<div class="drug-info-section-header" style="color:#dc2626;">' +
+                gi('<path d="M10.29 3.86 1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>', '#dc2626') +
+                '⚠️ تحذيرات الصندوق الأسود (Boxed Warning)</div>' +
                 mkList(info.special_warnings, '#dc2626') + '</div>' : '') +
 
-            // Disclaimer
+            // ── آلية العمل ──
+            '<div class="drug-info-section">' +
+            '<div class="drug-info-section-header">' + gi('<circle cx="12" cy="12" r="4"/><path d="M12 3v1M12 20v1M4.22 4.22l.7.7M19.07 19.07l.71.71M3 12h1M20 12h1M4.22 19.78l.7-.7M19.07 4.93l.71-.71"/>') + 'آلية العمل</div>' +
+            mkParagraph(info.mechanism) + '</div>' +
+
+            // ── الحركية الدوائية ──
+            (info.pharmacokinetics ?
+                '<div class="drug-info-section" style="border-color:rgba(6,182,212,0.2);background:rgba(6,182,212,0.04);">' +
+                '<div class="drug-info-section-header" style="color:#0891b2;">' +
+                gi('<path d="M22 12h-4l-3 9L9 3l-3 9H2"/>', '#0891b2') +
+                'الحركية الدوائية (Pharmacokinetics)</div>' +
+                mkParagraph(info.pharmacokinetics, '#164e63') + '</div>' : '') +
+
+            // ── الاستطبابات ──
+            '<div class="drug-info-section" style="border-color:rgba(22,163,74,0.2);background:rgba(22,163,74,0.04);">' +
+            '<div class="drug-info-section-header" style="color:#16a34a;">' + gi('<path d="M20 6 9 17l-5-5"/>', '#16a34a') + 'الاستطبابات</div>' +
+            mkList(info.indications.length ? info.indications : ['راجع نشرة الدواء'], '#16a34a') + '</div>' +
+
+            // ── موانع الاستعمال ──
+            '<div class="drug-info-section" style="border-color:rgba(220,38,38,0.2);background:rgba(220,38,38,0.04);">' +
+            '<div class="drug-info-section-header" style="color:#dc2626;">' + gi('<circle cx="12" cy="12" r="10"/><path d="m4.9 4.9 14.2 14.2"/>', '#dc2626') + 'موانع الاستعمال</div>' +
+            mkList(info.contraindications.length ? info.contraindications : ['راجع نشرة الدواء'], '#dc2626') + '</div>' +
+
+            // ── الجرعة والأشكال الدوائية ──
+            formsSection +
+
+            // ── الفئات السكانية الخاصة (أطفال / مسنّون / حمل / رضاعة / قصور كلوي) ──
+            specialPopSection +
+
+            // ── التأثيرات الجانبية ──
+            '<div class="drug-info-section" style="border-color:rgba(217,119,6,0.2);background:rgba(217,119,6,0.04);">' +
+            '<div class="drug-info-section-header" style="color:#d97706;">' + gi('<path d="m21.73 18-8-14a2 2 0 00-3.48 0l-8 14A2 2 0 004 21h16a2 2 0 001.73-3Z"/><path d="M12 9v4M12 17h.01"/>', '#d97706') + 'التأثيرات الجانبية</div>' +
+            (info.side_effects.common.length ?
+                '<div style="font-size:0.74rem;font-weight:800;color:#d97706;margin-bottom:5px;">التأثيرات الجانبية (Adverse Reactions):</div>' +
+                mkList(info.side_effects.common, '#d97706') : '') +
+            (info.side_effects.serious.length ?
+                '<div style="margin-top:10px;padding-top:8px;border-top:1px dashed rgba(220,38,38,0.2);">' +
+                '<div style="font-size:0.74rem;font-weight:800;color:#dc2626;margin-bottom:5px;">تحذيرات وتنبيهات (Warnings & Cautions):</div>' +
+                mkList(info.side_effects.serious, '#dc2626') + '</div>' : '') +
+            ((!info.side_effects.common.length && !info.side_effects.serious.length) ? '<span style="color:#9ca3af;font-size:0.82rem;">غير متوفر</span>' : '') +
+            '</div>' +
+
+            // ── التفاعلات الدوائية ──
+            '<div class="drug-info-section" style="border-color:rgba(124,58,237,0.2);background:rgba(124,58,237,0.04);">' +
+            '<div class="drug-info-section-header" style="color:#7c3aed;">' + gi('<path d="m8 3 4 8 5-5 5 15H2L8 3z"/>', '#7c3aed') + 'التفاعلات الدوائية</div>' +
+            mkList(info.interactions.length ? info.interactions : ['راجع نشرة الدواء'], '#7c3aed') + '</div>' +
+
+            // ── شروط الحفظ ──
+            '<div class="drug-info-section">' +
+            '<div class="drug-info-section-header">' + gi('<path d="M20 7h-9"/><path d="M14 17H5"/><circle cx="17" cy="17" r="3"/><circle cx="7" cy="7" r="3"/>') + 'شروط الحفظ</div>' +
+            mkParagraph(info.storage) + '</div>' +
+
+            // ── Disclaimer ──
             '<div style="background:#f9fafb;border:1px solid #e5e7eb;border-radius:10px;padding:9px 14px;font-size:0.72rem;color:#9ca3af;text-align:center;margin-top:4px;">' +
             '⚕️ لأغراض مرجعية فقط — يجب الرجوع للمراجع الدوائية الرسمية والطبيب المختص' +
             (info._rxcui ? ' · RxCUI: ' + info._rxcui : '') + '</div>';
