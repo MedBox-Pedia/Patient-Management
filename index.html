@@ -3398,7 +3398,6 @@ window.addEventListener('resize', setTopbarHeight);
                     <a href="#" onclick="showDrugEncyclopedia(); return false;" class="flex items-center gap-3 px-4 py-2.5 text-[--color-primary] font-semibold hover:bg-[--color-primary-light] text-sm transition-colors" style="background:rgba(7,144,172,0.06);">
                         <span style="width:28px;height:28px;border-radius:7px;background:rgba(7,144,172,0.15);display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;border:1px solid rgba(7,144,172,0.25);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0790AC" stroke-width="2" stroke-linecap="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0016.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 002 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/><path d="M3.22 12H9.5l.5-1 2 4.5.5-2h5.3"/></svg></span>
                         الأدوية
-                        <span style="margin-right:auto;font-size:0.65rem;background:#0790AC;color:#fff;border-radius:999px;padding:1px 6px;">جديد</span>
                     </a>
                     <a href="#" class="flex items-center gap-3 px-4 py-2.5 text-gray-600 hover:bg-[--color-primary-light] hover:text-[--color-primary] text-sm transition-colors">
                         <span style="width:28px;height:28px;border-radius:7px;background:rgba(7,144,172,0.1);display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0790AC" stroke-width="2" stroke-linecap="round"><path d="M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2V9M9 21H5a2 2 0 01-2-2V9m0 0h18"/></svg></span>
@@ -10086,6 +10085,27 @@ window.addEventListener('resize', setTopbarHeight);
             return '<p style="font-size:0.855rem;color:' + color + ';line-height:1.75;margin:0;direction:ltr;text-align:left;white-space:pre-wrap;">' + txt + '</p>';
         }
 
+        // قائمة نقاط للجرعات — تقسيم النص إلى بنود منفصلة
+        function mkDosageBullets(txt, color) {
+            if (!txt) return '<span style="color:#9ca3af;font-size:0.82rem;">غير متوفر</span>';
+            color = color || '#1e3a5f';
+            // تقسيم على: سطر جديد أو أرقام مرتّبة أو نقطتين+سطر
+            var lines = txt.split(/\r?\n+/)
+                .map(function(s){ return s.replace(/^\s*\d+[\.\)]\s*/, '').trim(); })
+                .filter(function(s){ return s.length > 3; });
+            if (lines.length <= 1) {
+                // إذا كان نصاً واحداً بدون فواصل — قسّمه على الجمل
+                lines = txt.match(/[^.!?;]+[.!?;]*/g) || [txt];
+                lines = lines.map(function(s){ return s.trim(); }).filter(function(s){ return s.length > 8; });
+            }
+            if (lines.length <= 1) return mkParagraph(txt, color);
+            return lines.map(function(item){
+                return '<div style="padding:5px 0;display:flex;gap:8px;align-items:flex-start;font-size:0.855rem;line-height:1.65;border-bottom:1px dashed rgba(0,0,0,0.06);">' +
+                    '<span style="color:' + color + ';flex-shrink:0;margin-top:4px;font-size:0.7rem;">◆</span>' +
+                    '<span style="direction:ltr;text-align:left;flex:1;">' + item + '</span></div>';
+            }).join('');
+        }
+
         // قسم فرعي داخل قسم رئيسي
         function mkSubSection(title, content, color) {
             if (!content) return '';
@@ -10128,7 +10148,7 @@ window.addEventListener('resize', setTopbarHeight);
             if (info.dosage_text) {
                 formsSection +=
                     '<div style="font-size:0.74rem;font-weight:800;color:#2563eb;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.04em;">تعليمات الجرعة والإعطاء — كاملة</div>' +
-                    mkParagraph(info.dosage_text, '#1e3a5f');
+                    mkDosageBullets(info.dosage_text, '#1e3a5f');
             }
             formsSection += '</div>';
 
@@ -10138,17 +10158,17 @@ window.addEventListener('resize', setTopbarHeight);
                 '<div class="drug-info-section-header" style="color:#2563eb;">' +
                 gi('<rect width="8" height="14" x="8" y="5" rx="4"/>', '#2563eb') +
                 'الجرعة والإعطاء</div>' +
-                mkParagraph(info.dosage_text, '#1e3a5f') + '</div>';
+                mkDosageBullets(info.dosage_text, '#1e3a5f') + '</div>';
         }
 
         // ── قسم الفئات الخاصة (أطفال / مسنّون / حمل / رضاعة / قصور كلوي) ──
         var specialPopSection = '';
         var popContent = '';
-        if (info.pediatric_text)       popContent += mkSubSection('🧒 الجرعة لدى الأطفال (Pediatric Use)', mkParagraph(info.pediatric_text, '#1e3a5f'), '#2563eb');
-        if (info.geriatric_text)       popContent += mkSubSection('👴 الجرعة لدى المسنّين (Geriatric Use)', mkParagraph(info.geriatric_text, '#1e3a5f'), '#7c3aed');
-        if (info.special_populations)  popContent += mkSubSection('🏥 الفئات الخاصة (قصور الكلى / الكبد / إلخ)', mkParagraph(info.special_populations, '#1e3a5f'), '#0790AC');
-        if (info.pregnancy_text)       popContent += mkSubSection('🤰 الحمل', mkParagraph(info.pregnancy_text, '#1e3a5f'), '#dc2626');
-        if (info.nursing_text)         popContent += mkSubSection('🤱 الرضاعة', mkParagraph(info.nursing_text, '#1e3a5f'), '#d97706');
+        if (info.pediatric_text)       popContent += mkSubSection('🧒 الجرعة لدى الأطفال (Pediatric Use)', mkDosageBullets(info.pediatric_text, '#1e3a5f'), '#2563eb');
+        if (info.geriatric_text)       popContent += mkSubSection('👴 الجرعة لدى المسنّين (Geriatric Use)', mkDosageBullets(info.geriatric_text, '#1e3a5f'), '#7c3aed');
+        if (info.special_populations)  popContent += mkSubSection('🏥 الفئات الخاصة (قصور الكلى / الكبد / إلخ)', mkDosageBullets(info.special_populations, '#1e3a5f'), '#0790AC');
+        if (info.pregnancy_text)       popContent += mkSubSection('🤰 الحمل', mkDosageBullets(info.pregnancy_text, '#1e3a5f'), '#dc2626');
+        if (info.nursing_text)         popContent += mkSubSection('🤱 الرضاعة', mkDosageBullets(info.nursing_text, '#1e3a5f'), '#d97706');
         if (popContent) {
             specialPopSection =
                 '<div class="drug-info-section" style="border-color:rgba(124,58,237,0.2);background:rgba(124,58,237,0.03);">' +
@@ -10178,7 +10198,7 @@ window.addEventListener('resize', setTopbarHeight);
             '<button id="drug-enc-translate-result-btn" onclick="translateDrugResult(this)" title="ترجمة النتائج إلى العربية">' +
             '<span class="tr-spinner"></span>' +
             '<svg class="tr-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 8 6 6"/><path d="m4 14 6-6 2-3"/><path d="M2 5h12"/><path d="M7 2h1"/><path d="m22 22-5-10-5 10"/><path d="M14 18h6"/></svg>' +
-            'ترجمة النتائج إلى العربية' +
+            '<span class="tr-label">ترجمة النتائج إلى العربية</span>' +
             '</button></div>' +
 
             // ── Header ──
@@ -10273,7 +10293,8 @@ window.addEventListener('resize', setTopbarHeight);
         // ── الرجوع إلى النص الأصلي ──
         if (btn.classList.contains('translated')) {
             btn.classList.remove('translated');
-            btn.childNodes[btn.childNodes.length - 1].textContent = 'ترجمة النتائج إلى العربية';
+            var lbl0 = btn.querySelector('.tr-label');
+            if (lbl0) lbl0.textContent = 'ترجمة النتائج إلى العربية';
             var lastDrug = window._lastDrugEncInfo;
             if (lastDrug) renderDrugEncResult(lastDrug);
             return;
@@ -10449,7 +10470,8 @@ window.addEventListener('resize', setTopbarHeight);
 
             // تحديث الزر بعد كل عنصر لإظهار التقدم
             var pct = Math.round(((i + 1) / total) * 100);
-            btn.childNodes[btn.childNodes.length - 1].textContent = 'جارٍ الترجمة... ' + pct + '%';
+            var lbl1 = btn.querySelector('.tr-label');
+            if (lbl1) lbl1.textContent = 'جارٍ الترجمة... ' + pct + '%';
 
             // فاصل بين كل طلبين لتفادي rate limit
             if (i < candidates.length - 1) {
@@ -10459,7 +10481,8 @@ window.addEventListener('resize', setTopbarHeight);
 
         btn.classList.remove('translating');
         btn.classList.add('translated');
-        btn.childNodes[btn.childNodes.length - 1].textContent = 'عرض النص الأصلي (إنجليزي)';
+        var lbl2 = btn.querySelector('.tr-label');
+        if (lbl2) lbl2.textContent = 'عرض النص الأصلي (إنجليزي)';
         showToast('✅ تمت ترجمة ' + done + ' من ' + total + ' نص', 'success');
     }
 
