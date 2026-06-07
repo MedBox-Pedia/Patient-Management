@@ -10270,7 +10270,7 @@ window.addEventListener('resize', setTopbarHeight);
     async function translateDrugResult(btn) {
         if (!btn) return;
 
-        // الرجوع إلى النص الأصلي
+        // ── الرجوع إلى النص الأصلي ──
         if (btn.classList.contains('translated')) {
             btn.classList.remove('translated');
             btn.childNodes[btn.childNodes.length - 1].textContent = 'ترجمة النتائج إلى العربية';
@@ -10284,77 +10284,129 @@ window.addEventListener('resize', setTopbarHeight);
         var result = document.getElementById('drug-enc-result');
         if (!result) { btn.classList.remove('translating'); return; }
 
-        // ── دالة ترجمة نص واحد ──
-        async function tr(txt) {
+        // ── حد MyMemory لكل طلب: 500 حرف ──
+        var CHUNK_LIMIT = 480;
+
+        // تقسيم نص طويل إلى أجزاء لا تتجاوز CHUNK_LIMIT مع الحفاظ على الجمل كاملة
+        function splitIntoChunks(txt) {
+            if (txt.length <= CHUNK_LIMIT) return [txt];
+            var chunks = [];
+            // نقسم على أسطر جديدة أولاً، ثم على جمل إن لزم
+            var lines = txt.split(/\n+/);
+            var current = '';
+            lines.forEach(function(line) {
+                if ((current + '\n' + line).trim().length <= CHUNK_LIMIT) {
+                    current = current ? current + '\n' + line : line;
+                } else {
+                    if (current) chunks.push(current.trim());
+                    // إذا السطر نفسه أطول من CHUNK_LIMIT — نقسمه على الجمل
+                    if (line.length > CHUNK_LIMIT) {
+                        var sentences = line.match(/[^.!?]+[.!?]+/g) || [line];
+                        var part = '';
+                        sentences.forEach(function(sen) {
+                            if ((part + ' ' + sen).trim().length <= CHUNK_LIMIT) {
+                                part = part ? part + ' ' + sen : sen;
+                            } else {
+                                if (part) chunks.push(part.trim());
+                                // جملة أطول من الحد — نقسمها بالقوة على CHUNK_LIMIT
+                                if (sen.length > CHUNK_LIMIT) {
+                                    for (var k = 0; k < sen.length; k += CHUNK_LIMIT) {
+                                        chunks.push(sen.substring(k, k + CHUNK_LIMIT));
+                                    }
+                                    part = '';
+                                } else {
+                                    part = sen;
+                                }
+                            }
+                        });
+                        current = part;
+                    } else {
+                        current = line;
+                    }
+                }
+            });
+            if (current.trim()) chunks.push(current.trim());
+            return chunks.filter(function(c){ return c.length > 0; });
+        }
+
+        // ── ترجمة chunk واحد عبر MyMemory ──
+        async function trChunk(txt) {
             if (!txt || txt.trim().length < 3) return txt;
-            // تجاهل النصوص العربية بالكامل
-            if (/^[\u0600-\u06FF\s\d.,،:؛؟!()%\-\/°]+$/.test(txt.trim())) return txt;
+            if (/^[\u0600-\u06FF\s\d.,،:؛؟!()%\-\/°\n]+$/.test(txt.trim())) return txt;
             try {
                 var r = await fetch(
                     'https://api.mymemory.translated.net/get?q=' +
-                    encodeURIComponent(txt.trim().substring(0, 400)) + '&langpair=en|ar'
+                    encodeURIComponent(txt.trim()) + '&langpair=en|ar'
                 );
                 var d = await r.json();
                 var out = d.responseData && d.responseData.translatedText;
-                // MyMemory أحياناً يعيد نفس النص بدون ترجمة أو رسالة خطأ
-                if (!out || out === txt.trim() || out.toLowerCase().includes('mymemory')) return txt;
+                if (!out || out === txt.trim() || out.toLowerCase().includes('mymemory warning')) return txt;
                 return out;
             } catch (e) { return txt; }
         }
 
-        // ── جمع كل العقد الورقية (leaf elements) التي تحتوي نصاً إنجليزياً ──
-        // نستهدف: فقرات، عناوين، عناصر القائمة داخل drug-info-section، خلايا الجدول
+        // ── ترجمة نص كامل (مهما طال) بتقسيمه ودمج النتيجة ──
+        async function trFull(txt) {
+            if (!txt || txt.trim().length < 3) return txt;
+            if (/^[\u0600-\u06FF\s\d.,،:؛؟!()%\-\/°\n]+$/.test(txt.trim())) return txt;
+            var chunks = splitIntoChunks(txt.trim());
+            if (chunks.length === 1) return await trChunk(chunks[0]);
+            // ترجمة كل chunk على التوالي (لا بالتوازي لتفادي rate limit)
+            var results = [];
+            for (var i = 0; i < chunks.length; i++) {
+                results.push(await trChunk(chunks[i]));
+                if (i < chunks.length - 1) {
+                    await new Promise(function(r){ setTimeout(r, 150); });
+                }
+            }
+            return results.join('\n');
+        }
+
+        // ── جمع العناصر المستهدفة للترجمة ──
         var candidates = [];
         var seen = new Set();
 
-        // المحددات الشاملة لكل النصوص في النتيجة
-        var selectors = [
-            '#drug-enc-result h3',
-            '#drug-enc-result p',
-            '#drug-enc-result td',
-            '#drug-enc-result .drug-info-section > div > span',   // عناوين الأقسام (النصية)
-            '#drug-enc-result .drug-info-section-header',
-            '#drug-enc-result span[style]',                       // badges وعناوين فرعية
-        ].join(',');
-
-        result.querySelectorAll(selectors).forEach(function(el) {
-            if (seen.has(el)) return;
-            // تجاهل الـ SVG والأيقونات والـ glass-icon
-            if (el.closest('svg') || el.classList.contains('glass-icon')) return;
-            // تجاهل span داخل glass-icon
-            if (el.closest('.glass-icon')) return;
+        function addCandidate(el) {
+            if (!el || seen.has(el)) return;
+            if (el.closest('svg') || el.classList.contains('glass-icon') || el.closest('.glass-icon')) return;
             var txt = (el.innerText || el.textContent || '').trim();
-            // يجب أن يحتوي على حروف إنجليزية ويكون أكثر من 3 أحرف
             if (txt.length > 3 && /[a-zA-Z]{2,}/.test(txt)) {
                 seen.add(el);
                 candidates.push(el);
             }
-        });
+        }
 
-        // أيضاً: كل div مباشر داخل drug-info-section يحتوي نصاً ورقياً
-        result.querySelectorAll('.drug-info-section > div').forEach(function(el) {
-            if (seen.has(el)) return;
-            if (el.classList.contains('drug-info-section-header')) return;
-            var children = el.querySelectorAll('*');
-            // إذا لم يحتوِ على عناصر فرعية كثيرة — نصٌ مباشر
-            if (children.length <= 3) {
-                var txt = (el.innerText || '').trim();
-                if (txt.length > 3 && /[a-zA-Z]{2,}/.test(txt) && !seen.has(el)) {
-                    seen.add(el);
-                    candidates.push(el);
-                }
-            }
-        });
+        // 1) فقرات p (تشمل النصوص الطويلة: آلية العمل، الحركية الدوائية، الجرعات، إلخ)
+        result.querySelectorAll('p').forEach(addCandidate);
 
-        // عناصر القوائم النقطية (عناصر البند داخل mkList)
+        // 2) عناوين h3
+        result.querySelectorAll('h3').forEach(addCandidate);
+
+        // 3) خلايا الجدول (الأشكال الدوائية)
+        result.querySelectorAll('td').forEach(addCandidate);
+
+        // 4) عناصر بنود القائمة: span آخر داخل كل بند (mkList)
         result.querySelectorAll('.drug-info-section span:last-child').forEach(function(el) {
-            if (seen.has(el)) return;
             if (el.closest('.glass-icon') || el.closest('svg')) return;
-            var txt = (el.innerText || '').trim();
-            if (txt.length > 3 && /[a-zA-Z]{2,}/.test(txt)) {
-                seen.add(el);
-                candidates.push(el);
-            }
+            addCandidate(el);
+        });
+
+        // 5) النصوص داخل الأقسام الفرعية (mkSubSection) — div ورقي مباشر
+        result.querySelectorAll('.drug-info-section > div, .drug-info-section > div > div').forEach(function(el) {
+            if (el.classList.contains('drug-info-section-header')) return;
+            if (el.closest('.glass-icon')) return;
+            // فقط العناصر الورقية أو شبه الورقية
+            var deepChildren = el.querySelectorAll('p, span:last-child');
+            if (deepChildren.length === 0) addCandidate(el);
+        });
+
+        // 6) div خارج drug-info-section يحتوي نصاً إنجليزياً (العناوين الفرعية للفئات الخاصة)
+        result.querySelectorAll('div[style]').forEach(function(el) {
+            if (el.closest('.glass-icon') || el.closest('svg')) return;
+            if (seen.has(el)) return;
+            // فقط إذا لم يحتوِ على فقرات فرعية
+            if (el.querySelector('p, div')) return;
+            addCandidate(el);
         });
 
         if (!candidates.length) {
@@ -10363,50 +10415,52 @@ window.addEventListener('resize', setTopbarHeight);
             return;
         }
 
-        // ── ترجمة على دفعات من 4 لتفادي rate limit ──
         var done = 0;
-        var batchSize = 4;
-        for (var i = 0; i < candidates.length; i += batchSize) {
-            var batch = candidates.slice(i, i + batchSize);
-            var txts  = batch.map(function(el){ return (el.innerText || el.textContent || '').trim(); });
-            var translated = await Promise.all(txts.map(tr));
-            batch.forEach(function(el, j) {
-                var orig = txts[j];
-                var res  = translated[j];
-                if (res && res !== orig) {
-                    el.setAttribute('data-orig-html', el.innerHTML);
-                    // نحافظ على الهيكل ونستبدل فقط النص
-                    if (el.children.length === 0) {
-                        // عنصر ورقي — استبدال مباشر
-                        el.textContent = res;
+        var total = candidates.length;
+
+        // ── ترجمة كل عنصر على التوالي (لتفادي rate limit مع النصوص الطويلة) ──
+        for (var i = 0; i < candidates.length; i++) {
+            var el  = candidates[i];
+            var orig = (el.innerText || el.textContent || '').trim();
+            var res  = await trFull(orig);
+
+            if (res && res !== orig) {
+                el.setAttribute('data-orig-html', el.innerHTML);
+                if (el.children.length === 0) {
+                    // عنصر ورقي بالكامل
+                    el.textContent = res;
+                } else {
+                    // عنصر مركّب — نستبدل textNode الرئيسي
+                    var nodes = Array.from(el.childNodes);
+                    var mainNode = nodes.find(function(n){
+                        return n.nodeType === 3 && n.textContent.trim().length > 3;
+                    });
+                    if (mainNode) {
+                        mainNode.textContent = ' ' + res;
                     } else {
-                        // عنصر مركّب — ابحث عن آخر textNode مباشر فيه
-                        var nodes = Array.from(el.childNodes);
-                        var mainTextNode = nodes.find(function(n){
-                            return n.nodeType === 3 && n.textContent.trim().length > 3;
-                        });
-                        if (mainTextNode) {
-                            mainTextNode.textContent = ' ' + res;
-                        } else {
-                            el.setAttribute('data-orig-html', el.innerHTML);
-                            el.innerHTML = res;
-                        }
+                        el.innerHTML = res;
                     }
-                    el.style.direction = 'rtl';
-                    el.style.textAlign = 'right';
-                    done++;
                 }
-            });
-            // فاصل قصير بين الدفعات
-            if (i + batchSize < candidates.length) {
-                await new Promise(function(r){ setTimeout(r, 120); });
+                el.style.direction = 'rtl';
+                el.style.textAlign = 'right';
+                el.style.whiteSpace = 'pre-wrap';
+                done++;
+            }
+
+            // تحديث الزر بعد كل عنصر لإظهار التقدم
+            var pct = Math.round(((i + 1) / total) * 100);
+            btn.childNodes[btn.childNodes.length - 1].textContent = 'جارٍ الترجمة... ' + pct + '%';
+
+            // فاصل بين كل طلبين لتفادي rate limit
+            if (i < candidates.length - 1) {
+                await new Promise(function(r){ setTimeout(r, 180); });
             }
         }
 
         btn.classList.remove('translating');
         btn.classList.add('translated');
         btn.childNodes[btn.childNodes.length - 1].textContent = 'عرض النص الأصلي (إنجليزي)';
-        showToast('✅ تمت ترجمة ' + done + ' من ' + candidates.length + ' نص', 'success');
+        showToast('✅ تمت ترجمة ' + done + ' من ' + total + ' نص', 'success');
     }
 
     // --- دوال الأدوية ---
