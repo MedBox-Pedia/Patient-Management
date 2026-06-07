@@ -287,6 +287,57 @@
             display: inline-block;
         }
 
+        /* ===== زر ترجمة نتائج موسوعة الأدوية ===== */
+        #drug-enc-translate-result-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 14px;
+            border-radius: 10px;
+            border: 1.5px solid rgba(7,144,172,0.3);
+            background: rgba(255,255,255,0.85);
+            color: #0790AC;
+            font-family: 'Cairo', sans-serif;
+            font-size: 0.78rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+            flex-shrink: 0;
+            backdrop-filter: blur(4px);
+        }
+        #drug-enc-translate-result-btn:hover {
+            background: #0790AC;
+            color: #fff;
+            border-color: #0790AC;
+            box-shadow: 0 3px 12px rgba(7,144,172,0.28);
+            transform: translateY(-1px);
+        }
+        #drug-enc-translate-result-btn.translating {
+            opacity: 0.7;
+            pointer-events: none;
+        }
+        #drug-enc-translate-result-btn .tr-spinner {
+            width: 13px; height: 13px;
+            border: 2px solid rgba(7,144,172,0.3);
+            border-top-color: #0790AC;
+            border-radius: 50%;
+            animation: ac-spin 0.7s linear infinite;
+            display: none;
+        }
+        #drug-enc-translate-result-btn.translating .tr-spinner { display: inline-block; }
+        #drug-enc-translate-result-btn.translating .tr-icon { display: none; }
+        #drug-enc-translate-result-btn.translated {
+            background: rgba(22,163,74,0.08);
+            border-color: rgba(22,163,74,0.35);
+            color: #16a34a;
+        }
+        #drug-enc-translate-result-btn.translated:hover {
+            background: #16a34a;
+            color: #fff;
+            border-color: #16a34a;
+        }
+
         /* Drug info result card */
         #drug-enc-result {
             animation: fadeInSlide 0.35s ease;
@@ -9920,6 +9971,7 @@ window.addEventListener('resize', setTopbarHeight);
     // ── رسم نتيجة الدواء ─────────────────────────────────────────────
     function renderDrugEncResult(info) {
         document.getElementById('drug-enc-loading').style.display = 'none';
+        window._lastDrugEncInfo = info; // حفظ للرجوع عند إلغاء الترجمة
 
         if (info._not_found) {
             document.getElementById('drug-enc-result').style.display = 'block';
@@ -9998,6 +10050,15 @@ window.addEventListener('resize', setTopbarHeight);
         var pregColor = pregColors[pc] || '#6b7280';
 
         var html =
+            // ── شريط أدوات النتيجة (toolbar) ──
+            '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:8px;">' +
+            '<span style="font-size:0.78rem;color:#6b7280;font-weight:600;">📋 نتيجة البحث</span>' +
+            '<button id="drug-enc-translate-result-btn" onclick="translateDrugResult(this)" title="ترجمة النتائج إلى العربية">' +
+            '<span class="tr-spinner"></span>' +
+            '<svg class="tr-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 8 6 6"/><path d="m4 14 6-6 2-3"/><path d="M2 5h12"/><path d="M7 2h1"/><path d="m22 22-5-10-5 10"/><path d="M14 18h6"/></svg>' +
+            'ترجمة النتائج إلى العربية' +
+            '</button></div>' +
+
             // Header
             '<div style="background:linear-gradient(135deg,#f0fafc,#e6f4f7);border-radius:14px;padding:16px 20px;border:1.5px solid rgba(7,144,172,0.2);margin-bottom:12px;display:flex;align-items:flex-start;gap:14px;">' +
             '<div style="width:52px;height:52px;background:linear-gradient(135deg,#0790AC,#056a80);border-radius:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 4px 12px rgba(7,144,172,0.3);">' +
@@ -10064,6 +10125,87 @@ window.addEventListener('resize', setTopbarHeight);
         document.getElementById('drug-enc-result').innerHTML = html;
         document.getElementById('drug-enc-result').style.display = 'block';
         document.getElementById('drug-enc-result').scrollIntoView({ behavior:'smooth', block:'start' });
+    }
+
+    // ── ترجمة نتائج الدواء إلى العربية ──────────────────────────────
+    async function translateDrugResult(btn) {
+        if (!btn) return;
+        var isTranslated = btn.classList.contains('translated');
+
+        // تبديل بين الإنجليزية والعربية
+        if (isTranslated) {
+            btn.classList.remove('translated');
+            btn.childNodes[btn.childNodes.length - 1].textContent = 'ترجمة النتائج إلى العربية';
+            // إعادة عرض الدواء الأصلي
+            var lastDrug = window._lastDrugEncInfo;
+            if (lastDrug) renderDrugEncResult(lastDrug);
+            return;
+        }
+
+        btn.classList.add('translating');
+
+        var result = document.getElementById('drug-enc-result');
+        if (!result) { btn.classList.remove('translating'); return; }
+
+        // جمع كل النصوص القابلة للترجمة (span و p و div تحتوي نصاً)
+        var translatableSelectors = [
+            '.drug-info-section p',
+            '.drug-info-section div[style*="font-size:0.855"]',
+            '.drug-info-section span:not([class])',
+            '#drug-enc-result h3',
+        ];
+
+        // نجمع كل عناصر النص داخل النتيجة
+        var textNodes = [];
+        result.querySelectorAll('p, .drug-info-section > div > span, td:first-child').forEach(function(el) {
+            var txt = el.innerText ? el.innerText.trim() : '';
+            // تجاهل النصوص القصيرة جداً أو التي تبدو أرقاماً أو رموزاً
+            if (txt.length > 4 && /[a-zA-Z]/.test(txt) && !/^\d/.test(txt)) {
+                textNodes.push(el);
+            }
+        });
+
+        if (!textNodes.length) {
+            btn.classList.remove('translating');
+            showToast('لا توجد نصوص إنجليزية لترجمتها', 'info');
+            return;
+        }
+
+        // دالة ترجمة نص واحد عبر MyMemory
+        async function translateText(txt) {
+            try {
+                var r = await fetch('https://api.mymemory.translated.net/get?q=' + encodeURIComponent(txt.substring(0,400)) + '&langpair=en|ar');
+                var d = await r.json();
+                return (d.responseData && d.responseData.translatedText) ? d.responseData.translatedText : txt;
+            } catch(e) { return txt; }
+        }
+
+        // نحفظ النصوص الأصلية لإمكانية العودة
+        var originals = textNodes.map(function(el){ return el.innerHTML; });
+
+        // نترجم على دفعات (5 في المرة) لتفادي rate limit
+        var batchSize = 5;
+        var translated = 0;
+        for (var i = 0; i < textNodes.length; i += batchSize) {
+            var batch = textNodes.slice(i, i + batchSize);
+            var results = await Promise.all(batch.map(function(el){
+                return translateText(el.innerText.trim());
+            }));
+            batch.forEach(function(el, j) {
+                if (results[j] && results[j] !== batch[j].innerText.trim()) {
+                    el.setAttribute('data-orig', el.innerHTML);
+                    el.style.direction = 'rtl';
+                    el.style.textAlign = 'right';
+                    el.textContent = results[j];
+                }
+                translated++;
+            });
+        }
+
+        btn.classList.remove('translating');
+        btn.classList.add('translated');
+        btn.childNodes[btn.childNodes.length - 1].textContent = 'عرض النص الأصلي (إنجليزي)';
+        showToast('✅ تمت ترجمة ' + translated + ' نص إلى العربية', 'success');
     }
 
     // --- دوال الأدوية ---
