@@ -10072,9 +10072,9 @@ window.addEventListener('resize', setTopbarHeight);
             color = color || '#0790AC';
             if (!arr || !arr.length) return '<span style="color:#9ca3af;font-size:0.82rem;">غير متوفر</span>';
             return arr.map(function(item){
-                return '<div style="padding:5px 0;display:flex;gap:8px;align-items:flex-start;font-size:0.855rem;line-height:1.65;border-bottom:1px dashed rgba(0,0,0,0.06);">' +
+                return '<div style="padding:5px 0;display:flex;flex-direction:row;gap:8px;align-items:flex-start;font-size:0.855rem;line-height:1.65;border-bottom:1px dashed rgba(0,0,0,0.06);direction:ltr;text-align:left;">' +
                     '<span style="color:' + color + ';flex-shrink:0;margin-top:3px;font-size:0.7rem;">◈</span>' +
-                    '<span style="direction:ltr;text-align:left;flex:1;">' + item + '</span></div>';
+                    '<span style="flex:1;">' + item + '</span></div>';
             }).join('');
         }
 
@@ -10100,9 +10100,9 @@ window.addEventListener('resize', setTopbarHeight);
             }
             if (lines.length <= 1) return mkParagraph(txt, color);
             return lines.map(function(item){
-                return '<div style="padding:5px 0;display:flex;gap:8px;align-items:flex-start;font-size:0.855rem;line-height:1.65;border-bottom:1px dashed rgba(0,0,0,0.06);">' +
+                return '<div style="padding:5px 0;display:flex;flex-direction:row;gap:8px;align-items:flex-start;font-size:0.855rem;line-height:1.65;border-bottom:1px dashed rgba(0,0,0,0.06);direction:ltr;text-align:left;">' +
                     '<span style="color:' + color + ';flex-shrink:0;margin-top:4px;font-size:0.7rem;">◆</span>' +
-                    '<span style="direction:ltr;text-align:left;flex:1;">' + item + '</span></div>';
+                    '<span style="flex:1;">' + item + '</span></div>';
             }).join('');
         }
 
@@ -10376,9 +10376,6 @@ window.addEventListener('resize', setTopbarHeight);
             var results = [];
             for (var i = 0; i < chunks.length; i++) {
                 results.push(await trChunk(chunks[i]));
-                if (i < chunks.length - 1) {
-                    await new Promise(function(r){ setTimeout(r, 150); });
-                }
             }
             return results.join('\n');
         }
@@ -10439,43 +10436,57 @@ window.addEventListener('resize', setTopbarHeight);
         var done = 0;
         var total = candidates.length;
 
-        // ── ترجمة كل عنصر على التوالي (لتفادي rate limit مع النصوص الطويلة) ──
-        for (var i = 0; i < candidates.length; i++) {
-            var el  = candidates[i];
-            var orig = (el.innerText || el.textContent || '').trim();
-            var res  = await trFull(orig);
+        // ── ترجمة متوازية بـ batches (5 طلبات في نفس الوقت) ──
+        var BATCH = 5;
+        for (var b = 0; b < candidates.length; b += BATCH) {
+            var batch = candidates.slice(b, b + BATCH);
 
-            if (res && res !== orig) {
-                el.setAttribute('data-orig-html', el.innerHTML);
-                if (el.children.length === 0) {
-                    // عنصر ورقي بالكامل
-                    el.textContent = res;
-                } else {
-                    // عنصر مركّب — نستبدل textNode الرئيسي
-                    var nodes = Array.from(el.childNodes);
-                    var mainNode = nodes.find(function(n){
-                        return n.nodeType === 3 && n.textContent.trim().length > 3;
-                    });
-                    if (mainNode) {
-                        mainNode.textContent = ' ' + res;
+            // ترجمة الـ batch كاملاً بالتوازي
+            var batchResults = await Promise.all(batch.map(function(el) {
+                var orig = (el.innerText || el.textContent || '').trim();
+                return trFull(orig).then(function(res) {
+                    return { el: el, orig: orig, res: res };
+                });
+            }));
+
+            // تطبيق النتائج على DOM
+            batchResults.forEach(function(item) {
+                var el = item.el, orig = item.orig, res = item.res;
+                if (res && res !== orig) {
+                    el.setAttribute('data-orig-html', el.innerHTML);
+                    if (el.children.length === 0) {
+                        el.textContent = res;
                     } else {
-                        el.innerHTML = res;
+                        var nodes = Array.from(el.childNodes);
+                        var mainNode = nodes.find(function(n){
+                            return n.nodeType === 3 && n.textContent.trim().length > 3;
+                        });
+                        if (mainNode) {
+                            mainNode.textContent = ' ' + res;
+                        } else {
+                            el.innerHTML = res;
+                        }
                     }
+                    el.style.direction = 'rtl';
+                    el.style.textAlign = 'right';
+                    el.style.whiteSpace = 'pre-wrap';
+                    // إصلاح اتجاه div الحاوي للنقطة + النص (mkList / mkDosageBullets)
+                    if (el.parentElement && el.parentElement.style && el.parentElement.style.flexDirection === 'row') {
+                        el.parentElement.style.direction = 'rtl';
+                        el.parentElement.style.textAlign = 'right';
+                    }
+                    done++;
                 }
-                el.style.direction = 'rtl';
-                el.style.textAlign = 'right';
-                el.style.whiteSpace = 'pre-wrap';
-                done++;
-            }
+            });
 
-            // تحديث الزر بعد كل عنصر لإظهار التقدم
-            var pct = Math.round(((i + 1) / total) * 100);
+            // تحديث الزر بعد كل batch
+            var pct = Math.round((Math.min(b + BATCH, total)) / total * 100);
             var lbl1 = btn.querySelector('.tr-label');
             if (lbl1) lbl1.textContent = 'جارٍ الترجمة... ' + pct + '%';
 
-            // فاصل بين كل طلبين لتفادي rate limit
-            if (i < candidates.length - 1) {
-                await new Promise(function(r){ setTimeout(r, 180); });
+            // فاصل قصير بين كل batch لتفادي rate limit
+            if (b + BATCH < candidates.length) {
+                await new Promise(function(r){ setTimeout(r, 120); });
             }
         }
 
