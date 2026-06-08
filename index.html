@@ -10024,25 +10024,23 @@ window.addEventListener('resize', setTopbarHeight);
         var pc = (info.pregnancy_category||'').replace(/[^A-Za-z]/g,'').toUpperCase();
         var pregColor = pregColors[pc] || '#6b7280';
 
-        var geminiKey = localStorage.getItem('_gemini_api_key') || '';
-        var translateBtn = geminiKey
-            ? '<button id="drug-enc-gemini-translate-btn" onclick="translateDrugWithGemini()" ' +
-              'style="display:inline-flex;align-items:center;gap:6px;padding:5px 13px;border-radius:9px;' +
-              'border:1.5px solid rgba(66,133,244,0.35);background:rgba(66,133,244,0.07);color:#4285F4;' +
-              'font-family:Cairo,sans-serif;font-size:0.77rem;font-weight:700;cursor:pointer;transition:all 0.2s;" ' +
-              'onmouseover="this.style.background=\'#4285F4\';this.style.color=\'#fff\'" ' +
-              'onmouseout="this.style.background=\'rgba(66,133,244,0.07)\';this.style.color=\'#4285F4\'">' +
-              '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">' +
-              '<path d="m5 8 6 6"/><path d="m4 14 6-6 2-3"/><path d="M2 5h12"/><path d="M7 2h1"/>' +
-              '<path d="m22 22-5-10-5 10"/><path d="M14 18h6"/></svg>' +
-              'ترجمة بـ Gemini AI</button>'
-            : '';
+        var translateBtn =
+            '<button id="drug-enc-gemini-translate-btn" onclick="translateDrugWithGemini()" ' +
+            'style="display:inline-flex;align-items:center;gap:6px;padding:5px 13px;border-radius:9px;' +
+            'border:1.5px solid rgba(66,133,244,0.35);background:rgba(66,133,244,0.07);color:#4285F4;' +
+            'font-family:Cairo,sans-serif;font-size:0.77rem;font-weight:700;cursor:pointer;transition:all 0.2s;" ' +
+            'onmouseover="this.style.background=\'#4285F4\';this.style.color=\'#fff\'" ' +
+            'onmouseout="this.style.background=\'rgba(66,133,244,0.07)\';this.style.color=\'#4285F4\'">' +
+            '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">' +
+            '<path d="m5 8 6 6"/><path d="m4 14 6-6 2-3"/><path d="M2 5h12"/><path d="M7 2h1"/>' +
+            '<path d="m22 22-5-10-5 10"/><path d="M14 18h6"/></svg>' +
+            'ترجمة بـ Gemini AI</button>';
 
         var html =
             // ── شريط أدوات النتيجة ──
-            (translateBtn ? '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:8px;">' +
+            '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:8px;">' +
             '<span style="font-size:0.78rem;color:#6b7280;font-weight:600;">📋 نتيجة البحث</span>' +
-            translateBtn + '</div>' : '') +
+            translateBtn + '</div>' +
 
             // Header
             '<div style="background:linear-gradient(135deg,#f0fafc,#e6f4f7);border-radius:14px;padding:16px 20px;border:1.5px solid rgba(7,144,172,0.2);margin-bottom:12px;display:flex;align-items:flex-start;gap:14px;">' +
@@ -10131,7 +10129,10 @@ window.addEventListener('resize', setTopbarHeight);
         }
 
         var apiKey = localStorage.getItem('_gemini_api_key') || '';
-        if (!apiKey) { showToast('لم يُعثر على مفتاح Gemini — افتح تقرير المريض وأدخل المفتاح أولاً', 'error'); return; }
+        if (!apiKey) {
+            showToast('افتح تقرير أي مريض → أدخل مفتاح Gemini API واحفظه أولاً', 'error');
+            return;
+        }
 
         // حالة التحميل
         if (btn) {
