@@ -830,40 +830,49 @@
             display: flex;
         }
 
-        /* ===== القائمة الجانبية للأدوية ===== */
-        #drug-sidebar-backdrop {
-            display: none;
-            position: fixed;
-            inset: 0;
-            z-index: 299;
-            background: rgba(15,23,42,0.45);
-            opacity: 0;
-            transition: opacity 0.35s cubic-bezier(0.4,0,0.2,1);
-            cursor: pointer;
-            top: var(--topbar-h, 56px);
-        }
-        #drug-sidebar-backdrop.open {
-            opacity: 1 !important;
-        }
+        /* ===== القائمة الجانبية للأدوية — تدفع المحتوى على كل الشاشات ===== */
+
+        /* لا backdrop ولا fixed — القائمة تدفع main-content دائماً */
+        #drug-sidebar-backdrop { display: none !important; }
+
+        /* القائمة نفسها — flex item يدفع المحتوى جانباً */
         #drug-sidebar {
-            position: fixed;
-            top: var(--topbar-h, 56px);
-            right: 0;
-            height: calc(100% - var(--topbar-h, 56px));
-            width: 260px;
-            z-index: 300;
+            width: 18rem;
+            flex-shrink: 0;
+            z-index: 20;
             display: flex;
             flex-direction: column;
+            height: 100%;
+            position: relative;
             transform: translateX(100%);
-            transition: transform 0.4s cubic-bezier(0.32,0.72,0,1);
+            will-change: transform;
+            overflow: hidden;
+            margin-right: -18rem;
+            transition: transform 0.4s cubic-bezier(0.32,0.72,0,1),
+                        margin-right 0.4s cubic-bezier(0.32,0.72,0,1);
+        }
+        #drug-sidebar.sidebar-open {
+            transform: translateX(0) !important;
+            margin-right: 0 !important;
+        }
+
+        /* الغلاف الداخلي — نفس تصميم #sidebar الداخلي */
+        #drug-sidebar-inner {
+            position: relative;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
             background: linear-gradient(165deg, #f0fafc 0%, #ffffff 40%, #f8fdff 100%);
             border-left: 1.5px solid rgba(7,144,172,0.12);
-            box-shadow: -8px 0 40px rgba(7,144,172,0.18), -2px 0 12px rgba(0,0,0,0.08);
             border-radius: 0 0 0 20px;
+            box-shadow: -8px 0 40px rgba(7,144,172,0.18), -2px 0 12px rgba(0,0,0,0.08);
         }
-        #drug-sidebar.open {
-            transform: translateX(0);
+        @media (min-width: 1024px) {
+            #drug-sidebar-inner { border-radius: 0 0 20px 20px; }
         }
+
+        /* هيدر القائمة */
         #drug-sidebar-header {
             display: flex;
             align-items: center;
@@ -899,6 +908,8 @@
             margin-right: auto;
         }
         #drug-sidebar-close:hover { background: rgba(255,255,255,0.25); }
+
+        /* أزرار القائمة */
         .drug-sidebar-menu-btn {
             display: flex;
             align-items: center;
@@ -3642,55 +3653,59 @@ window.addEventListener('resize', setTopbarHeight);
         <!-- Sidebar Backdrop: يظهر فقط على الموبايل -->
         <div id="sidebar-backdrop" onclick="toggleSidebar()" style="display:none;position:fixed;inset:0;z-index:199;background:rgba(15,23,42,0.45);opacity:0;transition:opacity 0.35s cubic-bezier(0.4,0,0.2,1);"></div>
 
-        <!-- ===== القائمة الجانبية للأدوية ===== -->
+        <!-- ===== Backdrop القائمة الجانبية للأدوية (موبايل فقط) ===== -->
         <div id="drug-sidebar-backdrop" onclick="closeDrugSidebar()"></div>
-        <div id="drug-sidebar">
-            <!-- هيدر القائمة -->
-            <div id="drug-sidebar-header">
-                <span style="width:32px;height:32px;border-radius:9px;background:rgba(255,255,255,0.18);display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;">
-                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0016.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 002 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/><path d="M3.22 12H9.5l.5-1 2 4.5.5-2h5.3"/></svg>
-                </span>
-                <div style="flex:1;">
-                    <div style="font-size:0.95rem;font-weight:800;color:#fff;">الأدوية</div>
-                    <div style="font-size:0.7rem;color:rgba(255,255,255,0.7);margin-top:1px;">موسوعة الأدوية الطبية</div>
+
+        <!-- ===== القائمة الجانبية للأدوية (موحّدة مع #sidebar) ===== -->
+        <aside id="drug-sidebar">
+            <div id="drug-sidebar-inner">
+                <!-- هيدر القائمة -->
+                <div id="drug-sidebar-header">
+                    <span style="width:32px;height:32px;border-radius:9px;background:rgba(255,255,255,0.18);display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;">
+                        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0016.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 002 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/><path d="M3.22 12H9.5l.5-1 2 4.5.5-2h5.3"/></svg>
+                    </span>
+                    <div style="flex:1;">
+                        <div style="font-size:0.95rem;font-weight:800;color:#fff;">الأدوية</div>
+                        <div style="font-size:0.7rem;color:rgba(255,255,255,0.7);margin-top:1px;">موسوعة الأدوية الطبية</div>
+                    </div>
+                    <button id="drug-sidebar-close" onclick="closeDrugSidebar()" title="إغلاق">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                    </button>
                 </div>
-                <button id="drug-sidebar-close" onclick="closeDrugSidebar()" title="إغلاق">
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
-                </button>
+                <!-- أزرار القائمة -->
+                <div style="flex:1;overflow-y:auto;padding:10px 0;">
+                    <!-- البحث عن دواء -->
+                    <button class="drug-sidebar-menu-btn" onclick="closeDrugSidebar(); showDrugEncyclopedia();">
+                        <span class="dsb-icon-wrap">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0790AC" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+                        </span>
+                        البحث عن دواء
+                        <span class="dsb-badge">AI</span>
+                    </button>
+                    <!-- قائمة الأدوية -->
+                    <button class="drug-sidebar-menu-btn" onclick="closeDrugSidebar();">
+                        <span class="dsb-icon-wrap">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0790AC" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="M9 12h6M9 16h4"/></svg>
+                        </span>
+                        قائمة الأدوية
+                    </button>
+                    <!-- الأدوية المحفوظة -->
+                    <button class="drug-sidebar-menu-btn" onclick="closeDrugSidebar();">
+                        <span class="dsb-icon-wrap">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0790AC" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/></svg>
+                        </span>
+                        الأدوية المحفوظة
+                    </button>
+                    <!-- الزمر الدوائية -->
+                    <button class="drug-sidebar-menu-btn" onclick="closeDrugSidebar();">
+                        <span class="dsb-icon-wrap">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0790AC" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a4 4 0 014 4 4 4 0 01-4 4 4 4 0 01-4-4 4 4 0 014-4z"/><path d="M6.343 14.343a4 4 0 015.657 0 4 4 0 010 5.657 4 4 0 01-5.657 0 4 4 0 010-5.657z"/><path d="M17.657 14.343a4 4 0 010 5.657 4 4 0 01-5.657 0"/></svg>
+                        </span>
+                        الزمر الدوائية
+                    </button>
+                </div>
             </div>
-            <!-- أزرار القائمة -->
-            <div style="flex:1;overflow-y:auto;padding:10px 0;">
-                <!-- البحث عن دواء -->
-                <button class="drug-sidebar-menu-btn" onclick="closeDrugSidebar(); showDrugEncyclopedia();">
-                    <span class="dsb-icon-wrap">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0790AC" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-                    </span>
-                    البحث عن دواء
-                    <span class="dsb-badge">AI</span>
-                </button>
-                <!-- قائمة الأدوية -->
-                <button class="drug-sidebar-menu-btn" onclick="closeDrugSidebar();">
-                    <span class="dsb-icon-wrap">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0790AC" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="M9 12h6M9 16h4"/></svg>
-                    </span>
-                    قائمة الأدوية
-                </button>
-                <!-- الأدوية المحفوظة -->
-                <button class="drug-sidebar-menu-btn" onclick="closeDrugSidebar();">
-                    <span class="dsb-icon-wrap">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0790AC" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/></svg>
-                    </span>
-                    الأدوية المحفوظة
-                </button>
-                <!-- الزمر الدوائية -->
-                <button class="drug-sidebar-menu-btn" onclick="closeDrugSidebar();">
-                    <span class="dsb-icon-wrap">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0790AC" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a4 4 0 014 4 4 4 0 01-4 4 4 4 0 01-4-4 4 4 0 014-4z"/><path d="M6.343 14.343a4 4 0 015.657 0 4 4 0 010 5.657 4 4 0 01-5.657 0 4 4 0 010-5.657z"/><path d="M17.657 14.343a4 4 0 010 5.657 4 4 0 01-5.657 0"/></svg>
-                    </span>
-                    الزمر الدوائية
-                </button>
-            </div>
-        </div>
+        </aside>
         <!-- ===== نهاية القائمة الجانبية للأدوية ===== -->
         
         <aside id="sidebar" class="w-72 md:w-80 flex-shrink-0 z-20 flex flex-col h-full relative" style="transform:translateX(100%);will-change:transform;overflow:hidden;margin-right:-18rem;transition:transform 0.4s cubic-bezier(0.32,0.72,0,1),margin-right 0.4s cubic-bezier(0.32,0.72,0,1);">
@@ -6568,6 +6583,7 @@ window.addEventListener('resize', setTopbarHeight);
     
     // --- متغيرات حالة الواجهة ---
     let isSidebarOpen = false; // (تعديل 3: القائمة مغلقة افتراضياً)
+    let isDrugSidebarOpen = false; // قائمة الأدوية مغلقة افتراضياً
     let currentPatientModalTab = 1;
     let tempPatientData = {}; // لتخزين بيانات المريض الجديد مؤقتاً (بما في ذلك الصور)
     let tempMedications = []; // لتخزين الأدوية مؤقتاً
@@ -7911,6 +7927,9 @@ window.addEventListener('resize', setTopbarHeight);
         var backdrop = document.getElementById('sidebar-backdrop');
 
         if (isSidebarOpen) {
+            // أغلق قائمة الأدوية إن كانت مفتوحة
+            if (isDrugSidebarOpen) closeDrugSidebar();
+
             sidebar.classList.add('sidebar-open');
             if (isMobile) {
                 // موبايل: backdrop مرئي + منع التمرير
@@ -9731,32 +9750,30 @@ window.addEventListener('resize', setTopbarHeight);
 
     // ================================================================
     // ================================================================
-    //  القائمة الجانبية للأدوية — Drug Sidebar
+    //  القائمة الجانبية للأدوية — Drug Sidebar (موحّدة مع #sidebar)
     // ================================================================
+
     function openDrugSidebar() {
         // أغلق القائمة المنسدلة للموسوعة
         var encDropdown = document.getElementById('encyclopedia-dropdown');
         if (encDropdown) encDropdown.classList.add('hidden');
 
-        var sidebar = document.getElementById('drug-sidebar');
-        var backdrop = document.getElementById('drug-sidebar-backdrop');
-        if (!sidebar) return;
+        // أغلق القائمة الرئيسية (#sidebar) إن كانت مفتوحة
+        if (isSidebarOpen) closeSidebar();
 
-        sidebar.classList.add('open');
-        if (backdrop) {
-            backdrop.style.display = 'block';
-            setTimeout(function(){ backdrop.classList.add('open'); }, 10);
-        }
+        var drugSidebar = document.getElementById('drug-sidebar');
+        if (!drugSidebar) return;
+
+        isDrugSidebarOpen = true;
+        drugSidebar.classList.add('sidebar-open');
     }
 
     function closeDrugSidebar() {
-        var sidebar = document.getElementById('drug-sidebar');
-        var backdrop = document.getElementById('drug-sidebar-backdrop');
-        if (sidebar) sidebar.classList.remove('open');
-        if (backdrop) {
-            backdrop.classList.remove('open');
-            setTimeout(function(){ backdrop.style.display = 'none'; }, 360);
-        }
+        var drugSidebar = document.getElementById('drug-sidebar');
+        if (!drugSidebar) return;
+
+        isDrugSidebarOpen = false;
+        drugSidebar.classList.remove('sidebar-open');
     }
 
     //  موسوعة الأدوية — Drug Encyclopedia (AI-powered via Claude API)
