@@ -18819,6 +18819,13 @@ function clearSyncLog() {
 function updateCloudUI() {
     const isConnected = !!_cloudAccessToken && Date.now() < _cloudTokenExpiry;
 
+    // إذا انتهى التوكن لكن المستخدم محفوظ → ابدأ التجديد الصامت فوراً
+    if (!isConnected && _googleAuthUser && localStorage.getItem('mbGoogleUser')) {
+        if (typeof window._tryRefreshToken === 'function') {
+            setTimeout(window._tryRefreshToken, 100);
+        }
+    }
+
     // تشغيل المزامنة التلقائية إذا كانت مفعلة في localStorage وتم الاتصال
     if (isConnected && localStorage.getItem('medbox_auto_sync') === '1' && !_autoSyncTimer) {
         setTimeout(function() { if (typeof startAutoSync === 'function') startAutoSync(); }, 500);
@@ -18853,11 +18860,14 @@ function updateCloudUI() {
     const userName = document.getElementById('cloud-user-name');
     const indicator = document.getElementById('cloud-sync-indicator');
 
+    // هل المستخدم محفوظ لكن التوكن منتهٍ فقط؟ (جارٍ التجديد)
+    const isReconnecting = !isConnected && !!_googleAuthUser && !!localStorage.getItem('mbGoogleUser');
+
     // تحديث نقطة الحالة في قائمة الإعدادات
     const statusDot = document.getElementById('cloud-sync-status-dot');
     if (statusDot) {
-        statusDot.className = `mr-auto w-2.5 h-2.5 rounded-full inline-block ${isConnected ? 'bg-green-500' : 'bg-red-400'}`;
-        statusDot.title = isConnected ? 'متصل' : 'غير متصل';
+        statusDot.className = `mr-auto w-2.5 h-2.5 rounded-full inline-block ${isConnected ? 'bg-green-500' : isReconnecting ? 'bg-yellow-400' : 'bg-red-400'}`;
+        statusDot.title = isConnected ? 'متصل' : isReconnecting ? 'جارٍ إعادة الاتصال' : 'غير متصل';
     }
 
     // تحديث شارة الشريط العلوي
@@ -18871,6 +18881,11 @@ function updateCloudUI() {
             topbarBadge.style.color = '#16a34a';
             if (topbarDot) topbarDot.style.background = '#16a34a';
             if (topbarLabel) topbarLabel.textContent = 'متصل';
+        } else if (isReconnecting) {
+            topbarBadge.style.background = '#fef9c3';
+            topbarBadge.style.color = '#b45309';
+            if (topbarDot) topbarDot.style.background = '#f59e0b';
+            if (topbarLabel) topbarLabel.textContent = 'جارٍ التجديد';
         } else {
             topbarBadge.style.background = '#fee2e2';
             topbarBadge.style.color = '#dc2626';
@@ -18888,6 +18903,15 @@ function updateCloudUI() {
         if (userInfo) userInfo.classList.remove('hidden');
         if (userName) userName.textContent = '👤 ' + (_cloudUserEmail || 'مستخدم Google');
         if (indicator) indicator.classList.remove('hidden');
+    } else if (isReconnecting) {
+        if (statusBadge) { statusBadge.className = 'cloud-status-badge disconnected'; statusBadge.innerHTML = '<span>●</span> جارٍ التجديد'; }
+        if (connectBtn) connectBtn.classList.add('hidden');
+        if (disconnectBtn) disconnectBtn.classList.remove('hidden');
+        if (uploadBtn) uploadBtn.disabled = true;
+        if (downloadBtn) downloadBtn.disabled = true;
+        if (userInfo) userInfo.classList.remove('hidden');
+        if (userName) userName.textContent = '👤 ' + (_cloudUserEmail || _googleAuthUser?.email || 'مستخدم Google');
+        if (indicator) indicator.classList.add('hidden');
     } else {
         if (statusBadge) { statusBadge.className = 'cloud-status-badge disconnected'; statusBadge.innerHTML = '<span>●</span> غير متصل'; }
         if (connectBtn) connectBtn.classList.remove('hidden');
@@ -19284,8 +19308,8 @@ function disconnectGoogleDrive() {
         try { savedGUser = localStorage.getItem('mbGoogleUser'); } catch(e) {}
         if (!savedGUser) return;
 
-        // لا نجدد إذا كان التوكن لا يزال صالحاً لأكثر من 10 دقائق
-        if (_cloudAccessToken && _cloudTokenExpiry && ((_cloudTokenExpiry - Date.now()) > 10 * 60 * 1000)) return;
+        // لا نجدد إذا كان التوكن لا يزال صالحاً لأكثر من دقيقتين
+        if (_cloudAccessToken && _cloudTokenExpiry && ((_cloudTokenExpiry - Date.now()) > 2 * 60 * 1000)) return;
 
         try {
             if (typeof google === 'undefined' || !google.accounts || !google.accounts.oauth2) return;
@@ -19340,6 +19364,16 @@ function disconnectGoogleDrive() {
 
     // تجديد دوري كل 45 دقيقة (التوكن ينتهي بعد 60 دقيقة)
     window._tokenRefreshTimer = setInterval(_tryRefreshToken, 45 * 60 * 1000);
+
+    // مراقب دقيقي: يكتشف انتهاء الصلاحية فوراً ويبدأ التجديد
+    window._tokenExpiryWatchdog = setInterval(function() {
+        if (!_googleAuthUser || !localStorage.getItem('mbGoogleUser')) return;
+        var tokenExpired = !_cloudAccessToken || Date.now() >= (_cloudTokenExpiry || 0);
+        if (tokenExpired) {
+            _tryRefreshToken();
+            if (typeof updateCloudUI === 'function') updateCloudUI();
+        }
+    }, 60 * 1000);
 
     // تعريف عالمي للاستخدام من أماكن أخرى
     window._tryRefreshToken = _tryRefreshToken;
