@@ -830,12 +830,24 @@
             display: flex;
         }
 
-        /* ===== القائمة الجانبية للأدوية — تدفع المحتوى على كل الشاشات ===== */
+        /* ===== القائمة الجانبية للأدوية ===== */
 
-        /* لا backdrop ولا fixed — القائمة تدفع main-content دائماً */
-        #drug-sidebar-backdrop { display: none !important; }
+        /* الـ Backdrop للموبايل فقط */
+        #drug-sidebar-backdrop {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 199;
+            background: rgba(15,23,42,0.45);
+            opacity: 0;
+            transition: opacity 0.35s cubic-bezier(0.4,0,0.2,1);
+            cursor: pointer;
+        }
+        #drug-sidebar-backdrop.drug-sidebar-open {
+            opacity: 1;
+        }
 
-        /* القائمة نفسها — نفس أبعاد #sidebar تماماً */
+        /* القائمة نفسها — تدفع المحتوى على الشاشات الكبيرة */
         #drug-sidebar {
             width: 18rem; /* w-72 */
             flex-shrink: 0;
@@ -857,6 +869,18 @@
         #drug-sidebar.sidebar-open {
             transform: translateX(0) !important;
             margin-right: 0 !important;
+        }
+
+        /* موبايل: القائمة تطفو فوق المحتوى */
+        @media (max-width: 1023px) {
+            #drug-sidebar {
+                position: fixed !important;
+                top: var(--topbar-h, 56px) !important;
+                right: 0 !important;
+                height: calc(100% - var(--topbar-h, 56px)) !important;
+                margin-right: 0 !important;
+                z-index: 200 !important;
+            }
         }
 
         /* الغلاف الداخلي — نفس تصميم #sidebar الداخلي */
@@ -3553,7 +3577,7 @@ window.addEventListener('resize', setTopbarHeight);
                         <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                     </svg>
                 </button>
-                <span class="tooltip tooltip-bottom">الإعدادات</span>
+                <span class="tooltip">الإعدادات</span>
             </div>
             
             <!-- (تعديل 3 و 4) زر تسجيل الدخول والقائمة المنسدلة -->
@@ -7979,6 +8003,13 @@ window.addEventListener('resize', setTopbarHeight);
             requestAnimationFrame(function() { backdrop.classList.add('sidebar-open'); });
             document.body.style.overflow = 'hidden';
         }
+        // تنظيف backdrop قائمة الأدوية عند الانتقال إلى شاشة كبيرة
+        var drugBackdrop = document.getElementById('drug-sidebar-backdrop');
+        if (!isNowMobile && drugBackdrop) {
+            drugBackdrop.classList.remove('drug-sidebar-open');
+            drugBackdrop.style.display = 'none';
+            if (!isSidebarOpen) document.body.style.overflow = '';
+        }
     });
 
     function closeSidebar() {
@@ -9770,6 +9801,18 @@ window.addEventListener('resize', setTopbarHeight);
 
         isDrugSidebarOpen = true;
         drugSidebar.classList.add('sidebar-open');
+
+        // موبايل: أظهر الـ backdrop ومنع التمرير
+        if (window.innerWidth < 1024) {
+            var backdrop = document.getElementById('drug-sidebar-backdrop');
+            if (backdrop) {
+                backdrop.style.display = 'block';
+                requestAnimationFrame(function() {
+                    backdrop.classList.add('drug-sidebar-open');
+                });
+            }
+            document.body.style.overflow = 'hidden';
+        }
     }
 
     function closeDrugSidebar() {
@@ -9778,6 +9821,16 @@ window.addEventListener('resize', setTopbarHeight);
 
         isDrugSidebarOpen = false;
         drugSidebar.classList.remove('sidebar-open');
+
+        // موبايل: أخفِ الـ backdrop واستعد التمرير
+        var backdrop = document.getElementById('drug-sidebar-backdrop');
+        if (backdrop) {
+            backdrop.classList.remove('drug-sidebar-open');
+            setTimeout(function() {
+                if (!isDrugSidebarOpen) backdrop.style.display = 'none';
+            }, 380);
+        }
+        document.body.style.overflow = '';
     }
 
     //  موسوعة الأدوية — Drug Encyclopedia (AI-powered via Claude API)
