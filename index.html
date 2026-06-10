@@ -19681,6 +19681,196 @@ function disconnectGoogleDrive() {
 })();
 
 // --- البحث عن الملف في Drive ---
+// --- متابعة آخر وقت تعديل معروف لملف Drive (لاكتشاف تعديلات الأجهزة الأخرى) ---
+window._lastKnownModifiedTime = window._lastKnownModifiedTime || null;
+let _remoteCheckTimer = null;
+const REMOTE_CHECK_INTERVAL_MS = 60 * 1000; // فحص كل دقيقة
+
+async function getDriveFileModifiedTime() {
+    if (!_cloudAccessToken || Date.now() >= _cloudTokenExpiry) return null;
+    const fileId = await findOrCreateDriveFile();
+    if (!fileId) return null;
+    try {
+        const r = await fetch(
+            `https://www.googleapis.com/drive/v3/files/${fileId}?fields=modifiedTime`,
+            { headers: { 'Authorization': 'Bearer ' + _cloudAccessToken } }
+        );
+        if (!r.ok) return null;
+        const d = await r.json();
+        return d.modifiedTime || null;
+    } catch (e) { return null; }
+}
+
+// فحص دوري: هل هناك نسخة أحدث على Drive رفعها جهاز آخر؟
+function startRemoteChangeWatcher() {
+    stopRemoteChangeWatcher();
+    _remoteCheckTimer = setInterval(async () => {
+        if (!_cloudAccessToken || Date.now() >= _cloudTokenExpiry) return;
+        const remoteTime = await getDriveFileModifiedTime();
+        if (!remoteTime) return;
+
+        if (!window._lastKnownModifiedTime) {
+            window._lastKnownModifiedTime = remoteTime;
+            return;
+        }
+
+        if (new Date(remoteTime) > new Date(window._lastKnownModifiedTime)) {
+            if (!window._isDataDirty) {
+                addSyncLog('تم اكتشاف تحديث جديد من جهاز آخر، جاري التنزيل التلقائي...', 'info');
+                await loadFromDrivePromptSilent();
+                window._lastKnownModifiedTime = remoteTime;
+            } else {
+                addSyncLog('يوجد تحديث جديد على Drive من جهاز آخر، ولديك تعديلات محلية غير محفوظة', 'error');
+                if (typeof showRemoteUpdateConflictDialog === 'function') {
+                    showRemoteUpdateConflictDialog(remoteTime);
+                }
+            }
+        }
+    }, REMOTE_CHECK_INTERVAL_MS);
+}
+
+function stopRemoteChangeWatcher() {
+    if (_remoteCheckTimer) { clearInterval(_remoteCheckTimer); _remoteCheckTimer = null; }
+}
+
+// نافذة تنبيه عند وجود تعارض: تعديلات محلية + تحديث جديد على Drive
+async function showRemoteUpdateConflictDialog(remoteTime) {
+    if (document.getElementById('remote-conflict-modal')) return;
+
+    const remoteData = await fetchRemoteAppDataForDiff();
+    let summary = { newRemote: [], changedRemote: [], localOnly: [] };
+    if (remoteData) {
+        summary = buildSyncConflictSummary(appData, remoteData);
+    }
+
+    const renderList = (items, emptyMsg) => {
+        if (!items.length) return `<p style="color:#9ca3af;font-size:.82rem;">${emptyMsg}</p>`;
+        return '<ul style="margin:0;padding-inline-start:18px;font-size:.82rem;color:#374151;line-height:1.9;">' +
+            items.slice(0, 10).map(i => `<li>${i}</li>`).join('') +
+            (items.length > 10 ? `<li>... و${items.length - 10} عنصر إضافي</li>` : '') +
+            '</ul>';
+    };
+
+    const remoteItems = [...summary.newRemote, ...summary.changedRemote];
+
+    const overlay = document.createElement('div');
+    overlay.id = 'remote-conflict-modal';
+    overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:99999;display:flex;align-items:center;justify-content:center;padding:16px;';
+    overlay.innerHTML = `
+        <div dir="rtl" style="background:#fff;border-radius:14px;padding:24px;max-width:440px;width:100%;font-family:inherit;box-shadow:0 10px 40px rgba(0,0,0,.2);max-height:85vh;overflow-y:auto;">
+            <h3 style="margin:0 0 12px;font-size:1.05rem;font-weight:700;color:#111827;">⚠️ تعارض في البيانات</h3>
+            <p style="color:#6b7280;font-size:.9rem;line-height:1.7;margin-bottom:14px;">
+                قام جهاز آخر بمزامنة تعديلات جديدة، وفي نفس الوقت لديك تعديلات محلية لم تُحفظ بعد.
+            </p>
+
+            <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:10px 12px;margin-bottom:10px;">
+                <div style="font-weight:700;font-size:.85rem;color:#166534;margin-bottom:6px;">🟢 بيانات جديدة على Drive (ستحصل عليها إن تابعت):</div>
+                ${renderList(remoteItems, 'لا توجد تغييرات ملحوظة')}
+            </div>
+
+            <div style="background:#fef2f2;border:1px solid #fecaca;border-radius:10px;padding:10px 12px;margin-bottom:18px;">
+                <div style="font-weight:700;font-size:.85rem;color:#991b1b;margin-bottom:6px;">🔴 تعديلاتك المحلية غير المرفوعة (قد تُفقد إذا اخترت "تجاهل تعديلاتي"):</div>
+                ${renderList(summary.localOnly, 'لا توجد تعديلات محلية غير مرفوعة')}
+            </div>
+
+            <div style="display:flex;flex-direction:column;gap:8px;">
+                <button id="conflict-upload-first-btn" style="background:#0790AC;color:#fff;border:none;border-radius:8px;padding:10px;font-weight:600;cursor:pointer;">
+                    رفع تعديلاتي أولاً، ثم تحديث الباقي لاحقاً
+                </button>
+                <button id="conflict-discard-local-btn" style="background:#f3f4f6;color:#b91c1c;border:none;border-radius:8px;padding:10px;font-weight:600;cursor:pointer;">
+                    تجاهل تعديلاتي وتنزيل نسخة الجهاز الآخر
+                </button>
+                <button id="conflict-later-btn" style="background:transparent;color:#6b7280;border:none;padding:8px;cursor:pointer;">
+                    تذكيري لاحقاً
+                </button>
+            </div>
+        </div>`;
+    document.body.appendChild(overlay);
+
+    document.getElementById('conflict-upload-first-btn').onclick = async () => {
+        overlay.remove();
+        try {
+            await uploadToGoogleDrive(true);
+            window._lastKnownModifiedTime = await getDriveFileModifiedTime();
+            if (typeof showToast === 'function') showToast('تم رفع تعديلاتك. لتحميل تعديلات الجهاز الآخر اضغط "حفظ فوري"', 'success');
+        } catch (e) {
+            if (typeof showToast === 'function') showToast('فشل رفع التعديلات: ' + e.message, 'error');
+        }
+    };
+    document.getElementById('conflict-discard-local-btn').onclick = async () => {
+        overlay.remove();
+        await loadFromDrivePromptSilent();
+        window._lastKnownModifiedTime = await getDriveFileModifiedTime();
+        window._isDataDirty = false;
+    };
+    document.getElementById('conflict-later-btn').onclick = () => overlay.remove();
+}
+
+// جلب نسخة Drive وفك تشفيرها دون تطبيقها على appData (للمقارنة عند التعارض)
+async function fetchRemoteAppDataForDiff() {
+    if (!_cloudAccessToken || Date.now() >= _cloudTokenExpiry) return null;
+    const fileId = await findOrCreateDriveFile();
+    if (!fileId) return null;
+    try {
+        const res = await fetch(
+            `https://www.googleapis.com/drive/v3/files/${fileId}?alt=media`,
+            { headers: { 'Authorization': 'Bearer ' + _cloudAccessToken } }
+        );
+        if (!res.ok) return null;
+        const rawBuf = await res.arrayBuffer();
+        const decText = await _mbDecrypt(rawBuf);
+        return JSON.parse(decText);
+    } catch (e) { return null; }
+}
+
+// بناء ملخص الفروقات بين البيانات المحلية (appData الحالية) ونسخة Drive الجديدة
+function buildSyncConflictSummary(localData, remoteData) {
+    const summary = { newRemote: [], changedRemote: [], localOnly: [] };
+    try {
+        const localPatients = (localData.patients || []);
+        const remotePatients = (remoteData.patients || []);
+        const localById = {};
+        localPatients.forEach(p => { localById[p.id] = p; });
+        const remoteById = {};
+        remotePatients.forEach(p => { remoteById[p.id] = p; });
+
+        // مرضى/زيارات جديدة أو معدّلة في النسخة البعيدة (سيتم إحضارها)
+        remotePatients.forEach(rp => {
+            const lp = localById[rp.id];
+            if (!lp) {
+                summary.newRemote.push(`مريض جديد: ${rp.name_ar || rp.id}`);
+            } else {
+                const lVisits = (lp.visits || []).length;
+                const rVisits = (rp.visits || []).length;
+                if (rVisits > lVisits) {
+                    summary.newRemote.push(`زيارة جديدة لـ ${rp.name_ar || rp.id} (${rVisits - lVisits})`);
+                }
+                if (JSON.stringify(lp) !== JSON.stringify(rp) && rVisits <= lVisits) {
+                    summary.changedRemote.push(`تعديل في بيانات: ${rp.name_ar || rp.id}`);
+                }
+            }
+        });
+
+        // بيانات محلية فقط (موجودة عندك ولن تكون موجودة إذا تم تجاهل تعديلاتك)
+        localPatients.forEach(lp => {
+            const rp = remoteById[lp.id];
+            if (!rp) {
+                summary.localOnly.push(`مريض جديد محلياً (لم يُرفع بعد): ${lp.name_ar || lp.id}`);
+            } else {
+                const lVisits = (lp.visits || []).length;
+                const rVisits = (rp.visits || []).length;
+                if (lVisits > rVisits) {
+                    summary.localOnly.push(`زيارة جديدة محلياً لـ ${lp.name_ar || lp.id} (${lVisits - rVisits}) لم تُرفع بعد`);
+                }
+                if (JSON.stringify(lp) !== JSON.stringify(rp) && lVisits <= rVisits) {
+                    summary.localOnly.push(`تعديل محلي غير مرفوع في بيانات: ${lp.name_ar || lp.id}`);
+                }
+            }
+        });
+    } catch (e) { /* تجاهل أخطاء المقارنة */ }
+    return summary;
+}
+
 async function findOrCreateDriveFile() {
     if (!_cloudAccessToken) return null;
     if (_cloudDriveFileId) return _cloudDriveFileId;
@@ -19765,6 +19955,7 @@ async function uploadToGoogleDrive(silent) {
             addSyncLog('تم حفظ البيانات المشفرة بنجاح ✓', 'success');
             if (!silent && typeof showToast === 'function') showToast('تم حفظ البيانات المشفرة إلى Google Drive ✓', 'success');
             window._isDataDirty = false;
+            getDriveFileModifiedTime().then(t => { if (t) window._lastKnownModifiedTime = t; });
             return;
         }
 
@@ -19783,6 +19974,7 @@ async function uploadToGoogleDrive(silent) {
         addSyncLog('تم حفظ البيانات المشفرة بنجاح ✓', 'success');
         if (!silent && typeof showToast === 'function') showToast('تم حفظ البيانات المشفرة إلى Google Drive ✓', 'success');
         window._isDataDirty = false;
+        getDriveFileModifiedTime().then(t => { if (t) window._lastKnownModifiedTime = t; });
 
     } catch (e) {
         addSyncLog('فشل الحفظ: ' + e.message, 'error');
@@ -19956,6 +20148,12 @@ function startAutoSync() {
     stopAutoSync(); // إيقاف أي مزامنة سابقة
     _autoSyncNextTime = Date.now() + AUTO_SYNC_INTERVAL_MS;
 
+    // بدء مراقبة تعديلات الأجهزة الأخرى
+    startRemoteChangeWatcher();
+    if (!window._lastKnownModifiedTime) {
+        getDriveFileModifiedTime().then(t => { if (t) window._lastKnownModifiedTime = t; });
+    }
+
     // عداد تنازلي لعرض الوقت المتبقي
     _autoSyncCountdownTimer = setInterval(() => {
         const remaining = Math.max(0, _autoSyncNextTime - Date.now());
@@ -19989,6 +20187,7 @@ function startAutoSync() {
 function stopAutoSync() {
     if (_autoSyncTimer) { clearInterval(_autoSyncTimer); _autoSyncTimer = null; }
     if (_autoSyncCountdownTimer) { clearInterval(_autoSyncCountdownTimer); _autoSyncCountdownTimer = null; }
+    stopRemoteChangeWatcher();
     _autoSyncNextTime = null;
     const el = document.getElementById('auto-sync-next');
     if (el) el.textContent = 'غير مفعّل';
