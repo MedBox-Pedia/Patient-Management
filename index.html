@@ -620,6 +620,7 @@
         .toggle-switch input:checked + .toggle-slider:before { transform: translateX(-22px); }
 
         /* ===== زر المشاركة في التول بار ===== */
+        /* الحاوية مخفية افتراضياً وتظهر فقط عند عرض مريض */
         #topbar-share-wrapper {
             display: none;
         }
@@ -12268,25 +12269,7 @@ window.addEventListener('resize', setTopbarHeight);
                                 <p class="text-sm font-bold text-gray-700">${lastVisit.date}</p>
                                 <p class="text-xs text-gray-500">آخر مراجعة</p>
                             </div>` : ''}
-                            <button onclick="window._openGeminiAIReport('${patient.id}')"
-                                id="gemini-ai-btn-${patient.id}"
-                                title="تحليل ذكي شامل بالذكاء الاصطناعي (Gemini)"
-                                style="display:inline-flex;align-items:center;gap:7px;padding:9px 18px;border-radius:10px;border:none;background:linear-gradient(135deg,#1a73e8 0%,#8430ce 50%,#e94235 80%,#fbbc05 100%);color:#fff;font-family:'Cairo',sans-serif;font-size:0.85rem;font-weight:700;cursor:pointer;box-shadow:0 2px 10px rgba(66,133,244,0.3);transition:all 0.2s;letter-spacing:0.02em;"
-                                onmouseover="this.style.transform='translateY(-1px)';this.style.boxShadow='0 4px 18px rgba(66,133,244,0.45)'"
-                                onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 2px 10px rgba(66,133,244,0.3)'">
-                                <svg width="20" height="20" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <defs>
-                                        <radialGradient id="gstar1" cx="30%" cy="30%" r="80%">
-                                            <stop offset="0%" stop-color="#FF4136"/>
-                                            <stop offset="33%" stop-color="#FFDC00"/>
-                                            <stop offset="66%" stop-color="#2ECC40"/>
-                                            <stop offset="100%" stop-color="#0074D9"/>
-                                        </radialGradient>
-                                    </defs>
-                                    <path d="M50 2 C50 2 56 38 72 50 C56 62 50 98 50 98 C50 98 44 62 28 50 C44 38 50 2 50 2 Z" fill="url(#gstar1)"/>
-                                </svg>
-                                تقرير Gemini
-                            </button>
+
                         </div>
                     </div>
                 </div>
@@ -15149,24 +15132,6 @@ window.addEventListener('resize', setTopbarHeight);
                             <div id="cmp-qr-${patient.id}" style="cursor:pointer;flex-shrink:0;border-radius:8px;overflow:hidden;border:2px solid #e6f4f7;" title="QR Code للمريض - اضغط للتكبير"></div>
                             <h3 class="text-xl font-bold text-[#0790AC]">📈 متابعة التحاليل عبر الزيارات</h3>
                         </div>
-                        <button onclick="window._openGeminiAIReport('${patient.id}')"
-                            title="تحليل ذكي بالذكاء الاصطناعي — Gemini"
-                            style="display:inline-flex;align-items:center;gap:6px;padding:7px 15px;border-radius:10px;border:none;background:linear-gradient(135deg,#1a73e8 0%,#8430ce 50%,#e94235 80%,#fbbc05 100%);color:#fff;font-family:'Cairo',sans-serif;font-size:0.82rem;font-weight:700;cursor:pointer;box-shadow:0 2px 10px rgba(66,133,244,0.3);transition:all 0.2s;white-space:nowrap;"
-                            onmouseover="this.style.transform='translateY(-1px)';this.style.boxShadow='0 4px 18px rgba(66,133,244,0.45)'"
-                            onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 2px 10px rgba(66,133,244,0.3)'">
-                            <svg width="18" height="18" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <defs>
-                                    <radialGradient id="gstar2" cx="30%" cy="30%" r="80%">
-                                        <stop offset="0%" stop-color="#FF4136"/>
-                                        <stop offset="33%" stop-color="#FFDC00"/>
-                                        <stop offset="66%" stop-color="#2ECC40"/>
-                                        <stop offset="100%" stop-color="#0074D9"/>
-                                    </radialGradient>
-                                </defs>
-                                <path d="M50 2 C50 2 56 38 72 50 C56 62 50 98 50 98 C50 98 44 62 28 50 C44 38 50 2 50 2 Z" fill="url(#gstar2)"/>
-                            </svg>
-                            تقرير Gemini
-                        </button>
                     </div>
                     <div class="text-center py-16 text-gray-400">
                         <svg class="w-16 h-16 mx-auto mb-4 opacity-30" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"/></svg>
@@ -15304,24 +15269,6 @@ window.addEventListener('resize', setTopbarHeight);
                             <span class="flex items-center gap-1"><span style="color:#16a34a">▼</span> انخفاض</span>
                             <span class="flex items-center gap-1"><span style="color:#6b7280">━</span> ثابت</span>
                         </div>
-                        <button onclick="window._openGeminiAIReport('${patient.id}')"
-                            title="تحليل ذكي شامل بالذكاء الاصطناعي — Gemini"
-                            style="display:inline-flex;align-items:center;gap:6px;padding:7px 15px;border-radius:10px;border:none;background:linear-gradient(135deg,#1a73e8 0%,#8430ce 50%,#e94235 80%,#fbbc05 100%);color:#fff;font-family:'Cairo',sans-serif;font-size:0.82rem;font-weight:700;cursor:pointer;box-shadow:0 2px 10px rgba(66,133,244,0.3);transition:all 0.2s;white-space:nowrap;"
-                            onmouseover="this.style.transform='translateY(-1px)';this.style.boxShadow='0 4px 18px rgba(66,133,244,0.45)'"
-                            onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 2px 10px rgba(66,133,244,0.3)'">
-                            <svg width="18" height="18" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <defs>
-                                    <radialGradient id="gstar3" cx="30%" cy="30%" r="80%">
-                                        <stop offset="0%" stop-color="#FF4136"/>
-                                        <stop offset="33%" stop-color="#FFDC00"/>
-                                        <stop offset="66%" stop-color="#2ECC40"/>
-                                        <stop offset="100%" stop-color="#0074D9"/>
-                                    </radialGradient>
-                                </defs>
-                                <path d="M50 2 C50 2 56 38 72 50 C56 62 50 98 50 98 C50 98 44 62 28 50 C44 38 50 2 50 2 Z" fill="url(#gstar3)"/>
-                            </svg>
-                            تقرير Gemini
-                        </button>
                     </div>
                 </div>
 
@@ -23015,24 +22962,12 @@ window._loadGeminiKeyFromDrive = async function() {
 
         switch(type) {
 
-            case 'appointments':
-                // فتح نافذة المواعيد الكبيرة
-                if (typeof openBigCalendar === 'function') {
-                    openBigCalendar();
-                } else {
-                    var calBtn = document.getElementById('mini-cal-expand');
-                    if (calBtn) { calBtn.click(); }
-                    else if (typeof showToast === 'function') {
-                        showToast('نافذة المواعيد غير متاحة', 'error');
-                    }
-                }
-                break;
-
             case 'prescription':
                 // طباعة الوصفة الطبية
                 if (typeof printPrescriptionFromVisit === 'function' && window.currentViewPatient && window.currentViewVisit) {
                     printPrescriptionFromVisit(window.currentViewPatient, window.currentViewVisit);
                 } else {
+                    // تشغيل الزر الموجود مسبقاً إن وجد
                     var btn = document.getElementById('view-print-prescription-btn');
                     if (btn) { btn.click(); }
                     else if (typeof showToast === 'function') {
@@ -23042,7 +22977,7 @@ window._loadGeminiKeyFromDrive = async function() {
                 break;
 
             case 'lab':
-                // فتح نافذة طلب التحاليل والإجراءات التشخيصية
+                // فتح نافذة طلب التحاليل
                 if (typeof window._openLabRequestFromView === 'function') {
                     window._openLabRequestFromView();
                 } else {
@@ -23054,8 +22989,8 @@ window._loadGeminiKeyFromDrive = async function() {
                 }
                 break;
 
-            case 'diet':
-                // طباعة البرنامج الغذائي
+            case 'exchange':
+                // طباعة جدول الحصص الغذائية فقط
                 if (typeof printDietProgram === 'function' && window.currentViewPatient && window.currentViewVisit) {
                     printDietProgram(window.currentViewPatient, window.currentViewVisit);
                 } else {
@@ -23067,12 +23002,25 @@ window._loadGeminiKeyFromDrive = async function() {
                 }
                 break;
 
+            case 'diet':
+                // طباعة البرنامج الغذائي الشامل (نفس دالة printDietProgram)
+                if (typeof printDietProgram === 'function' && window.currentViewPatient && window.currentViewVisit) {
+                    printDietProgram(window.currentViewPatient, window.currentViewVisit);
+                } else {
+                    var dietBtn2 = document.getElementById('print-diet-btn');
+                    if (dietBtn2) { dietBtn2.click(); }
+                    else if (typeof showToast === 'function') {
+                        showToast('قم بفتح تبويب البرنامج الغذائي أولاً', 'info');
+                    }
+                }
+                break;
+
             case 'gemini':
-                // فتح تقرير Gemini للمريض الحالي
+                // فتح تقرير الذكاء الاصطناعي Gemini للمريض الحالي
                 if (window.currentViewPatient && typeof window._openGeminiAIReport === 'function') {
                     window._openGeminiAIReport(window.currentViewPatient.id);
                 } else if (typeof showToast === 'function') {
-                    showToast('يرجى فتح بيانات مريض أولاً', 'error');
+                    showToast('يرجى فتح ملف مريض أولاً', 'info');
                 }
                 break;
 
@@ -23095,8 +23043,9 @@ window._loadGeminiKeyFromDrive = async function() {
             }
         }
 
+        // مراقبة التغييرات على class لمنطقة المريض
         new MutationObserver(syncBtn).observe(area, { attributes: true, attributeFilter: ['class'] });
-        syncBtn();
+        syncBtn(); // تطبيق الحالة الأولية
     })();
 
 })();
