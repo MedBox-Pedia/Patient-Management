@@ -14645,61 +14645,6 @@ window.addEventListener('resize', setTopbarHeight);
                 <div class="pt-6 border-t border-gray-300 mt-6">
                     <h3 class="text-xl font-bold text-[--color-primary] mb-4">3. إدراج البدائل الغذائية</h3>
 
-                    <!-- نموذج الإدراج -->
-                    <div class="bg-gray-50 rounded-2xl border border-gray-200 p-4 mb-4 shadow-sm">
-                        <div class="grid grid-cols-1 md:grid-cols-4 gap-3 items-end">
-
-                            <!-- قائمة الفئات -->
-                            <div>
-                                <label class="block text-sm font-bold text-gray-700 mb-1">قائمة البدائل</label>
-                                <select id="alt-category-select"
-                                    class="w-full border-2 border-gray-300 rounded-xl px-3 py-2 text-sm font-semibold focus:border-[#0790AC] focus:outline-none bg-white transition-colors">
-                                    <option value="">-- اختر الفئة --</option>
-                                    <option value="starch">🍞 قائمة النشويات</option>
-                                    <option value="fruit">🍎 قائمة الفواكه</option>
-                                    <option value="vegetable">🥦 قائمة الخضار</option>
-                                    <option value="meat_low">🥩 قائمة اللحوم قليلة الدهون</option>
-                                    <option value="meat_medium">🍗 قائمة اللحوم متوسطة الدهون</option>
-                                    <option value="meat_high">🥓 قائمة اللحوم عالية الدهون</option>
-                                    <option value="milk_skim">🥛 قائمة حليب خالي الدسم</option>
-                                    <option value="milk_low">🧀 قائمة حليب قليل الدسم</option>
-                                    <option value="milk_full">🫙 قائمة حليب كامل الدسم</option>
-                                    <option value="fat">🫒 قائمة الدهون</option>
-                                </select>
-                            </div>
-
-                            <!-- نوع البديل -->
-                            <div>
-                                <label class="block text-sm font-bold text-gray-700 mb-1">نوع البديل</label>
-                                <input type="text" id="alt-type-input"
-                                    class="w-full border-2 border-gray-300 rounded-xl px-3 py-2 text-sm focus:border-[#0790AC] focus:outline-none transition-colors"
-                                    placeholder="مثال: تفاح، أرز، خيار...">
-                            </div>
-
-                            <!-- الكمية -->
-                            <div>
-                                <label class="block text-sm font-bold text-gray-700 mb-1">الكمية (حصة واحدة)</label>
-                                <input type="text" id="alt-quantity-input"
-                                    class="w-full border-2 border-gray-300 rounded-xl px-3 py-2 text-sm focus:border-[#0790AC] focus:outline-none transition-colors"
-                                    placeholder="مثال: حبة صغيرة، 30 غ، كوب...">
-                            </div>
-
-                            <!-- زر الإدراج -->
-                            <div>
-                                <button id="add-alt-btn"
-                                    class="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-4 rounded-xl transition-colors text-sm flex items-center justify-center gap-2 shadow-sm">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/>
-                                    </svg>
-                                    إدراج
-                                </button>
-                            </div>
-                        </div>
-
-                        <!-- رسالة خطأ الإدراج -->
-                        <div id="alt-error-msg" class="hidden mt-2 px-3 py-2 bg-red-50 border border-red-200 rounded-lg text-xs text-red-600 font-semibold"></div>
-                    </div>
-
                     <!-- قائمة البدائل المدرجة -->
                     <div id="alt-list-section">
 
@@ -14824,6 +14769,66 @@ window.addEventListener('resize', setTopbarHeight);
                                 </div>
                             </div>
                             <!-- ===== نهاية منطقة إدراج في الجدول ===== -->
+
+                            <!-- ===== نموذج إضافة بديل يدوياً ===== -->
+                            <div class="px-4 py-4 border-t-2 border-[--color-primary]/10 bg-gray-50/60">
+                                <div class="flex items-center gap-2 mb-3">
+                                    <span class="text-sm">✏️</span>
+                                    <span class="text-xs font-bold text-gray-700">إضافة بديل يدوياً</span>
+                                </div>
+                                <div class="grid grid-cols-1 md:grid-cols-4 gap-3 items-end">
+
+                                    <!-- قائمة الفئات -->
+                                    <div>
+                                        <label class="block text-xs font-bold text-gray-600 mb-1">قائمة البدائل</label>
+                                        <select id="alt-category-select"
+                                            class="w-full border-2 border-gray-300 rounded-xl px-3 py-2 text-sm font-semibold focus:border-[#0790AC] focus:outline-none bg-white transition-colors">
+                                            <option value="">-- اختر الفئة --</option>
+                                            <option value="starch">🍞 قائمة النشويات</option>
+                                            <option value="fruit">🍎 قائمة الفواكه</option>
+                                            <option value="vegetable">🥦 قائمة الخضار</option>
+                                            <option value="meat_low">🥩 قائمة اللحوم قليلة الدهون</option>
+                                            <option value="meat_medium">🍗 قائمة اللحوم متوسطة الدهون</option>
+                                            <option value="meat_high">🥓 قائمة اللحوم عالية الدهون</option>
+                                            <option value="milk_skim">🥛 قائمة حليب خالي الدسم</option>
+                                            <option value="milk_low">🧀 قائمة حليب قليل الدسم</option>
+                                            <option value="milk_full">🫙 قائمة حليب كامل الدسم</option>
+                                            <option value="fat">🫒 قائمة الدهون</option>
+                                        </select>
+                                    </div>
+
+                                    <!-- نوع البديل -->
+                                    <div>
+                                        <label class="block text-xs font-bold text-gray-600 mb-1">نوع البديل</label>
+                                        <input type="text" id="alt-type-input"
+                                            class="w-full border-2 border-gray-300 rounded-xl px-3 py-2 text-sm focus:border-[#0790AC] focus:outline-none transition-colors"
+                                            placeholder="مثال: تفاح، أرز، خيار...">
+                                    </div>
+
+                                    <!-- الكمية -->
+                                    <div>
+                                        <label class="block text-xs font-bold text-gray-600 mb-1">الكمية (حصة واحدة)</label>
+                                        <input type="text" id="alt-quantity-input"
+                                            class="w-full border-2 border-gray-300 rounded-xl px-3 py-2 text-sm focus:border-[#0790AC] focus:outline-none transition-colors"
+                                            placeholder="مثال: حبة صغيرة، 30 غ، كوب...">
+                                    </div>
+
+                                    <!-- زر الإضافة -->
+                                    <div>
+                                        <button id="add-alt-btn"
+                                            class="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-4 rounded-xl transition-colors text-sm flex items-center justify-center gap-2 shadow-sm">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/>
+                                            </svg>
+                                            إضافة
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- رسالة خطأ الإدراج -->
+                                <div id="alt-error-msg" class="hidden mt-2 px-3 py-2 bg-red-50 border border-red-200 rounded-lg text-xs text-red-600 font-semibold"></div>
+                            </div>
+                            <!-- ===== نهاية نموذج الإضافة اليدوية ===== -->
 
                             <!-- قائمة كل البدائل للإدارة (حذف) -->
                             <div id="alt-items-container" class="divide-y divide-gray-100">
