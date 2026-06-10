@@ -11643,22 +11643,148 @@ window.addEventListener('resize', setTopbarHeight);
         var visit = patient.visits[vIdx];
         if (!visit) return;
         document.getElementById('_sb-wa-report-modal').remove();
+
         var acc = (typeof getCurrentAccount === 'function') ? getCurrentAccount() : null;
-        var doctorName = acc ? (acc.displayName || acc.username || '') : '';
-        var clinicName = acc ? (acc.clinic || '') : '';
-        var h = (visit.health || {});
-        var p = (visit.personal || {});
-        var phy = (visit.physical || {});
-        var vitals = (visit.vitals || {});
-        var msg = '🏥 تقرير طبي\n' +
-            '👤 المريض: ' + (patient.name_ar || p.name_ar || '') + '\n' +
-            '📅 تاريخ الزيارة: ' + (visit.date || '') + '\n';
-        if (h.current_complaint) msg += '📌 الشكوى: ' + h.current_complaint + '\n';
-        if (h.medical_diagnosis) msg += '🩺 التشخيص: ' + h.medical_diagnosis + '\n';
-        if (phy.weight) msg += '⚖️ الوزن: ' + phy.weight + ' kg\n';
-        if (vitals.bp_sys && vitals.bp_dias) msg += '💉 الضغط: ' + vitals.bp_sys + '/' + vitals.bp_dias + '\n';
-        if (clinicName) msg += '🏥 العيادة: ' + clinicName + '\n';
-        if (doctorName) msg += '👨‍⚕️ الطبيب: ' + doctorName + '\n';
+        var doctorName    = acc ? (acc.displayName || acc.username || '') : '';
+        var specialty     = acc ? (acc.specialty || '') : '';
+        var clinicName    = acc ? (acc.clinic    || '') : '';
+        var clinicPhone   = acc ? (acc.phone     || '') : '';
+        var clinicWa      = acc ? (acc.whatsapp  || '') : '';
+        var clinicAddress = acc ? (acc.address   || '') : '';
+
+        var per    = visit.personal  || {};
+        var phy    = visit.physical  || {};
+        var vitals = visit.vitals    || {};
+        var hlt    = visit.health    || {};
+        var lbs    = visit.labs      || {};
+
+        var patientName     = patient.name_ar || per.name_ar || '—';
+        var patientAge      = per.age || '—';
+        var visitDate       = visit.date || '—';
+
+        var lines = [];
+
+        // ── ترحيب ──
+        lines.push('السلام عليكم ورحمة الله وبركاته 🌿');
+        lines.push('مرحباً بك ' + patientName + '،');
+        lines.push('');
+
+        // ── رأس التقرير ──
+        lines.push('📋 هذا تقرير شامل بالمراجعة (' + visitDate + ') للمريض ' + patientName + '، العمر: ' + patientAge);
+        lines.push('');
+
+        // ── التشخيص الطبي ──
+        if (hlt.medical_diagnosis || hlt.current_complaint) {
+            lines.push('🩺 *التشخيص الطبي:*');
+            if (hlt.medical_diagnosis) lines.push('   ' + hlt.medical_diagnosis);
+            if (hlt.current_complaint) lines.push('   📌 الشكوى: ' + hlt.current_complaint);
+            lines.push('');
+        }
+
+        // ── التدخين والكحول ──
+        var smokingTxt = per.smoking
+            ? ('نعم' + (per.cigarettes_per_day ? ' (' + per.cigarettes_per_day + ' سيجارة/يوم)' : ''))
+            : 'لا';
+        var alcoholTxt = per.alcohol
+            ? ('نعم' + (per.liters_per_week ? ' (' + per.liters_per_week + ' لتر/أسبوع)' : ''))
+            : 'لا';
+        lines.push('🚬 التدخين: ' + smokingTxt + '   🍷 الكحول: ' + alcoholTxt);
+        lines.push('');
+        lines.push('━━━━━━━━━━━━━━━━━━');
+
+        // ── القياسات والعلامات الحيوية ──
+        lines.push('📏 *القياسات والعلامات الحيوية:*');
+        if (phy.height)              lines.push('   • الطول: ' + phy.height + ' سم');
+        if (phy.weight) {
+            var bmi = '';
+            var h = parseFloat(phy.height), w = parseFloat(phy.weight);
+            if (h > 0 && w > 0) bmi = '  (BMI: ' + (w / ((h/100)*(h/100))).toFixed(1) + ')';
+            lines.push('   • الوزن: ' + phy.weight + ' كغ' + bmi);
+        }
+        if (vitals.bp_sys && vitals.bp_dias) lines.push('   • ضغط الدم: ' + vitals.bp_sys + '/' + vitals.bp_dias + ' mmHg');
+        if (vitals.pulse)            lines.push('   • النبض: ' + vitals.pulse + ' ن/د');
+        if (vitals.temp)             lines.push('   • الحرارة: ' + vitals.temp + ' °C');
+        if (vitals.spo2)             lines.push('   • SpO₂: ' + vitals.spo2 + '%');
+        if (vitals.rr)               lines.push('   • معدل التنفس: ' + vitals.rr + ' ن/د');
+        lines.push('');
+        lines.push('━━━━━━━━━━━━━━━━━━');
+
+        // ── الحالة الصحية ──
+        lines.push('🏥 *الحالة الصحية:*');
+        if (hlt.chronic_diseases)    lines.push('   • الأمراض المزمنة: ' + hlt.chronic_diseases);
+        if (hlt.previous_surgeries)  lines.push('   • العمليات السابقة: ' + hlt.previous_surgeries);
+        if (hlt.allergies)           lines.push('   • الحساسية: ' + hlt.allergies);
+        if (hlt.family_history)      lines.push('   • التاريخ العائلي: ' + hlt.family_history);
+        if (hlt.medications && hlt.medications.length > 0) {
+            lines.push('   💊 الأدوية الموصوفة:');
+            hlt.medications.forEach(function(m) {
+                var med = '      - ' + (m.name || '');
+                if (m.dose) med += '، ' + m.dose;
+                if (m.frequency_num && m.frequency_unit) med += '، ' + m.frequency_num + ' مرة/' + m.frequency_unit;
+                lines.push(med);
+            });
+        }
+        lines.push('');
+        lines.push('━━━━━━━━━━━━━━━━━━');
+
+        // ── الإجراءات التشخيصية والمخبرية ──
+        var labFields = [
+            ['wbc','WBC'],['rbc','RBC'],['hb','HB'],['hba1c','HbA1c'],
+            ['glucose_fast','سكر الصيام'],['glucose_random','سكر عشوائي'],
+            ['cr','Creatinine'],['urea','Urea'],['alt','ALT'],['ast','AST'],
+            ['cholesterol','كوليسترول كلي'],['tg','TG'],['hdl','HDL'],['ldl','LDL'],
+            ['vit_d3','Vit D3'],['tsh','TSH'],['t3','T3'],['t4','T4'],
+            ['uric_acid','حمض اليوريك'],['iron','الحديد'],['ferritin','فيريتين'],
+        ];
+        var labLines = [];
+        labFields.forEach(function(f) {
+            if (lbs[f[0]] !== undefined && lbs[f[0]] !== '') labLines.push('   • ' + f[1] + ': ' + lbs[f[0]]);
+        });
+        if (hlt.lab_notes) labLines.push('   📝 ملاحظات: ' + hlt.lab_notes);
+        if (labLines.length > 0) {
+            lines.push('🧪 *الإجراءات التشخيصية والمخبرية:*');
+            labLines.forEach(function(l){ lines.push(l); });
+            lines.push('');
+            lines.push('━━━━━━━━━━━━━━━━━━');
+        }
+
+        // ── معلومات الأخصائي المعالج ──
+        lines.push('👨‍⚕️ *الأخصائي المعالج:*');
+        if (doctorName)     lines.push('   • الاسم: ' + doctorName);
+        if (specialty)      lines.push('   • التخصص: ' + specialty);
+        if (clinicName)     lines.push('   • العيادة: ' + clinicName);
+        if (clinicPhone)    lines.push('   • رقم الموبايل: ' + clinicPhone);
+        if (clinicWa)       lines.push('   • واتساب: ' + clinicWa);
+        if (clinicAddress)  lines.push('   • العنوان: ' + clinicAddress);
+        lines.push('');
+        lines.push('━━━━━━━━━━━━━━━━━━');
+
+        // ── موعد المراجعة القادم ──
+        var nowDate = new Date();
+        var todayISO = nowDate.toISOString().slice(0,10);
+        var appointments = (window._appData && window._appData.appointments) || [];
+        var upcoming = appointments.filter(function(a) {
+            return (a.patientId === pid || a.patientName === patientName) && a.date >= todayISO && !a.dismissed;
+        }).sort(function(a,b){ return a.date.localeCompare(b.date); });
+        if (upcoming.length > 0) {
+            var appt = upcoming[0];
+            var timeStr = appt.time ? ' الساعة ' + appt.time : '';
+            var noteStr = appt.note ? ' — ' + appt.note : '';
+            lines.push('📅 *موعد المراجعة القادم:*');
+            lines.push('   ' + appt.date + timeStr + noteStr);
+            lines.push('   نرجو الالتزام بالموعد المحدد 🙏');
+        } else {
+            lines.push('📅 يرجى التواصل معنا لتحديد موعد المراجعة القادمة.');
+        }
+        lines.push('');
+        lines.push('━━━━━━━━━━━━━━━━━━');
+
+        // ── الختام ──
+        lines.push('نشكركم على ثقتكم الغالية 💙');
+        lines.push('نتمنى لكم دوام الصحة والعافية 🌿');
+        if (clinicName) lines.push(clinicName);
+
+        var msg = lines.join('\n');
         window.open('https://wa.me/' + waNum + '?text=' + encodeURIComponent(msg), '_blank');
     };
 
@@ -18659,37 +18785,151 @@ window._waReminder = function(patientName, rawNumber) {
 window._waReport = function(patientName, rawNumber) {
     var visit = currentViewVisit;
     var acc = getCurrentAccount();
-    var doctorName = acc ? (acc.displayName || acc.username) : (appData.currentUser === 'developer' ? (getCurrentAccount()?.displayName || 'الادمن') : 'الطبيب');
-    var clinicName = acc ? (acc.clinic || '') : '';
-    var clinicPhone = acc ? (acc.phone || '') : '';
+    var doctorName   = acc ? (acc.displayName || acc.username || '') : '';
+    var specialty    = acc ? (acc.specialty || '') : '';
+    var clinicName   = acc ? (acc.clinic    || '') : '';
+    var clinicPhone  = acc ? (acc.phone     || '') : '';
+    var clinicWa     = acc ? (acc.whatsapp  || '') : '';
+    var clinicAddress= acc ? (acc.address   || '') : '';
 
-    var reportLines = [];
+    var lines = [];
+
+    // ── رسالة ترحيب ──
+    lines.push('السلام عليكم ورحمة الله وبركاته 🌿');
+    lines.push('مرحباً بك ' + (patientName || '') + '،');
+    lines.push('');
+
     if (visit) {
-        if (visit.physical) {
-            var ph = visit.physical;
-            var h = parseFloat(ph.height), w = parseFloat(ph.weight);
-            var bmiLine = (h > 0 && w > 0) ? ' | BMI: ' + (w / ((h/100)*(h/100))).toFixed(1) : '';
-            reportLines.push('⚖️ الوزن: ' + (ph.weight || '—') + ' كغ | الطول: ' + (ph.height || '—') + ' سم' + bmiLine);
+        var per  = visit.personal  || {};
+        var phy  = visit.physical  || {};
+        var vit  = visit.vitals    || {};
+        var hlt  = visit.health    || {};
+        var lbs  = visit.labs      || {};
+
+        // ── رأس التقرير ──
+        var patientFullName = per.name_ar || patientName || '—';
+        var patientAge      = per.age     || '—';
+        var visitDate       = visit.date  || '—';
+        lines.push('📋 هذا تقرير شامل بالمراجعة (' + visitDate + ') للمريض ' + patientFullName + '، العمر: ' + patientAge);
+        lines.push('');
+
+        // ── التشخيص الطبي ──
+        if (hlt.medical_diagnosis || hlt.current_complaint) {
+            lines.push('🩺 *التشخيص الطبي:*');
+            if (hlt.medical_diagnosis)  lines.push('   ' + hlt.medical_diagnosis);
+            if (hlt.current_complaint)  lines.push('   📌 الشكوى: ' + hlt.current_complaint);
+            lines.push('');
         }
-        if (visit.health) {
-            if (visit.health.chronic_diseases) reportLines.push('🏥 الأمراض المزمنة: ' + visit.health.chronic_diseases);
-            if (visit.health.current_complaint) reportLines.push('📋 الشكوى: ' + visit.health.current_complaint);
+
+        // ── التدخين والكحول ──
+        var smokingTxt = per.smoking
+            ? ('نعم' + (per.cigarettes_per_day ? ' (' + per.cigarettes_per_day + ' سيجارة/يوم)' : ''))
+            : 'لا';
+        var alcoholTxt = per.alcohol
+            ? ('نعم' + (per.liters_per_week ? ' (' + per.liters_per_week + ' لتر/أسبوع)' : ''))
+            : 'لا';
+        lines.push('🚬 التدخين: ' + smokingTxt + '   🍷 الكحول: ' + alcoholTxt);
+        lines.push('');
+        lines.push('━━━━━━━━━━━━━━━━━━');
+
+        // ── القياسات والعلامات الحيوية ──
+        lines.push('📏 *القياسات والعلامات الحيوية:*');
+        if (phy.height)            lines.push('   • الطول: ' + phy.height + ' سم');
+        if (phy.weight) {
+            var bmi = '';
+            var h = parseFloat(phy.height), w = parseFloat(phy.weight);
+            if (h > 0 && w > 0) bmi = '  (BMI: ' + (w / ((h/100)*(h/100))).toFixed(1) + ')';
+            lines.push('   • الوزن: ' + phy.weight + ' كغ' + bmi);
         }
-        if (visit.vitals) {
-            var v = visit.vitals;
-            var vitParts = [];
-            if (v.bp_sys && v.bp_dias) vitParts.push('الضغط: ' + v.bp_sys + '/' + v.bp_dias);
-            if (v.pulse) vitParts.push('النبض: ' + v.pulse);
-            if (v.spo2) vitParts.push('SpO2: ' + v.spo2 + '%');
-            if (vitParts.length) reportLines.push('💓 العلامات الحيوية: ' + vitParts.join(' | '));
+        if (vit.bp_sys && vit.bp_dias) lines.push('   • ضغط الدم: ' + vit.bp_sys + '/' + vit.bp_dias + ' mmHg');
+        if (vit.pulse)                 lines.push('   • النبض: ' + vit.pulse + ' ن/د');
+        if (vit.temp)                  lines.push('   • الحرارة: ' + vit.temp + ' °C');
+        if (vit.spo2)                  lines.push('   • SpO₂: ' + vit.spo2 + '%');
+        if (vit.rr)                    lines.push('   • معدل التنفس: ' + vit.rr + ' ن/د');
+        lines.push('');
+        lines.push('━━━━━━━━━━━━━━━━━━');
+
+        // ── الحالة الصحية ──
+        lines.push('🏥 *الحالة الصحية:*');
+        if (hlt.chronic_diseases)  lines.push('   • الأمراض المزمنة: ' + hlt.chronic_diseases);
+        if (hlt.previous_surgeries) lines.push('   • العمليات السابقة: ' + hlt.previous_surgeries);
+        if (hlt.allergies)         lines.push('   • الحساسية: ' + hlt.allergies);
+        if (hlt.family_history)    lines.push('   • التاريخ العائلي: ' + hlt.family_history);
+        if (hlt.medications && hlt.medications.length > 0) {
+            lines.push('   💊 الأدوية الموصوفة:');
+            hlt.medications.forEach(function(m) {
+                var med = '      - ' + (m.name || '');
+                if (m.dose)           med += '، ' + m.dose;
+                if (m.frequency_num && m.frequency_unit) med += '، ' + m.frequency_num + ' مرة/' + m.frequency_unit;
+                lines.push(med);
+            });
+        }
+        lines.push('');
+        lines.push('━━━━━━━━━━━━━━━━━━');
+
+        // ── الإجراءات التشخيصية والمخبرية ──
+        var labFields = [
+            ['wbc','WBC'],['rbc','RBC'],['hb','HB'],['hba1c','HbA1c'],
+            ['glucose_fast','سكر الصيام'],['glucose_random','سكر عشوائي'],
+            ['cr','Creatinine'],['urea','Urea'],['alt','ALT'],['ast','AST'],
+            ['cholesterol','كوليسترول كلي'],['tg','TG'],['hdl','HDL'],['ldl','LDL'],
+            ['vit_d3','Vit D3'],['tsh','TSH'],['t3','T3'],['t4','T4'],
+            ['uric_acid','حمض اليوريك'],['iron','الحديد'],['ferritin','فيريتين'],
+        ];
+        var labLines = [];
+        labFields.forEach(function(f) {
+            if (lbs[f[0]] !== undefined && lbs[f[0]] !== '') labLines.push('   • ' + f[1] + ': ' + lbs[f[0]]);
+        });
+        if (hlt.lab_notes) labLines.push('   📝 ملاحظات: ' + hlt.lab_notes);
+        if (labLines.length > 0) {
+            lines.push('🧪 *الإجراءات التشخيصية والمخبرية:*');
+            labLines.forEach(function(l){ lines.push(l); });
+            lines.push('');
+            lines.push('━━━━━━━━━━━━━━━━━━');
         }
     }
 
-    var reportBody = reportLines.length ? reportLines.join('\n') : '(لا توجد بيانات في هذه الزيارة)';
+    // ── معلومات الأخصائي المعالج ──
+    lines.push('👨‍⚕️ *الأخصائي المعالج:*');
+    if (doctorName)    lines.push('   • الاسم: ' + doctorName);
+    if (specialty)     lines.push('   • التخصص: ' + specialty);
+    if (clinicName)    lines.push('   • العيادة: ' + clinicName);
+    if (clinicPhone)   lines.push('   • رقم الموبايل: ' + clinicPhone);
+    if (clinicWa)      lines.push('   • واتساب: ' + clinicWa);
+    if (clinicAddress) lines.push('   • العنوان: ' + clinicAddress);
+    lines.push('');
+    lines.push('━━━━━━━━━━━━━━━━━━');
+
+    // ── موعد المراجعة القادم ──
+    var now = new Date();
+    var todayISO = now.toISOString().slice(0,10);
+    var patient = currentViewPatient;
+    var upcoming = (appData.appointments || []).filter(function(a) {
+        var nameMatch = a.patientName === patientName ||
+            (patient && (a.patientId === patient.id || a.patientName === patient.name_ar));
+        return nameMatch && a.date >= todayISO && !a.dismissed;
+    }).sort(function(a,b){ return a.date.localeCompare(b.date); });
+    if (upcoming.length > 0) {
+        var appt = upcoming[0];
+        var timeStr = appt.time ? ' الساعة ' + appt.time : '';
+        var noteStr = appt.note ? ' — ' + appt.note : '';
+        lines.push('📅 *موعد المراجعة القادم:*');
+        lines.push('   ' + appt.date + timeStr + noteStr);
+        lines.push('   نرجو الالتزام بالموعد المحدد 🙏');
+    } else {
+        lines.push('📅 يرجى التواصل معنا لتحديد موعد المراجعة القادمة.');
+    }
+    lines.push('');
+    lines.push('━━━━━━━━━━━━━━━━━━');
+
+    // ── رسالة الختام ──
+    lines.push('نشكركم على ثقتكم الغالية 💙');
+    lines.push('نتمنى لكم دوام الصحة والعافية 🌿');
+    if (clinicName) lines.push(clinicName);
 
     openWaModal({
         title: '📊 إرسال تقرير الحالة',
-        defaultText: 'السلام عليكم ' + (patientName || '') + ',\nنفيدكم بملخص حالتكم الصحية:\n\n' + reportBody + '\n\n' + (clinicName ? '🏥 ' + clinicName + '\n' : '') + (clinicPhone ? '📞 ' + clinicPhone + '\n' : '') + (doctorName ? '👨‍⚕️ ' + doctorName : ''),
+        defaultText: lines.join('\n'),
         rawNumber: rawNumber
     });
 };
