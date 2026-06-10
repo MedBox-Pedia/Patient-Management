@@ -12059,6 +12059,10 @@ window.addEventListener('resize', setTopbarHeight);
         const patient = appData.patients.find(p => p.id === patientId);
         if (!patient) return;
 
+        // حفظ المريض الحالي ليكون متاحاً لزر Gemini في التول بار
+        currentViewPatient = patient;
+        window.currentViewPatient = patient;
+
         // إخفاء رسالة الترحيب وإظهار لوحة العرض
         welcomeMessage.classList.add('hidden');
         patientDisplayArea.classList.remove('hidden');
@@ -12494,6 +12498,8 @@ window.addEventListener('resize', setTopbarHeight);
         // حفظ المريض والزيارة الحالية للطباعة
         currentViewPatient = patient;
         currentViewVisit   = visit;
+        window.currentViewPatient = patient;
+        window.currentViewVisit   = visit;
 
         // إخفاء الداش بورد وإظهار لوحة بيانات المريض
         welcomeMessage.classList.add('hidden');
