@@ -7881,6 +7881,47 @@ window.addEventListener('resize', setTopbarHeight);
         }
     }
 
+    // إغلاق تلقائي للقائمة الجانبية على الموبايل عند الضغط على أي زر داخلها
+    (function() {
+        var sidebarEl = document.getElementById('sidebar');
+        if (!sidebarEl) return;
+
+        // العناصر التي تفتح قوائم فرعية داخل السايدبار — لا تُغلقه
+        var noCloseIds = [
+            'sidebar-search-toggle-btn', // زر البحث (يفتح حقل البحث)
+            'sidebar-sort-btn',           // زر الفرز (يفتح لوحة الفرز)
+            'sidebar-close-btn',          // زر الإغلاق (يغلق بنفسه)
+            'header-add-patient-btn',     // زر إضافة مريض (يفتح modal)
+            'patient-search-input',       // حقل البحث (input)
+        ];
+        // العناصر الأب التي لا تُغلق السايدبار (قوائم فرعية داخلية)
+        var noCloseParentIds = [
+            'sidebar-sort-panel',         // لوحة خيارات الفرز
+            'sidebar-search-expand-wrap', // حاوية البحث
+        ];
+
+        sidebarEl.addEventListener('click', function(e) {
+            if (window.innerWidth >= 1024) return;
+
+            var target = e.target;
+
+            // تجاهل النقر على عناصر بعيدة عن الزر/الرابط
+            var el = target.closest('button, a, .sort-option, .patient-card');
+            if (!el) return;
+
+            // تجاهل إذا كان العنصر في قائمة الاستثناءات
+            if (noCloseIds.includes(el.id)) return;
+
+            // تجاهل إذا كان العنصر داخل منطقة فرعية مستثناة
+            for (var i = 0; i < noCloseParentIds.length; i++) {
+                if (el.closest('#' + noCloseParentIds[i])) return;
+            }
+
+            // تأخير بسيط ليكتمل الحدث الأصلي أولاً
+            setTimeout(closeSidebar, 150);
+        });
+    })();
+
     // تمييز المريض في القائمة الجانبية بتأثير وميض
     window.highlightPatientInSidebar = function(patientId) {
         // فتح القائمة الجانبية أولاً
