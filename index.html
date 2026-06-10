@@ -16810,54 +16810,25 @@ window.addEventListener('resize', setTopbarHeight);
         const p  = visitData.personal;
         const h  = visitData.health;
         const specInfo = getSpecialistInfoForPrint();
-        const specialistName = specInfo.fullName;
-        const today = new Date().toLocaleDateString('ar-SA', {year:'numeric', month:'long', day:'numeric'});
 
-        // الأدوية
-        const medsHtml = (h.medications && h.medications.length > 0)
-            ? `<table class="print-table" style="margin-top:6px">
-                <thead><tr>
-                    <th>الدواء</th><th>تاريخ البداية</th><th>التركيز</th><th>الجرعة</th><th>المدة</th>
-                </tr></thead>
-                <tbody>
-                    ${h.medications.map(m => `<tr>
-                        <td>${m.name||'—'}</td><td>${m.start||'—'}</td>
-                        <td>${m.concentration||'—'}</td><td>${m.dose||'—'}</td><td>${m.duration||'—'}</td>
-                    </tr>`).join('')}
-                </tbody>
-               </table>`
-            : '<p style="color:#6b7280;font-size:12px;margin:4px 0">لا توجد أدوية مسجلة</p>';
-
-        // السوابق التحسسية
-        const allergiesHtml = (h.allergies && h.allergies.trim())
-            ? `<p style="background:#fef9c3;border:1px solid #fde047;border-radius:6px;padding:8px 12px;font-size:13px;margin:4px 0">⚠️ ${h.allergies}</p>`
-            : '<p style="color:#6b7280;font-size:12px;margin:4px 0">لا توجد سوابق تحسسية مسجلة</p>';
-
-        // التشخيص الطبي
-        const dietDiagnosisHtml = (h.medical_diagnosis && h.medical_diagnosis.trim())
-            ? `<div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:6px;padding:8px 12px;font-size:13px;margin:4px 0"><strong>🩺 التشخيص الطبي:</strong> ${h.medical_diagnosis}</div>`
-            : '';
-
-        // جدول قوائم التبادل
+        // ── جدول قوائم التبادل (الحصص الغذائية) ──
         const rowsHtml = exchangeRows.length > 0
             ? exchangeRows.map((r, idx) => `
                 <tr style="background:${idx%2===0?'#fff':'#f9fafb'}">
-                    <td>${r.name}</td>
-                    <td>${r.servings}</td>
-                    <td>${r.carb.toFixed(1)}</td>
-                    <td>${r.prot.toFixed(1)}</td>
-                    <td>${r.fat.toFixed(1)}</td>
-                    <td>${r.kcal.toFixed(1)}</td>
+                    <td style="padding:6px 8px;border:1px solid #e5e7eb;text-align:right;">${r.name}</td>
+                    <td style="padding:6px 8px;border:1px solid #e5e7eb;text-align:center;">${r.servings}</td>
+                    <td style="padding:6px 8px;border:1px solid #e5e7eb;text-align:center;color:#15803d;">${r.carb.toFixed(1)}</td>
+                    <td style="padding:6px 8px;border:1px solid #e5e7eb;text-align:center;color:#1d4ed8;">${r.prot.toFixed(1)}</td>
+                    <td style="padding:6px 8px;border:1px solid #e5e7eb;text-align:center;color:#c2410c;">${r.fat.toFixed(1)}</td>
+                    <td style="padding:6px 8px;border:1px solid #e5e7eb;text-align:center;color:#0790AC;">${r.kcal.toFixed(1)}</td>
                 </tr>`).join('')
             : `<tr><td colspan="6" style="text-align:center;color:#9ca3af;padding:16px">لا توجد عناصر في جدول الحصص الغذائية</td></tr>`;
-
-        // مجاميع
         const totCarb = exchangeRows.reduce((s,r)=>s+r.carb,0).toFixed(1);
         const totProt = exchangeRows.reduce((s,r)=>s+r.prot,0).toFixed(1);
         const totFat  = exchangeRows.reduce((s,r)=>s+r.fat, 0).toFixed(1);
         const totKcal = exchangeRows.reduce((s,r)=>s+r.kcal,0).toFixed(1);
 
-        // القيم الهدف من الحاسبة
+        // ── الأهداف الغذائية ──
         const targetCarb = document.getElementById('carb-grams')?.textContent || '—';
         const targetProt = document.getElementById('prot-grams')?.textContent || '—';
         const targetFat  = document.getElementById('fat-grams')?.textContent  || '—';
@@ -16866,6 +16837,122 @@ window.addEventListener('resize', setTopbarHeight);
             (parseFloat(document.getElementById('prot-kcal')?.textContent)||0) +
             (parseFloat(document.getElementById('fat-kcal')?.textContent)||0)
         ).toFixed(0);
+
+        // ── توزيع الوجبات ──
+        const MEAL_LABELS_PRINT = {
+            breakfast: { label: 'فطور',   icon: '🌅' },
+            snack1:    { label: 'سناك 1', icon: '🍎' },
+            lunch:     { label: 'غداء',   icon: '☀️' },
+            snack2:    { label: 'سناك 2', icon: '🥜' },
+            dinner:    { label: 'عشاء',   icon: '🌙' },
+            snack3:    { label: 'سناك 3', icon: '🍵' },
+        };
+        const dist = window._mealDistribution;
+        let mealDistHtml = '';
+        if (dist && dist.distributed && dist.distributed.length > 0) {
+            const kcalPerPart = (dist.totalParts > 0 && dist.targetKcal > 0)
+                ? dist.targetKcal / dist.totalParts : 0;
+            mealDistHtml = `
+            <div class="print-no-break" style="margin-bottom:10px;">
+                <div style="font-size:12px;font-weight:700;color:#0790AC;border-right:4px solid #0790AC;padding-right:8px;margin-bottom:6px;">🍽️ توزيع الوجبات</div>
+                <div style="background:#f0f9ff;border:1px solid #bae6fd;border-radius:6px;padding:6px 10px;margin-bottom:6px;font-size:11px;color:#374151;">
+                    إجمالي الأجزاء: <strong style="color:#0790AC;">${dist.totalParts}</strong> &nbsp;|&nbsp;
+                    السعرات الهدف: <strong style="color:#15803d;">${dist.targetKcal}</strong> سعرة
+                </div>
+                <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:5px;">
+                    ${dist.distributed.map(function(m) {
+                        const info = MEAL_LABELS_PRINT[m.key] || { label: m.label || m.key, icon: '🍽️' };
+                        const mKcal = kcalPerPart > 0 ? Math.round((m.parts / dist.totalParts) * dist.targetKcal) : null;
+                        const perc  = dist.totalParts > 0 ? Math.round((m.parts / dist.totalParts) * 100) : 0;
+                        return '<div style="background:#fff;border:1px solid #bae6fd;border-radius:6px;padding:5px 7px;text-align:center;">'
+                            + '<div style="font-size:13px;">' + info.icon + '</div>'
+                            + '<div style="font-size:10px;font-weight:700;color:#0790AC;">' + info.label + '</div>'
+                            + '<div style="font-size:11px;font-weight:700;color:#374151;">' + m.parts + ' جزء (' + perc + '%)</div>'
+                            + (mKcal ? '<div style="font-size:10px;color:#15803d;font-weight:600;">' + mKcal + ' سعرة</div>' : '')
+                            + '</div>';
+                    }).join('')}
+                </div>
+            </div>`;
+        }
+
+        // ── جدول الحمية الغذائية (جميع الأيام مع البدائل) ──
+        const EXCHANGE_INFO_PRINT = {
+            starch:      { name: 'النشويات',           emoji:'🍞' },
+            fruit:       { name: 'الفواكه',            emoji:'🍎' },
+            vegetable:   { name: 'الخضار',             emoji:'🥦' },
+            meat_low:    { name: 'لحوم قليلة الدهون', emoji:'🥩' },
+            meat_medium: { name: 'لحوم متوسطة الدهون',emoji:'🍗' },
+            meat_high:   { name: 'لحوم عالية الدهون', emoji:'🥓' },
+            milk_skim:   { name: 'حليب خالي الدسم',   emoji:'🥛' },
+            milk_low:    { name: 'حليب قليل الدسم',   emoji:'🥛' },
+            milk_full:   { name: 'حليب كامل الدسم',   emoji:'🥛' },
+            fat:         { name: 'الدهون',             emoji:'🫒' },
+        };
+        let mealPlanPrintHtml = '';
+        if (mealPlanRows && mealPlanRows.length > 0) {
+            // الوجبات المختارة من checkboxes
+            const selectedMealsCbs = [];
+            document.querySelectorAll('.meal-checkbox:checked').forEach(function(cb) {
+                selectedMealsCbs.push({ key: cb.value, label: cb.dataset.label });
+            });
+            const meals = selectedMealsCbs.length > 0 ? selectedMealsCbs : [];
+
+            // رأس الجدول
+            let mealPlanThead = '<tr style="background:#0790AC;color:white;font-size:11px;">'
+                + '<th style="padding:6px 8px;border:1px solid #ccc;min-width:80px;text-align:right;">التاريخ</th>'
+                + '<th style="padding:6px 8px;border:1px solid #ccc;min-width:60px;">اليوم</th>';
+            meals.forEach(function(m) {
+                const info = MEAL_LABELS_PRINT[m.key] || { label: m.label, icon: '🍽️' };
+                const mKcal = (dist && dist.distributed) ? (function(){
+                    const dm = dist.distributed.find(function(d){ return d.key === m.key; });
+                    return dm && dist.totalParts > 0 && dist.targetKcal > 0
+                        ? Math.round((dm.parts / dist.totalParts) * dist.targetKcal) : null;
+                })() : null;
+                mealPlanThead += '<th style="padding:6px 8px;border:1px solid #ccc;min-width:130px;">'
+                    + info.icon + ' ' + info.label
+                    + (mKcal ? '<br><span style="font-size:9px;opacity:0.85;">' + mKcal + ' سعرة</span>' : '')
+                    + '</th>';
+            });
+            mealPlanThead += '</tr>';
+
+            // صفوف الأيام
+            let mealPlanTbody = '';
+            mealPlanRows.forEach(function(row, ri) {
+                const bg = ri % 2 === 0 ? '#fff' : '#f9fafb';
+                let tr = '<tr style="background:' + bg + ';font-size:11px;vertical-align:top;">'
+                    + '<td style="padding:6px 8px;border:1px solid #e5e7eb;white-space:nowrap;font-weight:600;color:#374151;">'
+                    + (row.date || '—') + '</td>'
+                    + '<td style="padding:6px 8px;border:1px solid #e5e7eb;text-align:center;font-weight:600;color:#0790AC;">'
+                    + (row.day || '—') + '</td>';
+                meals.forEach(function(m) {
+                    const items = (row.cells && row.cells[m.key]) ? row.cells[m.key] : [];
+                    const cellContent = items.length === 0
+                        ? '<span style="color:#d1d5db;">—</span>'
+                        : items.map(function(item) {
+                            const exInfo = EXCHANGE_INFO_PRINT[item.category] || { emoji: '🍽️' };
+                            return '<div style="margin-bottom:2px;line-height:1.4;">'
+                                + exInfo.emoji + ' <strong>' + item.type + '</strong>'
+                                + ' × ' + item.servings + ' حصة'
+                                + (item.quantity ? '<br><span style="font-size:9px;color:#6b7280;">' + item.quantity + '</span>' : '')
+                                + '</div>';
+                        }).join('');
+                    tr += '<td style="padding:6px 8px;border:1px solid #e5e7eb;">' + cellContent + '</td>';
+                });
+                tr += '</tr>';
+                mealPlanTbody += tr;
+            });
+
+            mealPlanPrintHtml = `
+            <div class="print-no-break" style="margin-bottom:10px;margin-top:12px;">
+                <div style="font-size:12px;font-weight:700;color:#0790AC;border-right:4px solid #0790AC;padding-right:8px;margin-bottom:6px;">📅 جدول الحمية الغذائية</div>
+                <div style="overflow-x:auto;">
+                <table style="width:100%;border-collapse:collapse;font-family:'Cairo',sans-serif;">
+                    <thead>${mealPlanThead}</thead>
+                    <tbody>${mealPlanTbody}</tbody>
+                </table>
+                </div>
+            </div>`;
+        }
 
         const printArea = document.getElementById('diet-print-area');
         getQRImageHTMLForPrint(patientData, 80).then(function(dietQrHtml) {
@@ -16880,15 +16967,9 @@ window.addEventListener('resize', setTopbarHeight);
                 <strong>⚠️ تنبيه حساسية:</strong> ${h.allergies}
             </div>` : ''}
 
-            <!-- الأدوية المستخدمة -->
-            <div class="print-no-break" style="margin:10px 0 8px 0;">
-                <div style="font-size:12px;font-weight:700;color:#374151;border-right:4px solid #0790AC;padding-right:8px;margin-bottom:6px;">الأدوية المستخدمة</div>
-                ${medsHtml}
-            </div>
-
             <!-- الأهداف الغذائية -->
-            <div class="print-no-break" style="margin-bottom:10px;">
-                <div style="font-size:12px;font-weight:700;color:#374151;border-right:4px solid #8b5cf6;padding-right:8px;margin-bottom:6px;">🎯 الأهداف الغذائية المحسوبة</div>
+            <div class="print-no-break" style="margin:10px 0 8px 0;">
+                <div style="font-size:12px;font-weight:700;color:#0790AC;border-right:4px solid #0790AC;padding-right:8px;margin-bottom:6px;">🎯 الأهداف الغذائية المحسوبة</div>
                 <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;text-align:center;">
                     <div style="background:#f0fdf4;border:1px solid #86efac;border-radius:6px;padding:6px;">
                         <div style="font-size:9px;color:#6b7280;">كربوهيدرات</div>
@@ -16909,9 +16990,9 @@ window.addEventListener('resize', setTopbarHeight);
                 </div>
             </div>
 
-            <!-- جدول البرنامج الغذائي -->
+            <!-- جدول الحصص الغذائية -->
             <div style="margin-bottom:8px;">
-                <div style="font-size:12px;font-weight:700;color:#374151;border-right:4px solid #0790AC;padding-right:8px;margin-bottom:6px;">📊 جدول الحصص الغذائية</div>
+                <div style="font-size:12px;font-weight:700;color:#0790AC;border-right:4px solid #0790AC;padding-right:8px;margin-bottom:6px;">📊 جدول الحصص الغذائية</div>
                 <table class="print-table" style="width:100%;border-collapse:collapse;font-size:11.5px;">
                     <thead>
                         <tr style="background:#0790AC;color:white;">
@@ -16927,17 +17008,23 @@ window.addEventListener('resize', setTopbarHeight);
                     <tfoot>
                         <tr style="background:#f3f4f6;font-weight:700;border-top:2px solid #9ca3af;">
                             <td style="padding:7px 8px;border:1px solid #ccc;text-align:right;">الإجمالي</td>
-                            <td style="padding:7px 6px;border:1px solid #ccc;">—</td>
-                            <td style="padding:7px 6px;border:1px solid #ccc;color:#15803d;">${totCarb}</td>
-                            <td style="padding:7px 6px;border:1px solid #ccc;color:#1d4ed8;">${totProt}</td>
-                            <td style="padding:7px 6px;border:1px solid #ccc;color:#c2410c;">${totFat}</td>
-                            <td style="padding:7px 6px;border:1px solid #ccc;color:#0790AC;">${totKcal}</td>
+                            <td style="padding:7px 6px;border:1px solid #ccc;text-align:center;">—</td>
+                            <td style="padding:7px 6px;border:1px solid #ccc;text-align:center;color:#15803d;">${totCarb}</td>
+                            <td style="padding:7px 6px;border:1px solid #ccc;text-align:center;color:#1d4ed8;">${totProt}</td>
+                            <td style="padding:7px 6px;border:1px solid #ccc;text-align:center;color:#c2410c;">${totFat}</td>
+                            <td style="padding:7px 6px;border:1px solid #ccc;text-align:center;color:#0790AC;">${totKcal}</td>
                         </tr>
                     </tfoot>
                 </table>
             </div>
 
-            <!-- ملاحظات البرنامج الغذائي -->
+            <!-- توزيع الوجبات -->
+            ${mealDistHtml}
+
+            <!-- جدول الحمية الغذائية -->
+            ${mealPlanPrintHtml}
+
+            <!-- ملاحظات -->
             <div class="print-no-break" style="background:#f0f9ff;border:1px solid #bae6fd;border-radius:8px;padding:8px 12px;margin:8px 0 12px 0;font-size:11.5px;color:#374151;">
                 <strong>ملاحظات:</strong> يرجى الالتزام بالحصص الغذائية المحددة وتوزيعها على وجبات منتظمة. استشر الأخصائي عند أي استفسار.
             </div>
@@ -16947,7 +17034,6 @@ window.addEventListener('resize', setTopbarHeight);
         </div>
         `;
 
-        // إظهار منطقة الطباعة ثم الطباعة ثم إخفاؤها
         printArea.style.display = 'block';
         window.print();
         setTimeout(() => { printArea.style.display = 'none'; }, 500);
