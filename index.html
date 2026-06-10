@@ -19558,6 +19558,7 @@ function disconnectGoogleDrive() {
 
 // ===== تجديد توكن Google تلقائياً عند العودة للمتصفح =====
 (function _setupTokenAutoRefresh() {
+    var _refreshTimeoutHandle = null;
 
     // تجديد صامت للتوكن عبر Google OAuth2
     function _tryRefreshToken() {
@@ -19576,6 +19577,7 @@ function disconnectGoogleDrive() {
                 scope: 'https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile',
                 prompt: '',
                 callback: function(response) {
+                    if (_refreshTimeoutHandle) { clearTimeout(_refreshTimeoutHandle); _refreshTimeoutHandle = null; }
                     if (response && !response.error && response.access_token) {
                         _cloudAccessToken = response.access_token;
                         _cloudTokenExpiry = Date.now() + (response.expires_in * 1000);
@@ -19601,9 +19603,47 @@ function disconnectGoogleDrive() {
                             var toggle = document.getElementById('auto-sync-toggle') || document.getElementById('topbar-auto-sync-toggle');
                             if (toggle && toggle.checked) startAutoSync();
                         }
+                    } else {
+                        // (إصلاح) فشل التجديد الصامت: لا نترك الحالة عالقة على "جارٍ التجديد" للأبد
+                        _cloudAccessToken = null;
+                        _cloudTokenExpiry = 0;
+                        window._cloudAccessToken = null;
+                        window._cloudTokenExpiry = 0;
+                        try {
+                            localStorage.removeItem('mbGoogleToken');
+                            localStorage.removeItem('mbGoogleTokenExpiry');
+                            localStorage.removeItem('mbGoogleUser');
+                        } catch(e) {}
+                        _googleAuthUser = null;
+                        window._googleAuthUser = null;
+                        if (typeof addSyncLog === 'function') addSyncLog('فشل تجديد الاتصال بـ Google تلقائياً، يرجى إعادة الاتصال يدوياً', 'error');
+                        updateCloudUI();
                     }
                 }
             });
+
+            // (إصلاح) مهلة أمان: إن لم يستجب callback خلال 8 ثوانٍ (iframe الصامت محجوب مثلاً)
+            // نخرج من حالة "جارٍ التجديد" العالقة بنفس منطق الفشل أعلاه
+            if (_refreshTimeoutHandle) clearTimeout(_refreshTimeoutHandle);
+            _refreshTimeoutHandle = setTimeout(function() {
+                _refreshTimeoutHandle = null;
+                if (!_cloudAccessToken || Date.now() >= _cloudTokenExpiry) {
+                    _cloudAccessToken = null;
+                    _cloudTokenExpiry = 0;
+                    window._cloudAccessToken = null;
+                    window._cloudTokenExpiry = 0;
+                    try {
+                        localStorage.removeItem('mbGoogleToken');
+                        localStorage.removeItem('mbGoogleTokenExpiry');
+                        localStorage.removeItem('mbGoogleUser');
+                    } catch(e) {}
+                    _googleAuthUser = null;
+                    window._googleAuthUser = null;
+                    if (typeof addSyncLog === 'function') addSyncLog('انتهت مهلة تجديد الاتصال بـ Google، يرجى إعادة الاتصال يدوياً', 'error');
+                    if (typeof updateCloudUI === 'function') updateCloudUI();
+                }
+            }, 8000);
+
             client.requestAccessToken({ prompt: '' });
         } catch(e) {}
     }
