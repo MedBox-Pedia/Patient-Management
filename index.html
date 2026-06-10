@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MedBox-Pedia v 3-2-0</title>
+    <title>MedBox-Pedia v 3-2-1</title>
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -3762,7 +3762,7 @@ window.addEventListener('resize', setTopbarHeight);
                         <img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" id="dash-logo-img" alt="MedBox Logo" style="width:52px;height:52px;object-fit:contain;border-radius:10px;background:rgba(255,255,255,0.15);padding:4px;flex-shrink:0;">
                         <div style="flex:1;min-width:0;">
                             <h2 style="color:#fff;font-size:1.2rem;font-weight:800;margin:0;letter-spacing:-0.3px;">MedBox – Pedia</h2>
-                            <p style="color:rgba(255,255,255,0.55);font-size:0.72rem;margin:1px 0 2px;letter-spacing:0.5px;font-family:'Courier New',monospace;font-weight:600;">V 3-2-0 | 6-6-26</p>
+                            <p style="color:rgba(255,255,255,0.55);font-size:0.72rem;margin:1px 0 2px;letter-spacing:0.5px;font-family:'Courier New',monospace;font-weight:600;">V 3-2-1 | 10-6-26</p>
                             <p style="color:rgba(255,255,255,0.82);font-size:0.82rem;margin:0;">وسيلة دعم شاملة للممارسين الصحيين</p>
                         </div>
                         <!-- بيانات العيادة مكان التاريخ في أقصى اليسار -->
@@ -4809,6 +4809,39 @@ window.addEventListener('resize', setTopbarHeight);
                                 <div class="lab-input-group">
                                     <input type="number" id="lab_pth" name="lab_pth" data-lab="pth" class="lab-input lab-field-input" step="any">
                                     <span id="lab_pth_status" class="lab-status-indicator"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- g) 🫀 الدهون ومتلازمة التمثيل الغذائي -->
+                        <h4 class="lab-subsection-title">g) الدهون ومتلازمة التمثيل الغذائي</h4>
+                        <div class="lab-grid">
+                            <div class="lab-field-card">
+                                <label for="lab_chol_total" class="lab-field-label">Total Cholesterol</label>
+                                <div class="lab-input-group">
+                                    <input type="number" id="lab_chol_total" name="lab_chol_total" data-lab="chol_total" class="lab-input lab-field-input" step="any">
+                                    <span id="lab_chol_total_status" class="lab-status-indicator"></span>
+                                </div>
+                            </div>
+                            <div class="lab-field-card">
+                                <label for="lab_tg" class="lab-field-label">Triglycerides (TG)</label>
+                                <div class="lab-input-group">
+                                    <input type="number" id="lab_tg" name="lab_tg" data-lab="tg" class="lab-input lab-field-input" step="any">
+                                    <span id="lab_tg_status" class="lab-status-indicator"></span>
+                                </div>
+                            </div>
+                            <div class="lab-field-card">
+                                <label for="lab_hdl" class="lab-field-label">HDL</label>
+                                <div class="lab-input-group">
+                                    <input type="number" id="lab_hdl" name="lab_hdl" data-lab="hdl" class="lab-input lab-field-input" step="any">
+                                    <span id="lab_hdl_status" class="lab-status-indicator"></span>
+                                </div>
+                            </div>
+                            <div class="lab-field-card">
+                                <label for="lab_ldl" class="lab-field-label">LDL</label>
+                                <div class="lab-input-group">
+                                    <input type="number" id="lab_ldl" name="lab_ldl" data-lab="ldl" class="lab-input lab-field-input" step="any">
+                                    <span id="lab_ldl_status" class="lab-status-indicator"></span>
                                 </div>
                             </div>
                         </div>
@@ -6172,6 +6205,14 @@ window.addEventListener('resize', setTopbarHeight);
             <label class="lab-req-item"><input type="checkbox" class="lab-req-checkbox" value="Testosterone"> <span class="text-sm text-gray-800">Testosterone — هرمون التستوستيرون</span></label>
             <label class="lab-req-item"><input type="checkbox" class="lab-req-checkbox" value="PTH"> <span class="text-sm text-gray-800">PTH — هرمون الغدة جارات الدرقية</span></label>
 
+            <!-- الدهون -->
+            <div class="pr-2 text-xs font-semibold text-gray-500 mb-1 mt-2">• الدهون ومتلازمة التمثيل الغذائي</div>
+            <label class="lab-req-item"><input type="checkbox" class="lab-req-checkbox" value="Total Cholesterol (الكولسترول الكلي)"> <span class="text-sm text-gray-800">Total Cholesterol — الكولسترول الكلي</span></label>
+            <label class="lab-req-item"><input type="checkbox" class="lab-req-checkbox" value="Triglycerides (TG / الشحوم الثلاثية)"> <span class="text-sm text-gray-800">Triglycerides (TG) — الشحوم الثلاثية</span></label>
+            <label class="lab-req-item"><input type="checkbox" class="lab-req-checkbox" value="HDL Cholesterol (الكولسترول الجيد)"> <span class="text-sm text-gray-800">HDL — الكولسترول الجيد (مرتفع الكثافة)</span></label>
+            <label class="lab-req-item"><input type="checkbox" class="lab-req-checkbox" value="LDL Cholesterol (الكولسترول الضار)"> <span class="text-sm text-gray-800">LDL — الكولسترول الضار (منخفض الكثافة)</span></label>
+            <label class="lab-req-item"><input type="checkbox" class="lab-req-checkbox" value="Lipid Profile كامل (TC, TG, HDL, LDL)"> <span class="text-sm text-gray-800">Lipid Profile كامل — TC, TG, HDL, LDL</span></label>
+
             <!-- خمائر القلب -->
             <div class="lab-req-section-title">❤️ خمائر القلب (Cardiac Enzymes)</div>
             <label class="lab-req-item"><input type="checkbox" class="lab-req-checkbox" value="Troponin"> <span class="text-sm text-gray-800">Troponin — التروبونين</span></label>
@@ -6597,6 +6638,11 @@ window.addEventListener('resize', setTopbarHeight);
         lh: { low: 1.7, high: 8.6 }, // (mIU/mL) - Male
         testo: { low: 280, high: 1100 }, // (ng/dL) - Male
         pth: { low: 10, high: 65 }, // (pg/mL)
+        // الدهون ومتلازمة التمثيل الغذائي
+        chol_total: { low: 0, high: 200 }, // (mg/dL) المثالي < 200
+        tg: { low: 0, high: 150 },         // (mg/dL) المثالي < 150
+        hdl: { low: 40, high: 999 },       // (mg/dL) رجال > 40 | نساء > 50
+        ldl: { low: 0, high: 100 },        // (mg/dL) المثالي < 100
         // الحقول الجديدة - تحاليل دموية
         mcv: { low: 80, high: 100 }, // (fL)
         mch: { low: 27, high: 33 }, // (pg)
@@ -7282,7 +7328,7 @@ window.addEventListener('resize', setTopbarHeight);
                                     </div>
                                     <div>
                                         <p class="text-xs text-gray-500 font-semibold">رقم الإصدار</p>
-                                        <p class="text-2xl font-black text-purple-600 ltr" dir="ltr">V3.2.0</p>
+                                        <p class="text-2xl font-black text-purple-600 ltr" dir="ltr">V3.2.1</p>
                                     </div>
                                 </div>
                                 <div class="bg-white px-4 py-2 rounded-xl border border-gray-200">
@@ -8729,6 +8775,8 @@ window.addEventListener('resize', setTopbarHeight);
                         <div id="rates-page-electrolytes" class="rates-grid"></div>
                         <h4 class="lab-subsection-title">f) الهرمونات</h4>
                         <div id="rates-page-hormones" class="rates-grid"></div>
+                        <h4 class="lab-subsection-title">g) الدهون ومتلازمة التمثيل الغذائي</h4>
+                        <div id="rates-page-lipids" class="rates-grid"></div>
                     </div>
                     <div class="lab-section">
                         <h3 class="lab-section-title">❤️ خمائر القلب (Cardiac Enzymes)</h3>
@@ -8826,6 +8874,12 @@ window.addEventListener('resize', setTopbarHeight);
             createRangeInput('t4','T4',ranges) + createRangeInput('fsh','FSH',ranges) +
             createRangeInput('lh','LH',ranges) + createRangeInput('testo','Testosterone',ranges) +
             createRangeInput('pth','PTH',ranges);
+
+        document.getElementById('rates-page-lipids').innerHTML =
+            createRangeInput('chol_total','Total Cholesterol',ranges) +
+            createRangeInput('tg','Triglycerides (TG)',ranges) +
+            createRangeInput('hdl','HDL',ranges) +
+            createRangeInput('ldl','LDL',ranges);
 
         document.getElementById('rates-page-cardiac').innerHTML =
             createRangeInput('troponin','Troponin',ranges) + createRangeInput('ck','CK',ranges) +
@@ -11860,6 +11914,10 @@ window.addEventListener('resize', setTopbarHeight);
             { key: 'labs.na',           label: 'Na',                color: '#3b82f6', unit: 'mEq/L'},
             // هرمونات
             { key: 'labs.tsh',          label: 'TSH',               color: '#8b5cf6', unit: 'µIU/mL'},
+            { key: 'labs.chol_total',   label: 'Cholesterol',        color: '#f97316', unit: 'mg/dL'},
+            { key: 'labs.tg',           label: 'Triglycerides',      color: '#fb923c', unit: 'mg/dL'},
+            { key: 'labs.hdl',          label: 'HDL',                color: '#22c55e', unit: 'mg/dL'},
+            { key: 'labs.ldl',          label: 'LDL',                color: '#ef4444', unit: 'mg/dL'},
             // قياسات
             { key: 'physical.weight',   label: 'الوزن',             color: '#ec4899', unit: 'كغ'  },
         ];
@@ -14981,6 +15039,10 @@ window.addEventListener('resize', setTopbarHeight);
             { key: 'labs.tsh',          label: 'TSH',               color: '#8b5cf6', unit: 'µIU/mL', group: 'هرمونات' },
             { key: 'labs.t3',           label: 'T3',                color: '#a855f7', unit: 'ng/dL',  group: 'هرمونات' },
             { key: 'labs.t4',           label: 'T4',                color: '#c084fc', unit: 'µg/dL',  group: 'هرمونات' },
+            { key: 'labs.chol_total',   label: 'Total Cholesterol',  color: '#f97316', unit: 'mg/dL',  group: 'دهون' },
+            { key: 'labs.tg',           label: 'Triglycerides',      color: '#fb923c', unit: 'mg/dL',  group: 'دهون' },
+            { key: 'labs.hdl',          label: 'HDL',                color: '#22c55e', unit: 'mg/dL',  group: 'دهون' },
+            { key: 'labs.ldl',          label: 'LDL',                color: '#ef4444', unit: 'mg/dL',  group: 'دهون' },
         ];
 
         function getNestedVal(obj, keyPath) {
