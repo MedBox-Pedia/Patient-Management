@@ -619,33 +619,34 @@
         .toggle-switch input:checked + .toggle-slider { background: #0790AC; }
         .toggle-switch input:checked + .toggle-slider:before { transform: translateX(-22px); }
 
-        /* ===== زر المشاركة والطباعة متعدد المهام ===== */
+        /* ===== زر المشاركة في التول بار ===== */
+        /* الحاوية مخفية افتراضياً وتظهر فقط عند عرض مريض */
+        #topbar-share-wrapper {
+            display: none;
+        }
+        #topbar-share-wrapper.patient-active {
+            display: block;
+        }
+
         #multi-print-btn {
-            position: relative;
             display: inline-flex;
             align-items: center;
-            gap: 6px;
-            padding: 8px 16px;
-            background: linear-gradient(135deg, #0790AC 0%, #056a80 100%);
-            color: white;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background: none;
+            color: #0790AC;
             border: none;
-            border-radius: 10px;
-            font-family: 'Cairo', sans-serif;
-            font-size: 0.88rem;
-            font-weight: 700;
+            border-radius: 8px;
             cursor: pointer;
-            box-shadow: 0 3px 12px rgba(7,144,172,0.35);
-            transition: all 0.2s;
+            transition: background 0.15s, color 0.15s;
             flex-shrink: 0;
-            z-index: 10;
         }
         #multi-print-btn:hover {
-            background: linear-gradient(135deg, #056a80 0%, #044d5e 100%);
-            box-shadow: 0 5px 18px rgba(7,144,172,0.45);
-            transform: translateY(-1px);
+            background: rgba(7,144,172,0.10);
         }
         #multi-print-btn:active {
-            transform: translateY(0);
+            background: rgba(7,144,172,0.18);
         }
         #multi-print-btn svg {
             flex-shrink: 0;
@@ -657,7 +658,7 @@
             position: absolute;
             top: calc(100% + 10px);
             left: 0;
-            min-width: 230px;
+            min-width: 240px;
             background: #fff;
             border-radius: 14px;
             box-shadow: 0 12px 40px rgba(0,0,0,0.18), 0 2px 8px rgba(0,0,0,0.08);
@@ -3380,6 +3381,57 @@ window.addEventListener('resize', setTopbarHeight);
                 </button>
                 <span class="tooltip tooltip-bottom">مسح QR Code للمريض</span>
             </div>
+
+            <!-- زر المشاركة — يظهر فقط عند عرض بيانات مريض -->
+            <div id="topbar-share-wrapper" class="group relative">
+                <button id="multi-print-btn" class="top-bar-icon-btn" onclick="window._togglePrintMenu(event)" title="خيارات المشاركة والطباعة" style="color:#0790AC">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M7.217 10.907a2.25 2.25 0 1 0 0 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186 9.566-5.314m-9.566 7.5 9.566 5.314m0 0a2.25 2.25 0 1 0 3.935 2.186 2.25 2.25 0 0 0-3.935-2.186zm0-12.814a2.25 2.25 0 1 0 3.933-2.185 2.25 2.25 0 0 0-3.933 2.185z"/>
+                    </svg>
+                </button>
+                <span class="tooltip tooltip-bottom">مشاركة وطباعة</span>
+                <!-- القائمة المنسدلة -->
+                <div id="print-menu-dropdown">
+                    <div class="print-menu-header">خيارات المشاركة والطباعة</div>
+                    <button class="print-menu-item" onclick="window._printMenuAction('appointments')">
+                        <span class="print-menu-icon">📅</span>
+                        <div>
+                            <div>مواعيد الزيارات</div>
+                            <div class="print-menu-item-desc">عرض وإدارة المواعيد المجدولة</div>
+                        </div>
+                    </button>
+                    <button class="print-menu-item" onclick="window._printMenuAction('prescription')">
+                        <span class="print-menu-icon">💊</span>
+                        <div>
+                            <div>الوصفة الطبية</div>
+                            <div class="print-menu-item-desc">قائمة الأدوية والجرعات</div>
+                        </div>
+                    </button>
+                    <button class="print-menu-item" onclick="window._printMenuAction('lab')">
+                        <span class="print-menu-icon">🧪</span>
+                        <div>
+                            <div>طلب التحاليل والإجراءات التشخيصية</div>
+                            <div class="print-menu-item-desc">طلب الإجراءات المخبرية</div>
+                        </div>
+                    </button>
+                    <button class="print-menu-item" onclick="window._printMenuAction('diet')">
+                        <span class="print-menu-icon">📋</span>
+                        <div>
+                            <div>البرنامج الغذائي</div>
+                            <div class="print-menu-item-desc">التقرير الغذائي الكامل</div>
+                        </div>
+                    </button>
+                    <button class="print-menu-item" onclick="window._printMenuAction('gemini')">
+                        <span class="print-menu-icon" style="background:linear-gradient(135deg,#1a73e8,#8430ce,#e94235,#fbbc05);color:#fff;">✦</span>
+                        <div>
+                            <div>تقرير Gemini</div>
+                            <div class="print-menu-item-desc">تحليل ذكي شامل بالذكاء الاصطناعي</div>
+                        </div>
+                    </button>
+                </div>
+            </div>
+            <!-- backdrop للقائمة المنسدلة -->
+            <div id="print-menu-backdrop" onclick="window._closePrintMenu && window._closePrintMenu()"></div>
 
             <!-- زر الإشعارات -->
             <div class="group relative">
@@ -12484,57 +12536,6 @@ window.addEventListener('resize', setTopbarHeight);
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="opacity:0.5;flex-shrink:0;"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h7"/></svg>
                                 </h2>
                                 <p class="text-sm text-gray-600">تاريخ المراجعة: ${visit.date}</p>
-                            </div>
-                        </div>
-                        <!-- زر الطباعة متعدد المهام -->
-                        <div style="position:relative;">
-                            <button id="multi-print-btn" onclick="window._togglePrintMenu(event)" title="خيارات المشاركة والطباعة">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" width="18" height="18">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M7.217 10.907a2.25 2.25 0 1 0 0 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186 9.566-5.314m-9.566 7.5 9.566 5.314m0 0a2.25 2.25 0 1 0 3.935 2.186 2.25 2.25 0 0 0-3.935-2.186zm0-12.814a2.25 2.25 0 1 0 3.933-2.185 2.25 2.25 0 0 0-3.933 2.185z"/>
-                                </svg>
-                                مشاركة
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" width="14" height="14" style="opacity:0.8">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5"/>
-                                </svg>
-                            </button>
-                            <!-- القائمة المنسدلة -->
-                            <div id="print-menu-dropdown">
-                                <div class="print-menu-header">خيارات المشاركة والطباعة</div>
-                                <button class="print-menu-item" onclick="window._printMenuAction('appointments')">
-                                    <span class="print-menu-icon">📅</span>
-                                    <div>
-                                        <div>مواعيد الزيارات</div>
-                                        <div class="print-menu-item-desc">عرض وإدارة المواعيد المجدولة</div>
-                                    </div>
-                                </button>
-                                <button class="print-menu-item" onclick="window._printMenuAction('prescription')">
-                                    <span class="print-menu-icon">💊</span>
-                                    <div>
-                                        <div>الوصفة الطبية</div>
-                                        <div class="print-menu-item-desc">قائمة الأدوية والجرعات</div>
-                                    </div>
-                                </button>
-                                <button class="print-menu-item" onclick="window._printMenuAction('lab')">
-                                    <span class="print-menu-icon">🧪</span>
-                                    <div>
-                                        <div>طلب التحاليل والإجراءات التشخيصية</div>
-                                        <div class="print-menu-item-desc">طلب الإجراءات المخبرية</div>
-                                    </div>
-                                </button>
-                                <button class="print-menu-item" onclick="window._printMenuAction('diet')">
-                                    <span class="print-menu-icon">📋</span>
-                                    <div>
-                                        <div>البرنامج الغذائي</div>
-                                        <div class="print-menu-item-desc">التقرير الغذائي الكامل</div>
-                                    </div>
-                                </button>
-                                <button class="print-menu-item" onclick="window._printMenuAction('gemini')">
-                                    <span class="print-menu-icon" style="background:linear-gradient(135deg,#1a73e8,#8430ce,#e94235,#fbbc05);color:#fff;">✦</span>
-                                    <div>
-                                        <div>تقرير Gemini</div>
-                                        <div class="print-menu-item-desc">تحليل ذكي شامل بالذكاء الاصطناعي</div>
-                                    </div>
-                                </button>
                             </div>
                         </div>
                     </div>
@@ -23015,19 +23016,6 @@ window._loadGeminiKeyFromDrive = async function() {
 
         switch(type) {
 
-            case 'appointments':
-                // فتح نافذة المواعيد الكبيرة
-                if (typeof openBigCalendar === 'function') {
-                    openBigCalendar();
-                } else {
-                    var calBtn = document.getElementById('mini-cal-expand');
-                    if (calBtn) { calBtn.click(); }
-                    else if (typeof showToast === 'function') {
-                        showToast('نافذة المواعيد غير متاحة', 'error');
-                    }
-                }
-                break;
-
             case 'prescription':
                 // طباعة الوصفة الطبية
                 if (typeof printPrescriptionFromVisit === 'function' && window.currentViewPatient && window.currentViewVisit) {
@@ -23055,8 +23043,21 @@ window._loadGeminiKeyFromDrive = async function() {
                 }
                 break;
 
+            case 'exchange':
+                // طباعة جدول الحصص الغذائية فقط
+                if (typeof printDietProgram === 'function' && window.currentViewPatient && window.currentViewVisit) {
+                    printDietProgram(window.currentViewPatient, window.currentViewVisit);
+                } else {
+                    var dietBtn = document.getElementById('print-diet-btn');
+                    if (dietBtn) { dietBtn.click(); }
+                    else if (typeof showToast === 'function') {
+                        showToast('قم بفتح تبويب البرنامج الغذائي أولاً', 'info');
+                    }
+                }
+                break;
+
             case 'diet':
-                // طباعة البرنامج الغذائي
+                // طباعة البرنامج الغذائي الشامل (نفس دالة printDietProgram)
                 if (typeof printDietProgram === 'function' && window.currentViewPatient && window.currentViewVisit) {
                     printDietProgram(window.currentViewPatient, window.currentViewVisit);
                 } else {
@@ -23068,19 +23069,29 @@ window._loadGeminiKeyFromDrive = async function() {
                 }
                 break;
 
-            case 'gemini':
-                // فتح تقرير Gemini للمريض الحالي
-                if (window.currentViewPatient && typeof window._openGeminiAIReport === 'function') {
-                    window._openGeminiAIReport(window.currentViewPatient.id);
-                } else if (typeof showToast === 'function') {
-                    showToast('يرجى فتح بيانات مريض أولاً', 'error');
-                }
-                break;
-
             default:
                 break;
         }
     };
+
+    // ── إظهار/إخفاء زر المشاركة في التول بار حسب عرض بيانات المريض ──
+    (function() {
+        var wrapper = document.getElementById('topbar-share-wrapper');
+        var area    = document.getElementById('patient-display-area');
+        if (!wrapper || !area) return;
+
+        function syncBtn() {
+            if (area.classList.contains('hidden')) {
+                wrapper.classList.remove('patient-active');
+            } else {
+                wrapper.classList.add('patient-active');
+            }
+        }
+
+        // مراقبة التغييرات على class لمنطقة المريض
+        new MutationObserver(syncBtn).observe(area, { attributes: true, attributeFilter: ['class'] });
+        syncBtn(); // تطبيق الحالة الأولية
+    })();
 
 })();
 </script>
