@@ -7085,15 +7085,35 @@ window.addEventListener('resize', setTopbarHeight);
 صمم ليكون وسيلة دعم شاملة لجميع الممارسين الصحيين.`, 'welcome', 6000);
 
         // ربط الأحداث
+        // نقل الـ dropdown إلى body مباشرة لتجنب مشكلة stacking context مع السايدبار
+        if (encyclopediaDropdown.parentElement !== document.body) {
+            document.body.appendChild(encyclopediaDropdown);
+        }
+
+        // إغلاق تلقائي على الشاشات الصغيرة عند الضغط على أي رابط في القائمة
+        encyclopediaDropdown.querySelectorAll('a').forEach(function(link) {
+            link.addEventListener('click', function() {
+                if (window.innerWidth < 1024) {
+                    encyclopediaDropdown.classList.add('hidden');
+                }
+            });
+        });
+
         encyclopediaBtn.addEventListener('click', (e) => {
             e.stopPropagation(); // منع الإغلاق الفوري
             const isHidden = encyclopediaDropdown.classList.contains('hidden');
             if (isHidden) {
-                // حساب موضع الـ dropdown بالنسبة للشاشة
                 const rect = encyclopediaBtn.getBoundingClientRect();
-                encyclopediaDropdown.style.top  = (rect.bottom + 6) + 'px';
-                encyclopediaDropdown.style.right = (window.innerWidth - rect.right) + 'px';
-                encyclopediaDropdown.style.left  = 'auto';
+                const dropdownWidth = 208;
+                // منع الخروج من يسار الشاشة على الموبايل
+                let rightFromEdge = window.innerWidth - rect.right;
+                if ((rect.right - dropdownWidth) < 4) {
+                    rightFromEdge = Math.max(4, window.innerWidth - dropdownWidth - 4);
+                }
+                encyclopediaDropdown.style.top    = (rect.bottom + 6) + 'px';
+                encyclopediaDropdown.style.right  = rightFromEdge + 'px';
+                encyclopediaDropdown.style.left   = 'auto';
+                encyclopediaDropdown.style.zIndex = '99999';
             }
             encyclopediaDropdown.classList.toggle('hidden');
         });
