@@ -620,7 +620,6 @@
         .toggle-switch input:checked + .toggle-slider:before { transform: translateX(-22px); }
 
         /* ===== زر المشاركة في التول بار ===== */
-        /* الحاوية مخفية افتراضياً وتظهر فقط عند عرض مريض */
         #topbar-share-wrapper {
             display: none;
         }
@@ -23016,12 +23015,24 @@ window._loadGeminiKeyFromDrive = async function() {
 
         switch(type) {
 
+            case 'appointments':
+                // فتح نافذة المواعيد الكبيرة
+                if (typeof openBigCalendar === 'function') {
+                    openBigCalendar();
+                } else {
+                    var calBtn = document.getElementById('mini-cal-expand');
+                    if (calBtn) { calBtn.click(); }
+                    else if (typeof showToast === 'function') {
+                        showToast('نافذة المواعيد غير متاحة', 'error');
+                    }
+                }
+                break;
+
             case 'prescription':
                 // طباعة الوصفة الطبية
                 if (typeof printPrescriptionFromVisit === 'function' && window.currentViewPatient && window.currentViewVisit) {
                     printPrescriptionFromVisit(window.currentViewPatient, window.currentViewVisit);
                 } else {
-                    // تشغيل الزر الموجود مسبقاً إن وجد
                     var btn = document.getElementById('view-print-prescription-btn');
                     if (btn) { btn.click(); }
                     else if (typeof showToast === 'function') {
@@ -23031,7 +23042,7 @@ window._loadGeminiKeyFromDrive = async function() {
                 break;
 
             case 'lab':
-                // فتح نافذة طلب التحاليل
+                // فتح نافذة طلب التحاليل والإجراءات التشخيصية
                 if (typeof window._openLabRequestFromView === 'function') {
                     window._openLabRequestFromView();
                 } else {
@@ -23043,8 +23054,8 @@ window._loadGeminiKeyFromDrive = async function() {
                 }
                 break;
 
-            case 'exchange':
-                // طباعة جدول الحصص الغذائية فقط
+            case 'diet':
+                // طباعة البرنامج الغذائي
                 if (typeof printDietProgram === 'function' && window.currentViewPatient && window.currentViewVisit) {
                     printDietProgram(window.currentViewPatient, window.currentViewVisit);
                 } else {
@@ -23056,16 +23067,12 @@ window._loadGeminiKeyFromDrive = async function() {
                 }
                 break;
 
-            case 'diet':
-                // طباعة البرنامج الغذائي الشامل (نفس دالة printDietProgram)
-                if (typeof printDietProgram === 'function' && window.currentViewPatient && window.currentViewVisit) {
-                    printDietProgram(window.currentViewPatient, window.currentViewVisit);
-                } else {
-                    var dietBtn2 = document.getElementById('print-diet-btn');
-                    if (dietBtn2) { dietBtn2.click(); }
-                    else if (typeof showToast === 'function') {
-                        showToast('قم بفتح تبويب البرنامج الغذائي أولاً', 'info');
-                    }
+            case 'gemini':
+                // فتح تقرير Gemini للمريض الحالي
+                if (window.currentViewPatient && typeof window._openGeminiAIReport === 'function') {
+                    window._openGeminiAIReport(window.currentViewPatient.id);
+                } else if (typeof showToast === 'function') {
+                    showToast('يرجى فتح بيانات مريض أولاً', 'error');
                 }
                 break;
 
@@ -23088,9 +23095,8 @@ window._loadGeminiKeyFromDrive = async function() {
             }
         }
 
-        // مراقبة التغييرات على class لمنطقة المريض
         new MutationObserver(syncBtn).observe(area, { attributes: true, attributeFilter: ['class'] });
-        syncBtn(); // تطبيق الحالة الأولية
+        syncBtn();
     })();
 
 })();
