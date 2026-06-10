@@ -16123,6 +16123,9 @@ window.addEventListener('resize', setTopbarHeight);
         // تحديث الرأس عند تغيير التوزيع (المزامنة مع مخرجات الحاسبة)
         document.addEventListener('meal-distribution-updated', function() {
             renderMealPlanHeader();
+            renderMealPlanBody();
+            updateRemainingPanel();
+            syncDaySelectors();
         });
 
         var showDistBtn = document.getElementById('show-manual-dist-btn');
