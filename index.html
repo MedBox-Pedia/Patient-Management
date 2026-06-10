@@ -619,7 +619,7 @@
         .toggle-switch input:checked + .toggle-slider { background: #0790AC; }
         .toggle-switch input:checked + .toggle-slider:before { transform: translateX(-22px); }
 
-        /* ===== زر المشاركة متعدد المهام ===== */
+        /* ===== زر الطباعة متعدد المهام ===== */
         #multi-print-btn {
             position: relative;
             display: inline-flex;
@@ -651,16 +651,16 @@
             flex-shrink: 0;
         }
 
-        /* قائمة المشاركة المنسدلة */
+        /* قائمة الطباعة المنسدلة */
         #print-menu-dropdown {
             display: none;
             position: absolute;
             top: calc(100% + 10px);
             left: 0;
-            min-width: 320px;
+            min-width: 230px;
             background: #fff;
-            border-radius: 16px;
-            box-shadow: 0 16px 48px rgba(0,0,0,0.18), 0 2px 8px rgba(0,0,0,0.08);
+            border-radius: 14px;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.18), 0 2px 8px rgba(0,0,0,0.08);
             border: 1px solid #e6f4f7;
             z-index: 99999;
             overflow: hidden;
@@ -674,99 +674,54 @@
             to   { opacity: 1; transform: translateY(0) scale(1); }
         }
         #print-menu-dropdown .print-menu-header {
-            padding: 12px 16px 10px;
-            font-size: 0.78rem;
-            font-weight: 700;
-            color: #6b7280;
-            letter-spacing: 0.04em;
-            border-bottom: 1px solid #f3f4f6;
-            background: linear-gradient(135deg, #f0fafc 0%, #fafafa 100%);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        /* عنصر القائمة الرئيسي */
-        .share-section {
-            border-bottom: 1px solid #f3f4f6;
-        }
-        .share-section:last-child { border-bottom: none; }
-        /* رأس القسم (اسم التقرير) */
-        .share-section-header {
-            display: flex;
-            align-items: center;
-            gap: 10px;
             padding: 10px 16px 8px;
-            font-family: 'Cairo', sans-serif;
-            font-size: 0.88rem;
+            font-size: 0.75rem;
             font-weight: 700;
-            color: #1f2937;
-            background: none;
+            color: #9ca3af;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            border-bottom: 1px solid #f3f4f6;
+            background: #fafafa;
+        }
+        .print-menu-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            cursor: pointer;
+            transition: background 0.15s;
             border: none;
+            background: none;
             width: 100%;
             text-align: right;
-            cursor: default;
-            background: #fafefe;
+            font-family: 'Cairo', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #1f2937;
+            border-bottom: 1px solid #f9fafb;
         }
-        .share-section-icon {
-            width: 30px;
-            height: 30px;
-            border-radius: 8px;
+        .print-menu-item:last-child { border-bottom: none; }
+        .print-menu-item:hover { background: #f0fafc; color: #0790AC; }
+        .print-menu-item:hover .print-menu-icon { background: #0790AC; color: #fff; }
+        .print-menu-icon {
+            width: 34px;
+            height: 34px;
+            border-radius: 9px;
             background: #e6f4f7;
             color: #0790AC;
             display: inline-flex;
             align-items: center;
             justify-content: center;
             flex-shrink: 0;
-            font-size: 0.9rem;
-        }
-        /* صف أزرار الأيقونات تحت كل عنصر */
-        .share-actions-row {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            padding: 4px 16px 10px;
-            background: none;
-        }
-        .share-action-btn {
-            display: inline-flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 3px;
-            padding: 7px 10px;
-            border: 1.5px solid #e5e7eb;
-            border-radius: 10px;
-            background: #fff;
-            cursor: pointer;
-            font-family: 'Cairo', sans-serif;
-            font-size: 0.65rem;
-            font-weight: 600;
-            color: #4b5563;
             transition: all 0.15s;
-            flex: 1;
-            min-width: 0;
+            font-size: 1rem;
         }
-        .share-action-btn:hover {
-            background: #f0fafc;
-            border-color: #0790AC;
-            color: #0790AC;
+        .print-menu-item-desc {
+            font-size: 0.73rem;
+            color: #9ca3af;
+            font-weight: 400;
+            margin-top: 1px;
         }
-        .share-action-btn:hover svg { color: #0790AC; }
-        .share-action-btn svg {
-            width: 18px;
-            height: 18px;
-            flex-shrink: 0;
-            transition: color 0.15s;
-        }
-        .share-action-btn.wa-text { border-color: #dcfce7; }
-        .share-action-btn.wa-text:hover { background: #f0fdf4; border-color: #16a34a; color: #16a34a; }
-        .share-action-btn.wa-text:hover svg { color: #16a34a; }
-        .share-action-btn.wa-pdf  { border-color: #dcfce7; }
-        .share-action-btn.wa-pdf:hover  { background: #f0fdf4; border-color: #16a34a; color: #16a34a; }
-        .share-action-btn.wa-pdf:hover svg  { color: #16a34a; }
-        .share-action-btn.print-action { border-color: #e0e7ff; }
-        .share-action-btn.print-action:hover { background: #eef2ff; border-color: #6366f1; color: #6366f1; }
-        .share-action-btn.print-action:hover svg { color: #6366f1; }
         #print-menu-backdrop {
             display: none;
             position: fixed;
@@ -774,10 +729,6 @@
             z-index: 99998;
         }
         #print-menu-backdrop.open { display: block; }
-        /* Legacy styles kept for compatibility */
-        .print-menu-item { display: none; }
-        .print-menu-icon { display: none; }
-        .print-menu-item-desc { display: none; }
 
         /* تصميم QR Code في القائمة والعرض */
         .qr-btn-list:hover { opacity: 0.7; }
@@ -12535,156 +12486,48 @@ window.addEventListener('resize', setTopbarHeight);
                                 <p class="text-sm text-gray-600">تاريخ المراجعة: ${visit.date}</p>
                             </div>
                         </div>
-                        <!-- زر المشاركة متعدد المهام -->
+                        <!-- زر الطباعة متعدد المهام -->
                         <div style="position:relative;">
-                            <button id="multi-print-btn" onclick="window._togglePrintMenu(event)" title="خيارات المشاركة والطباعة">
+                            <button id="multi-print-btn" onclick="window._togglePrintMenu(event)" title="خيارات الطباعة">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" width="18" height="18">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M7.217 10.907a2.25 2.25 0 100 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186l9.566-5.314m-9.566 7.5l9.566 5.314m0 0a2.25 2.25 0 103.935 2.186 2.25 2.25 0 00-3.935-2.186zm0-12.814a2.25 2.25 0 103.933-2.185 2.25 2.25 0 00-3.933 2.185z"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M6.72 13.829c-.24.03-.48.062-.72.096m.72-.096a42.415 42.415 0 0110.56 0m-10.56 0L6.34 18m10.94-4.171c.24.03.48.062.72.096m-.72-.096L17.66 18m0 0l.229 2.523a1.125 1.125 0 01-1.12 1.227H7.231c-.662 0-1.18-.568-1.12-1.227L6.34 18m11.318 0h1.091A2.25 2.25 0 0021 15.75V9.456c0-1.081-.768-2.015-1.837-2.175a48.055 48.055 0 00-1.913-.247M6.34 18H5.25A2.25 2.25 0 013 15.75V9.456c0-1.081.768-2.015 1.837-2.175a48.041 48.041 0 011.913-.247m10.5 0a48.536 48.536 0 00-10.5 0m10.5 0V3.375c0-.621-.504-1.125-1.125-1.125h-8.25c-.621 0-1.125.504-1.125 1.125v3.659M18 10.5h.008v.008H18V10.5zm-3 0h.008v.008H15V10.5z"/>
                                 </svg>
-                                مشاركة
+                                طباعة
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" width="14" height="14" style="opacity:0.8">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5"/>
                                 </svg>
                             </button>
-                            <!-- القائمة المنسدلة للمشاركة -->
+                            <!-- القائمة المنسدلة -->
                             <div id="print-menu-dropdown">
-                                <div class="print-menu-header">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" width="14" height="14"><path stroke-linecap="round" stroke-linejoin="round" d="M7.217 10.907a2.25 2.25 0 100 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186l9.566-5.314m-9.566 7.5l9.566 5.314m0 0a2.25 2.25 0 103.935 2.186 2.25 2.25 0 00-3.935-2.186zm0-12.814a2.25 2.25 0 103.933-2.185 2.25 2.25 0 00-3.933 2.185z"/></svg>
-                                    اختر نوع التقرير وطريقة المشاركة
-                                </div>
-
-                                <!-- 1. قائمة المواعيد المسجلة -->
-                                <div class="share-section">
-                                    <div class="share-section-header">
-                                        <span class="share-section-icon">📅</span>
-                                        <span>قائمة المواعيد المسجلة</span>
+                                <div class="print-menu-header">اختر ما تريد طباعته</div>
+                                <button class="print-menu-item" onclick="window._printMenuAction('prescription')">
+                                    <span class="print-menu-icon">💊</span>
+                                    <div>
+                                        <div>طباعة الوصفة الطبية</div>
+                                        <div class="print-menu-item-desc">قائمة الأدوية والجرعات</div>
                                     </div>
-                                    <div class="share-actions-row">
-                                        <button class="share-action-btn wa-text" onclick="window._shareAction('appointments','wa-text')" title="إرسال تقرير كتابي عبر الواتساب">
-                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-                                            <span>نص واتساب</span>
-                                        </button>
-                                        <button class="share-action-btn wa-pdf" onclick="window._shareAction('appointments','wa-pdf')" title="إرسال PDF عبر الواتساب">
-                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
-                                            <span>PDF واتساب</span>
-                                        </button>
-                                        <button class="share-action-btn print-action" onclick="window._shareAction('appointments','print')" title="طباعة">
-                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6.72 13.829c-.24.03-.48.062-.72.096m.72-.096a42.415 42.415 0 0110.56 0m-10.56 0L6.34 18m10.94-4.171c.24.03.48.062.72.096m-.72-.096L17.66 18m0 0l.229 2.523a1.125 1.125 0 01-1.12 1.227H7.231c-.662 0-1.18-.568-1.12-1.227L6.34 18m11.318 0h1.091A2.25 2.25 0 0021 15.75V9.456c0-1.081-.768-2.015-1.837-2.175a48.055 48.055 0 00-1.913-.247M6.34 18H5.25A2.25 2.25 0 013 15.75V9.456c0-1.081.768-2.015 1.837-2.175a48.041 48.041 0 011.913-.247m10.5 0a48.536 48.536 0 00-10.5 0m10.5 0V3.375c0-.621-.504-1.125-1.125-1.125h-8.25c-.621 0-1.125.504-1.125 1.125v3.659M18 10.5h.008v.008H18V10.5zm-3 0h.008v.008H15V10.5z"/></svg>
-                                            <span>طباعة</span>
-                                        </button>
+                                </button>
+                                <button class="print-menu-item" onclick="window._printMenuAction('lab')">
+                                    <span class="print-menu-icon">🧪</span>
+                                    <div>
+                                        <div>طباعة طلب تحاليل</div>
+                                        <div class="print-menu-item-desc">طلب الإجراءات المخبرية</div>
                                     </div>
-                                </div>
-
-                                <!-- 2. وصفة طبية -->
-                                <div class="share-section">
-                                    <div class="share-section-header">
-                                        <span class="share-section-icon">💊</span>
-                                        <span>وصفة طبية</span>
+                                </button>
+                                <button class="print-menu-item" onclick="window._printMenuAction('exchange')">
+                                    <span class="print-menu-icon">🥗</span>
+                                    <div>
+                                        <div>طباعة جدول الحصص الغذائية</div>
+                                        <div class="print-menu-item-desc">جدول قوائم التبادل الغذائي</div>
                                     </div>
-                                    <div class="share-actions-row">
-                                        <button class="share-action-btn wa-text" onclick="window._shareAction('prescription','wa-text')" title="إرسال الوصفة نصاً عبر الواتساب">
-                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-                                            <span>نص واتساب</span>
-                                        </button>
-                                        <button class="share-action-btn wa-pdf" onclick="window._shareAction('prescription','wa-pdf')" title="إرسال الوصفة PDF عبر الواتساب">
-                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
-                                            <span>PDF واتساب</span>
-                                        </button>
-                                        <button class="share-action-btn print-action" onclick="window._shareAction('prescription','print')" title="طباعة الوصفة">
-                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6.72 13.829c-.24.03-.48.062-.72.096m.72-.096a42.415 42.415 0 0110.56 0m-10.56 0L6.34 18m10.94-4.171c.24.03.48.062.72.096m-.72-.096L17.66 18m0 0l.229 2.523a1.125 1.125 0 01-1.12 1.227H7.231c-.662 0-1.18-.568-1.12-1.227L6.34 18m11.318 0h1.091A2.25 2.25 0 0021 15.75V9.456c0-1.081-.768-2.015-1.837-2.175a48.055 48.055 0 00-1.913-.247M6.34 18H5.25A2.25 2.25 0 013 15.75V9.456c0-1.081.768-2.015 1.837-2.175a48.041 48.041 0 011.913-.247m10.5 0a48.536 48.536 0 00-10.5 0m10.5 0V3.375c0-.621-.504-1.125-1.125-1.125h-8.25c-.621 0-1.125.504-1.125 1.125v3.659M18 10.5h.008v.008H18V10.5zm-3 0h.008v.008H15V10.5z"/></svg>
-                                            <span>طباعة</span>
-                                        </button>
+                                </button>
+                                <button class="print-menu-item" onclick="window._printMenuAction('diet')">
+                                    <span class="print-menu-icon">📋</span>
+                                    <div>
+                                        <div>طباعة البرنامج الغذائي الشامل</div>
+                                        <div class="print-menu-item-desc">التقرير الغذائي الكامل</div>
                                     </div>
-                                </div>
-
-                                <!-- 3. طلب تحاليل وإجراءات تشخيصية -->
-                                <div class="share-section">
-                                    <div class="share-section-header">
-                                        <span class="share-section-icon">🧪</span>
-                                        <span>طلب تحاليل وإجراءات تشخيصية</span>
-                                    </div>
-                                    <div class="share-actions-row">
-                                        <button class="share-action-btn wa-text" onclick="window._shareAction('lab','wa-text')" title="إرسال طلب التحاليل نصاً عبر الواتساب">
-                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-                                            <span>نص واتساب</span>
-                                        </button>
-                                        <button class="share-action-btn wa-pdf" onclick="window._shareAction('lab','wa-pdf')" title="إرسال PDF عبر الواتساب">
-                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
-                                            <span>PDF واتساب</span>
-                                        </button>
-                                        <button class="share-action-btn print-action" onclick="window._shareAction('lab','print')" title="طباعة طلب التحاليل">
-                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6.72 13.829c-.24.03-.48.062-.72.096m.72-.096a42.415 42.415 0 0110.56 0m-10.56 0L6.34 18m10.94-4.171c.24.03.48.062.72.096m-.72-.096L17.66 18m0 0l.229 2.523a1.125 1.125 0 01-1.12 1.227H7.231c-.662 0-1.18-.568-1.12-1.227L6.34 18m11.318 0h1.091A2.25 2.25 0 0021 15.75V9.456c0-1.081-.768-2.015-1.837-2.175a48.055 48.055 0 00-1.913-.247M6.34 18H5.25A2.25 2.25 0 013 15.75V9.456c0-1.081.768-2.015 1.837-2.175a48.041 48.041 0 011.913-.247m10.5 0a48.536 48.536 0 00-10.5 0m10.5 0V3.375c0-.621-.504-1.125-1.125-1.125h-8.25c-.621 0-1.125.504-1.125 1.125v3.659M18 10.5h.008v.008H18V10.5zm-3 0h.008v.008H15V10.5z"/></svg>
-                                            <span>طباعة</span>
-                                        </button>
-                                    </div>
-                                </div>
-
-                                <!-- 4. البرنامج الغذائي -->
-                                <div class="share-section">
-                                    <div class="share-section-header">
-                                        <span class="share-section-icon">🥗</span>
-                                        <span>البرنامج الغذائي</span>
-                                    </div>
-                                    <div class="share-actions-row">
-                                        <button class="share-action-btn wa-text" onclick="window._shareAction('diet','wa-text')" title="إرسال البرنامج الغذائي نصاً عبر الواتساب">
-                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-                                            <span>نص واتساب</span>
-                                        </button>
-                                        <button class="share-action-btn wa-pdf" onclick="window._shareAction('diet','wa-pdf')" title="إرسال PDF عبر الواتساب">
-                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
-                                            <span>PDF واتساب</span>
-                                        </button>
-                                        <button class="share-action-btn print-action" onclick="window._shareAction('diet','print')" title="طباعة البرنامج الغذائي">
-                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6.72 13.829c-.24.03-.48.062-.72.096m.72-.096a42.415 42.415 0 0110.56 0m-10.56 0L6.34 18m10.94-4.171c.24.03.48.062.72.096m-.72-.096L17.66 18m0 0l.229 2.523a1.125 1.125 0 01-1.12 1.227H7.231c-.662 0-1.18-.568-1.12-1.227L6.34 18m11.318 0h1.091A2.25 2.25 0 0021 15.75V9.456c0-1.081-.768-2.015-1.837-2.175a48.055 48.055 0 00-1.913-.247M6.34 18H5.25A2.25 2.25 0 013 15.75V9.456c0-1.081.768-2.015 1.837-2.175a48.041 48.041 0 011.913-.247m10.5 0a48.536 48.536 0 00-10.5 0m10.5 0V3.375c0-.621-.504-1.125-1.125-1.125h-8.25c-.621 0-1.125.504-1.125 1.125v3.659M18 10.5h.008v.008H18V10.5zm-3 0h.008v.008H15V10.5z"/></svg>
-                                            <span>طباعة</span>
-                                        </button>
-                                    </div>
-                                </div>
-
-                                <!-- 5. تقرير طبي شامل -->
-                                <div class="share-section">
-                                    <div class="share-section-header">
-                                        <span class="share-section-icon">📋</span>
-                                        <span>تقرير طبي شامل</span>
-                                    </div>
-                                    <div class="share-actions-row">
-                                        <button class="share-action-btn wa-text" onclick="window._shareAction('full-report','wa-text')" title="إرسال التقرير الشامل نصاً عبر الواتساب">
-                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-                                            <span>نص واتساب</span>
-                                        </button>
-                                        <button class="share-action-btn wa-pdf" onclick="window._shareAction('full-report','wa-pdf')" title="إرسال PDF عبر الواتساب">
-                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
-                                            <span>PDF واتساب</span>
-                                        </button>
-                                        <button class="share-action-btn print-action" onclick="window._shareAction('full-report','print')" title="طباعة التقرير الشامل">
-                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6.72 13.829c-.24.03-.48.062-.72.096m.72-.096a42.415 42.415 0 0110.56 0m-10.56 0L6.34 18m10.94-4.171c.24.03.48.062.72.096m-.72-.096L17.66 18m0 0l.229 2.523a1.125 1.125 0 01-1.12 1.227H7.231c-.662 0-1.18-.568-1.12-1.227L6.34 18m11.318 0h1.091A2.25 2.25 0 0021 15.75V9.456c0-1.081-.768-2.015-1.837-2.175a48.055 48.055 0 00-1.913-.247M6.34 18H5.25A2.25 2.25 0 013 15.75V9.456c0-1.081.768-2.015 1.837-2.175a48.041 48.041 0 011.913-.247m10.5 0a48.536 48.536 0 00-10.5 0m10.5 0V3.375c0-.621-.504-1.125-1.125-1.125h-8.25c-.621 0-1.125.504-1.125 1.125v3.659M18 10.5h.008v.008H18V10.5zm-3 0h.008v.008H15V10.5z"/></svg>
-                                            <span>طباعة</span>
-                                        </button>
-                                    </div>
-                                </div>
-
-                                <!-- 6. تقرير Gemini -->
-                                <div class="share-section">
-                                    <div class="share-section-header">
-                                        <span class="share-section-icon">✨</span>
-                                        <span>تقرير Gemini</span>
-                                    </div>
-                                    <div class="share-actions-row">
-                                        <button class="share-action-btn wa-text" onclick="window._shareAction('gemini','wa-text')" title="إرسال تقرير Gemini نصاً عبر الواتساب">
-                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-                                            <span>نص واتساب</span>
-                                        </button>
-                                        <button class="share-action-btn wa-pdf" onclick="window._shareAction('gemini','wa-pdf')" title="إرسال PDF عبر الواتساب">
-                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
-                                            <span>PDF واتساب</span>
-                                        </button>
-                                        <button class="share-action-btn print-action" onclick="window._shareAction('gemini','print')" title="طباعة تقرير Gemini">
-                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6.72 13.829c-.24.03-.48.062-.72.096m.72-.096a42.415 42.415 0 0110.56 0m-10.56 0L6.34 18m10.94-4.171c.24.03.48.062.72.096m-.72-.096L17.66 18m0 0l.229 2.523a1.125 1.125 0 01-1.12 1.227H7.231c-.662 0-1.18-.568-1.12-1.227L6.34 18m11.318 0h1.091A2.25 2.25 0 0021 15.75V9.456c0-1.081-.768-2.015-1.837-2.175a48.055 48.055 0 00-1.913-.247M6.34 18H5.25A2.25 2.25 0 013 15.75V9.456c0-1.081.768-2.015 1.837-2.175a48.041 48.041 0 011.913-.247m10.5 0a48.536 48.536 0 00-10.5 0m10.5 0V3.375c0-.621-.504-1.125-1.125-1.125h-8.25c-.621 0-1.125.504-1.125 1.125v3.659M18 10.5h.008v.008H18V10.5zm-3 0h.008v.008H15V10.5z"/></svg>
-                                            <span>طباعة</span>
-                                        </button>
-                                    </div>
-                                </div>
-
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -23122,7 +22965,7 @@ window._loadGeminiKeyFromDrive = async function() {
 </script>
 
 <script>
-// ===== زر المشاركة متعدد المهام =====
+// ===== زر الطباعة متعدد المهام =====
 (function() {
 
     // فتح / إغلاق القائمة المنسدلة
@@ -23159,369 +23002,68 @@ window._loadGeminiKeyFromDrive = async function() {
         }
     });
 
-    // ── مساعدات ──────────────────────────────────────────────────────────
-    function _getWaNum() {
-        var patient = window.currentViewPatient;
-        if (!patient) return '';
-        return (patient.whatsapp || patient.phone || '').replace(/[^0-9]/g, '');
-    }
+    // تنفيذ إجراء الطباعة المختار
+    window._printMenuAction = function(type) {
+        _closePrintMenu();
 
-    function _toast(msg, type) {
-        if (typeof showToast === 'function') showToast(msg, type || 'info');
-    }
+        switch(type) {
 
-    // ── بناء رسائل نصية لكل نوع ──────────────────────────────────────────
-
-    function _buildAppointmentsText() {
-        var patient = window.currentViewPatient;
-        if (!patient) return null;
-        var patientName = patient.name_ar || '—';
-        var appointments = (window._appData && window._appData.appointments) || [];
-        var patAppts = appointments.filter(function(a) {
-            return a.patientId === patient.id || a.patientName === patientName;
-        }).sort(function(a,b){ return a.date.localeCompare(b.date); });
-
-        var acc = (typeof getCurrentAccount === 'function') ? getCurrentAccount() : null;
-        var clinicName  = acc ? (acc.clinic || '') : '';
-        var doctorName  = acc ? (acc.displayName || acc.username || '') : '';
-
-        var lines = [];
-        lines.push('📅 *قائمة المواعيد المسجلة*');
-        lines.push('المريض: ' + patientName);
-        if (doctorName) lines.push('الطبيب: ' + doctorName);
-        if (clinicName) lines.push('العيادة: ' + clinicName);
-        lines.push('━━━━━━━━━━━━━━━━━━');
-        if (patAppts.length === 0) {
-            lines.push('لا توجد مواعيد مسجلة.');
-        } else {
-            patAppts.forEach(function(a, i) {
-                var timeStr = a.time ? ' | الوقت: ' + a.time : '';
-                var noteStr = a.note ? ' | ' + a.note : '';
-                var status  = a.dismissed ? ' ✓ منتهي' : ' 🔔 قادم';
-                lines.push((i+1) + '. ' + a.date + timeStr + noteStr + status);
-            });
-        }
-        lines.push('━━━━━━━━━━━━━━━━━━');
-        if (clinicName) lines.push(clinicName);
-        return lines.join('\n');
-    }
-
-    function _buildPrescriptionText() {
-        var patient = window.currentViewPatient;
-        var visit   = window.currentViewVisit;
-        if (!patient || !visit) return null;
-        var hlt  = visit.health || {};
-        var per  = visit.personal || {};
-        var meds = hlt.medications || [];
-        var acc  = (typeof getCurrentAccount === 'function') ? getCurrentAccount() : null;
-        var doctorName  = acc ? (acc.displayName || acc.username || '') : '';
-        var specialty   = acc ? (acc.specialty || '') : '';
-        var clinicName  = acc ? (acc.clinic || '') : '';
-        var clinicPhone = acc ? (acc.phone || '') : '';
-
-        var lines = [];
-        lines.push('💊 *الوصفة الطبية*');
-        lines.push('المريض: ' + (patient.name_ar || per.name_ar || '—'));
-        lines.push('التاريخ: ' + (visit.date || '—'));
-        lines.push('━━━━━━━━━━━━━━━━━━');
-        if (hlt.medical_diagnosis) lines.push('التشخيص: ' + hlt.medical_diagnosis);
-        if (hlt.current_complaint)  lines.push('الشكوى: ' + hlt.current_complaint);
-        if (meds.length > 0) {
-            lines.push('');
-            lines.push('الأدوية الموصوفة:');
-            meds.forEach(function(m, i) {
-                var med = (i+1) + '. ' + (m.name || '');
-                if (m.dose) med += ' — ' + m.dose;
-                if (m.frequency_num && m.frequency_unit) med += ' × ' + m.frequency_num + '/' + m.frequency_unit;
-                if (m.duration) med += ' لمدة ' + m.duration;
-                if (m.notes) med += '\n   📝 ' + m.notes;
-                lines.push(med);
-            });
-        } else {
-            lines.push('لا توجد أدوية موصوفة.');
-        }
-        lines.push('━━━━━━━━━━━━━━━━━━');
-        if (doctorName)  lines.push('د. ' + doctorName);
-        if (specialty)   lines.push(specialty);
-        if (clinicName)  lines.push(clinicName);
-        if (clinicPhone) lines.push('📞 ' + clinicPhone);
-        return lines.join('\n');
-    }
-
-    function _buildLabText() {
-        var patient = window.currentViewPatient;
-        var visit   = window.currentViewVisit;
-        if (!patient || !visit) return null;
-        var hlt  = visit.health || {};
-        var per  = visit.personal || {};
-        var acc  = (typeof getCurrentAccount === 'function') ? getCurrentAccount() : null;
-        var doctorName = acc ? (acc.displayName || acc.username || '') : '';
-        var clinicName = acc ? (acc.clinic || '') : '';
-
-        var labTests = hlt.lab_requests || hlt.requested_labs || [];
-        var lines = [];
-        lines.push('🧪 *طلب تحاليل وإجراءات تشخيصية*');
-        lines.push('المريض: ' + (patient.name_ar || per.name_ar || '—'));
-        lines.push('التاريخ: ' + (visit.date || '—'));
-        lines.push('━━━━━━━━━━━━━━━━━━');
-        if (hlt.medical_diagnosis) lines.push('التشخيص: ' + hlt.medical_diagnosis);
-        lines.push('');
-        lines.push('التحاليل المطلوبة:');
-        if (labTests.length > 0) {
-            labTests.forEach(function(t, i) {
-                lines.push((i+1) + '. ' + (typeof t === 'string' ? t : (t.name || t)));
-            });
-        } else if (hlt.lab_notes) {
-            lines.push(hlt.lab_notes);
-        } else {
-            lines.push('(راجع الطبيب للاطلاع على التفاصيل)');
-        }
-        lines.push('━━━━━━━━━━━━━━━━━━');
-        if (doctorName) lines.push('د. ' + doctorName);
-        if (clinicName) lines.push(clinicName);
-        return lines.join('\n');
-    }
-
-    function _buildDietText() {
-        var patient = window.currentViewPatient;
-        var visit   = window.currentViewVisit;
-        if (!patient || !visit) return null;
-        var per  = visit.personal || {};
-        var phy  = visit.physical || {};
-        var acc  = (typeof getCurrentAccount === 'function') ? getCurrentAccount() : null;
-        var doctorName = acc ? (acc.displayName || acc.username || '') : '';
-        var clinicName = acc ? (acc.clinic || '') : '';
-
-        var diet = visit.diet_program || visit.dietProgram || {};
-        var lines = [];
-        lines.push('🥗 *البرنامج الغذائي*');
-        lines.push('المريض: ' + (patient.name_ar || per.name_ar || '—'));
-        lines.push('التاريخ: ' + (visit.date || '—'));
-        lines.push('━━━━━━━━━━━━━━━━━━');
-        if (phy.weight) lines.push('الوزن الحالي: ' + phy.weight + ' كغ');
-        if (diet.target_weight) lines.push('الوزن المستهدف: ' + diet.target_weight + ' كغ');
-        if (diet.total_calories) lines.push('السعرات اليومية: ' + diet.total_calories + ' سعر حراري');
-        if (diet.notes) { lines.push(''); lines.push('📝 ملاحظات:'); lines.push(diet.notes); }
-        lines.push('━━━━━━━━━━━━━━━━━━');
-        lines.push('للاطلاع على التفاصيل الكاملة للبرنامج الغذائي يرجى مراجعة الأخصائي.');
-        if (doctorName) lines.push('د. ' + doctorName);
-        if (clinicName) lines.push(clinicName);
-        return lines.join('\n');
-    }
-
-    function _buildFullReportText() {
-        // يستخدم دالة التقرير الشاملة الموجودة مسبقاً إن وجدت
-        if (typeof window._sidebarWaReportSend === 'function') {
-            // نستخدم نفس منطق بناء التقرير الموجود
-        }
-        var patient = window.currentViewPatient;
-        var visit   = window.currentViewVisit;
-        if (!patient || !visit) return null;
-        // نفّذ نفس بناء التقرير من _sidebarWaReportSend لكن بشكل مباشر
-        var acc = (typeof getCurrentAccount === 'function') ? getCurrentAccount() : null;
-        var doctorName    = acc ? (acc.displayName || acc.username || '') : '';
-        var specialty     = acc ? (acc.specialty || '') : '';
-        var clinicName    = acc ? (acc.clinic    || '') : '';
-        var clinicPhone   = acc ? (acc.phone     || '') : '';
-        var clinicWa      = acc ? (acc.whatsapp  || '') : '';
-        var clinicAddress = acc ? (acc.address   || '') : '';
-
-        var per    = visit.personal  || {};
-        var phy    = visit.physical  || {};
-        var vitals = visit.vitals    || {};
-        var hlt    = visit.health    || {};
-        var lbs    = visit.labs      || {};
-        var patientName = patient.name_ar || per.name_ar || '—';
-        var patientAge  = per.age || '—';
-        var visitDate   = visit.date || '—';
-
-        var lines = [];
-        lines.push('السلام عليكم ورحمة الله وبركاته 🌿');
-        lines.push('مرحباً بك ' + patientName + '،');
-        lines.push('');
-        lines.push('📋 *تقرير طبي شامل*');
-        lines.push('المراجعة: ' + visitDate + ' | المريض: ' + patientName + ' | العمر: ' + patientAge);
-        lines.push('');
-        if (hlt.medical_diagnosis || hlt.current_complaint) {
-            lines.push('🩺 *التشخيص الطبي:*');
-            if (hlt.medical_diagnosis) lines.push('   ' + hlt.medical_diagnosis);
-            if (hlt.current_complaint) lines.push('   📌 الشكوى: ' + hlt.current_complaint);
-            lines.push('');
-        }
-        lines.push('━━━━━━━━━━━━━━━━━━');
-        lines.push('📏 *القياسات والعلامات الحيوية:*');
-        if (phy.height) lines.push('   • الطول: ' + phy.height + ' سم');
-        if (phy.weight) {
-            var bmi = '';
-            var h = parseFloat(phy.height), w = parseFloat(phy.weight);
-            if (h > 0 && w > 0) bmi = '  (BMI: ' + (w/((h/100)*(h/100))).toFixed(1) + ')';
-            lines.push('   • الوزن: ' + phy.weight + ' كغ' + bmi);
-        }
-        if (vitals.bp_sys && vitals.bp_dias) lines.push('   • ضغط الدم: ' + vitals.bp_sys + '/' + vitals.bp_dias + ' mmHg');
-        if (vitals.pulse) lines.push('   • النبض: ' + vitals.pulse + ' ن/د');
-        if (vitals.temp)  lines.push('   • الحرارة: ' + vitals.temp + ' °C');
-        if (vitals.spo2)  lines.push('   • SpO₂: ' + vitals.spo2 + '%');
-        lines.push('');
-        lines.push('━━━━━━━━━━━━━━━━━━');
-        lines.push('🏥 *الحالة الصحية:*');
-        if (hlt.chronic_diseases)   lines.push('   • الأمراض المزمنة: ' + hlt.chronic_diseases);
-        if (hlt.previous_surgeries) lines.push('   • العمليات السابقة: ' + hlt.previous_surgeries);
-        if (hlt.allergies)          lines.push('   • الحساسية: ' + hlt.allergies);
-        if (hlt.medications && hlt.medications.length > 0) {
-            lines.push('   💊 الأدوية الموصوفة:');
-            hlt.medications.forEach(function(m) {
-                var med = '      - ' + (m.name || '');
-                if (m.dose) med += '، ' + m.dose;
-                if (m.frequency_num && m.frequency_unit) med += '، ' + m.frequency_num + ' مرة/' + m.frequency_unit;
-                lines.push(med);
-            });
-        }
-        lines.push('');
-        lines.push('━━━━━━━━━━━━━━━━━━');
-        lines.push('👨‍⚕️ *الأخصائي المعالج:*');
-        if (doctorName)     lines.push('   • الاسم: ' + doctorName);
-        if (specialty)      lines.push('   • التخصص: ' + specialty);
-        if (clinicName)     lines.push('   • العيادة: ' + clinicName);
-        if (clinicPhone)    lines.push('   • الموبايل: ' + clinicPhone);
-        if (clinicAddress)  lines.push('   • العنوان: ' + clinicAddress);
-        lines.push('');
-        lines.push('نشكركم على ثقتكم الغالية 💙');
-        if (clinicName) lines.push(clinicName);
-        return lines.join('\n');
-    }
-
-    function _buildGeminiText() {
-        var patient = window.currentViewPatient;
-        var visit   = window.currentViewVisit;
-        if (!patient || !visit) return null;
-        // ابحث عن تقرير Gemini المخزّن في الزيارة
-        var geminiReport = visit.gemini_report || visit.geminiReport || visit.ai_report || '';
-        var patientName  = patient.name_ar || (visit.personal && visit.personal.name_ar) || '—';
-        var visitDate    = visit.date || '—';
-
-        var lines = [];
-        lines.push('✨ *تقرير Gemini الذكي*');
-        lines.push('المريض: ' + patientName);
-        lines.push('التاريخ: ' + visitDate);
-        lines.push('━━━━━━━━━━━━━━━━━━');
-        if (geminiReport) {
-            lines.push(geminiReport);
-        } else {
-            lines.push('لم يتم توليد تقرير Gemini لهذه الزيارة بعد.');
-            lines.push('يرجى فتح تبويب Gemini وتوليد التقرير أولاً.');
-        }
-        lines.push('━━━━━━━━━━━━━━━━━━');
-        var acc = (typeof getCurrentAccount === 'function') ? getCurrentAccount() : null;
-        if (acc && acc.clinic) lines.push(acc.clinic);
-        return lines.join('\n');
-    }
-
-    // ── إرسال نص عبر الواتساب ─────────────────────────────────────────────
-    function _sendWaText(text) {
-        var waNum = _getWaNum();
-        if (!waNum) { _toast('لا يوجد رقم واتساب مسجل للمريض', 'error'); return; }
-        window.open('https://wa.me/' + waNum + '?text=' + encodeURIComponent(text), '_blank');
-    }
-
-    // ── إرسال PDF عبر الواتساب (فتح واتساب مع إرشاد) ─────────────────────
-    function _sendWaPdf(reportType) {
-        var waNum = _getWaNum();
-        if (!waNum) { _toast('لا يوجد رقم واتساب مسجل للمريض', 'error'); return; }
-        // تنفيذ الطباعة أولاً لتوليد PDF ثم إرشاد المستخدم
-        _doPrint(reportType);
-        setTimeout(function() {
-            _toast('بعد حفظ الـ PDF، أرسله يدوياً عبر واتساب للمريض', 'info');
-            window.open('https://wa.me/' + waNum, '_blank');
-        }, 800);
-    }
-
-    // ── تنفيذ الطباعة ─────────────────────────────────────────────────────
-    function _doPrint(reportType) {
-        switch(reportType) {
             case 'prescription':
+                // طباعة الوصفة الطبية
                 if (typeof printPrescriptionFromVisit === 'function' && window.currentViewPatient && window.currentViewVisit) {
                     printPrescriptionFromVisit(window.currentViewPatient, window.currentViewVisit);
                 } else {
+                    // تشغيل الزر الموجود مسبقاً إن وجد
                     var btn = document.getElementById('view-print-prescription-btn');
-                    if (btn) btn.click();
-                    else _toast('لا توجد وصفة طبية لهذه الزيارة', 'error');
+                    if (btn) { btn.click(); }
+                    else if (typeof showToast === 'function') {
+                        showToast('لا توجد وصفة طبية لهذه الزيارة', 'error');
+                    }
                 }
                 break;
+
             case 'lab':
+                // فتح نافذة طلب التحاليل
                 if (typeof window._openLabRequestFromView === 'function') {
                     window._openLabRequestFromView();
                 } else {
                     var labBtn = document.getElementById('open-lab-request-btn');
                     if (labBtn) labBtn.click();
-                    else _toast('نافذة طلب التحاليل غير متاحة', 'error');
+                    else if (typeof showToast === 'function') {
+                        showToast('نافذة طلب التحاليل غير متاحة', 'error');
+                    }
                 }
                 break;
-            case 'diet':
+
+            case 'exchange':
+                // طباعة جدول الحصص الغذائية فقط
                 if (typeof printDietProgram === 'function' && window.currentViewPatient && window.currentViewVisit) {
                     printDietProgram(window.currentViewPatient, window.currentViewVisit);
                 } else {
                     var dietBtn = document.getElementById('print-diet-btn');
-                    if (dietBtn) dietBtn.click();
-                    else _toast('قم بفتح تبويب البرنامج الغذائي أولاً', 'info');
+                    if (dietBtn) { dietBtn.click(); }
+                    else if (typeof showToast === 'function') {
+                        showToast('قم بفتح تبويب البرنامج الغذائي أولاً', 'info');
+                    }
                 }
                 break;
-            case 'full-report':
-                if (typeof printPrescriptionFromVisit === 'function' && window.currentViewPatient && window.currentViewVisit) {
-                    printPrescriptionFromVisit(window.currentViewPatient, window.currentViewVisit);
-                } else { window.print(); }
+
+            case 'diet':
+                // طباعة البرنامج الغذائي الشامل (نفس دالة printDietProgram)
+                if (typeof printDietProgram === 'function' && window.currentViewPatient && window.currentViewVisit) {
+                    printDietProgram(window.currentViewPatient, window.currentViewVisit);
+                } else {
+                    var dietBtn2 = document.getElementById('print-diet-btn');
+                    if (dietBtn2) { dietBtn2.click(); }
+                    else if (typeof showToast === 'function') {
+                        showToast('قم بفتح تبويب البرنامج الغذائي أولاً', 'info');
+                    }
+                }
                 break;
-            case 'appointments':
-                window.print();
-                break;
-            case 'gemini':
-                var geminiPrintBtn = document.getElementById('gemini-print-btn') || document.getElementById('print-gemini-btn');
-                if (geminiPrintBtn) geminiPrintBtn.click();
-                else _toast('قم بفتح تقرير Gemini أولاً', 'info');
-                break;
+
             default:
-                window.print();
+                break;
         }
-    }
-
-    // ── الدالة الرئيسية لمعالجة الإجراء ──────────────────────────────────
-    window._shareAction = function(reportType, actionType) {
-        _closePrintMenu();
-
-        var patient = window.currentViewPatient;
-        var visit   = window.currentViewVisit;
-
-        if (!patient) { _toast('لم يتم تحميل بيانات المريض', 'error'); return; }
-
-        if (actionType === 'print') {
-            _doPrint(reportType);
-            return;
-        }
-
-        // بناء النص حسب نوع التقرير
-        var text = null;
-        switch(reportType) {
-            case 'appointments': text = _buildAppointmentsText(); break;
-            case 'prescription': text = _buildPrescriptionText(); break;
-            case 'lab':          text = _buildLabText();          break;
-            case 'diet':         text = _buildDietText();         break;
-            case 'full-report':  text = _buildFullReportText();   break;
-            case 'gemini':       text = _buildGeminiText();       break;
-        }
-
-        if (!text) { _toast('لا توجد بيانات كافية لهذا التقرير', 'error'); return; }
-
-        if (actionType === 'wa-text') {
-            _sendWaText(text);
-        } else if (actionType === 'wa-pdf') {
-            _sendWaPdf(reportType);
-        }
-    };
-
-    // ── الحفاظ على التوافق مع الكود القديم ───────────────────────────────
-    window._printMenuAction = function(type) {
-        _closePrintMenu();
-        var map = { prescription: 'prescription', lab: 'lab', exchange: 'diet', diet: 'diet' };
-        _doPrint(map[type] || type);
     };
 
 })();
