@@ -12746,7 +12746,6 @@ window.addEventListener('resize', setTopbarHeight);
         // ===== ربط منطق إدراج البدائل الغذائية (v20) =====
         (function() {
             let altItems = [];
-            let listVisible = true;
 
             // ===== قاعدة بيانات البدائل الغذائية الافتراضية =====
             const DEFAULT_FOOD_DB = {
@@ -13258,41 +13257,6 @@ window.addEventListener('resize', setTopbarHeight);
                 });
             }
 
-            // زر الإدراج من منطقة البحث
-            var altViewInsertBtn = document.getElementById('alt-view-insert-btn');
-            if (altViewInsertBtn) {
-                altViewInsertBtn.addEventListener('click', function() {
-                    var catSel   = document.getElementById('alt-view-category');
-                    var tblSec   = document.getElementById('alt-view-table-insert-section');
-                    var qtyVal   = document.getElementById('alt-view-qty-val');
-                    var category = catSel ? catSel.value : '';
-                    // استخدام الاسم المحفوظ في dataset بدلاً من نص الخيار (لتجنب بادئات الـ optgroup)
-                    var type     = tblSec ? tblSec.dataset.selectedType : '';
-                    var quantity = qtyVal ? qtyVal.textContent.trim() : '';
-                    if (!category || !type || !quantity) return;
-                    // تحقق من عدم التكرار في البدائل المخصصة
-                    var exists = altItems.some(function(i){ return i.category === category && i.type === type; });
-                    if (!exists) {
-                        altItems.push({ category: category, type: type, quantity: quantity });
-                        renderAltList();
-                    }
-                    listVisible = true;
-                    var dropdown = document.getElementById('alt-list-dropdown');
-                    var icon = document.getElementById('alt-list-toggle-icon');
-                    if (dropdown) dropdown.classList.remove('hidden');
-                    if (icon) icon.textContent = '▼';
-                    // تأثير بصري
-                    altViewInsertBtn.textContent = '✓ تم';
-                    altViewInsertBtn.classList.add('bg-green-600');
-                    altViewInsertBtn.classList.remove('bg-orange-500');
-                    setTimeout(function() {
-                        altViewInsertBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg> إدراج';
-                        altViewInsertBtn.classList.remove('bg-green-600');
-                        altViewInsertBtn.classList.add('bg-orange-500');
-                    }, 1200);
-                });
-            }
-
             // دالة الحذف (عامة على window)
             window._removeAltItem = function(idx) {
                 altItems.splice(idx, 1);
@@ -13350,12 +13314,6 @@ window.addEventListener('resize', setTopbarHeight);
 
                     renderAltList();
 
-                    // ضمان ظهور القائمة بعد الإدراج
-                    listVisible = true;
-                    const dropdown = document.getElementById('alt-list-dropdown');
-                    const icon = document.getElementById('alt-list-toggle-icon');
-                    if (dropdown) dropdown.classList.remove('hidden');
-                    if (icon) icon.textContent = '▼';
                 });
             }
 
@@ -13367,24 +13325,7 @@ window.addEventListener('resize', setTopbarHeight);
                 });
             }
 
-            // زر إخفاء/إظهار القائمة
-            const toggleBtn = document.getElementById('alt-list-toggle-btn');
-            if (toggleBtn) {
-                toggleBtn.addEventListener('click', function() {
-                    const dropdown = document.getElementById('alt-list-dropdown');
-                    const icon = document.getElementById('alt-list-toggle-icon');
-                    listVisible = !listVisible;
-                    if (dropdown) {
-                        if (listVisible) {
-                            dropdown.classList.remove('hidden');
-                            if (icon) icon.textContent = '▼';
-                        } else {
-                            dropdown.classList.add('hidden');
-                            if (icon) icon.textContent = '◀';
-                        }
-                    }
-                });
-            }
+            // القائمة ظاهرة دائماً — لا حاجة لزر الطي
 
             // ===== استدعاء التهيئة الأولى لإظهار قسم البدائل المدرجة =====
             renderAltList();
@@ -14762,16 +14703,14 @@ window.addEventListener('resize', setTopbarHeight);
                     <!-- قائمة البدائل المدرجة -->
                     <div id="alt-list-section">
 
-                        <!-- رأس القائمة مع زر الطي -->
+                        <!-- رأس القائمة الثابت -->
                         <div class="flex items-center gap-3 mb-3">
                             <div class="h-1 flex-1 bg-gradient-to-l from-[--color-primary] to-[--color-primary-dark] rounded-full"></div>
-                            <button id="alt-list-toggle-btn"
-                                class="flex items-center gap-2 text-sm font-bold text-[--color-primary] bg-[--color-primary-light] px-4 py-1.5 rounded-full border border-[--color-primary]/30 hover:bg-[--color-primary]/10 transition-colors whitespace-nowrap">
-                                <span id="alt-list-toggle-icon" class="text-xs">▼</span>
-                                <span>البدائل المدرجة</span>
+                            <div class="flex items-center gap-2 text-sm font-bold text-[--color-primary] bg-[--color-primary-light] px-4 py-1.5 rounded-full border border-[--color-primary]/30 whitespace-nowrap">
+                                <span>إدراج البدائل الغذائية</span>
                                 <span id="alt-count-badge"
                                     class="bg-[--color-primary] text-white text-xs font-bold px-2 py-0.5 rounded-full min-w-[20px] text-center">0</span>
-                            </button>
+                            </div>
                             <div class="h-1 flex-1 bg-gradient-to-r from-[--color-primary] to-[--color-primary-dark] rounded-full"></div>
                         </div>
 
@@ -14828,13 +14767,6 @@ window.addEventListener('resize', setTopbarHeight);
                                                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386-1.591 1.591M21 12h-2.25m-.386 6.364-1.591-1.591M12 18.75V21m-4.773-4.227-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z"/>
                                             </svg>
                                             <span id="alt-view-qty-val" class="text-sm font-bold text-green-800 leading-snug flex-1"></span>
-                                            <button id="alt-view-insert-btn"
-                                                class="shrink-0 flex items-center gap-1 bg-orange-500 hover:bg-orange-600 text-white font-bold px-3 py-1.5 rounded-lg text-xs transition-colors shadow-sm">
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/>
-                                                </svg>
-                                                إدراج
-                                            </button>
                                         </div>
                                     </div>
 
