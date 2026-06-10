@@ -19718,13 +19718,13 @@ async function findOrCreateDriveFile() {
 
 // --- رفع البيانات إلى Google Drive ---
 async function uploadToGoogleDrive(silent) {
-    // حفظ البرنامج الغذائي قبل المزامنة إن كانت هناك زيارة مفتوحة
-    if (typeof saveDietDataToVisit === 'function' &&
+    // حفظ البرنامج الغذائي في الذاكرة فقط قبل المزامنة (بدون استدعاء sync لتفادي الحلقة المفرغة)
+    if (typeof collectDietData === 'function' &&
         typeof currentViewPatient !== 'undefined' && currentViewPatient &&
         typeof currentViewVisit !== 'undefined' && currentViewVisit &&
         typeof exchangeRows !== 'undefined' &&
         (exchangeRows.length > 0 || (typeof mealPlanRows !== 'undefined' && mealPlanRows.length > 0))) {
-        saveDietDataToVisit();
+        try { currentViewVisit.diet = collectDietData(); } catch(e) { /* تجاهل الأخطاء */ }
     }
     if (!_cloudAccessToken || Date.now() >= _cloudTokenExpiry) {
         if (typeof showToast === 'function') showToast('انتهت صلاحية الاتصال، يرجى تسجيل الدخول مجدداً', 'error');
