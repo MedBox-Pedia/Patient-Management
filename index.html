@@ -12501,9 +12501,9 @@ window.addEventListener('resize', setTopbarHeight);
                 printDietProgram(currentViewPatient, currentViewVisit);
             }
         });
-        // ── زر حفظ البرنامج الغذائي ──
-        const saveDietBtn = document.getElementById('save-diet-btn');
-        if (saveDietBtn) saveDietBtn.addEventListener('click', saveDietDataToVisit);
+        // ── زر حفظ البرنامج الغذائي (الزر المدمج في رأس الجدول) ──
+        const saveDietBtnInline = document.getElementById('save-diet-btn-inline');
+        if (saveDietBtnInline) saveDietBtnInline.addEventListener('click', saveDietDataToVisit);
 
         // ── استعادة البيانات المحفوظة إن وُجدت ──
         if (currentViewVisit && currentViewVisit.diet) {
@@ -14967,7 +14967,20 @@ window.addEventListener('resize', setTopbarHeight);
                                 <tr>
                                     <th style="min-width:100px;">التاريخ</th>
                                     <th style="min-width:80px;">اليوم</th>
-                                    <th style="min-width:60px;">حذف</th>
+                                    <th style="min-width:100px;">
+                                        <div style="display:flex;align-items:center;justify-content:center;gap:6px;">
+                                            <span>حذف</span>
+                                            <button id="save-diet-btn-inline" onclick="saveDietDataToVisit()" title="حفظ الجدول الغذائي"
+                                                style="display:inline-flex;align-items:center;gap:3px;background:linear-gradient(to left,#16a34a,#15803d);color:#fff;font-size:0.65rem;font-weight:700;padding:3px 8px;border-radius:8px;border:none;cursor:pointer;white-space:nowrap;transition:opacity 0.2s;"
+                                                onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">
+                                                <svg xmlns="http://www.w3.org/2000/svg" style="width:12px;height:12px;" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M17 21H7a2 2 0 01-2-2V5a2 2 0 012-2h7l5 5v11a2 2 0 01-2 2z"/>
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M13 3v5h5M9 17h6M9 13h6"/>
+                                                </svg>
+                                                حفظ
+                                            </button>
+                                        </div>
+                                    </th>
                                 </tr>
                             </thead>
                             <tbody id="meal-plan-tbody">
@@ -14987,15 +15000,6 @@ window.addEventListener('resize', setTopbarHeight);
 
                 <!-- أزرار البرنامج الغذائي -->
                 <div class="mt-6 flex flex-wrap justify-end gap-3">
-                    <!-- زر حفظ البرنامج الغذائي -->
-                    <button id="save-diet-btn"
-                        class="flex items-center gap-2 bg-gradient-to-l from-green-600 to-green-700 hover:opacity-90 text-white font-bold px-6 py-3 rounded-xl shadow-md transition-all text-sm">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M17 21H7a2 2 0 01-2-2V5a2 2 0 012-2h7l5 5v11a2 2 0 01-2 2z"/>
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M13 3v5h5M9 17h6M9 13h6"/>
-                        </svg>
-                        حفظ البرنامج الغذائي
-                    </button>
                     <button id="print-diet-btn"
                         class="flex items-center gap-2 bg-gradient-to-l from-[--color-primary] to-[--color-primary-dark] hover:opacity-90 text-white font-bold px-6 py-3 rounded-xl shadow-md transition-all text-sm">
                         <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
@@ -15486,6 +15490,31 @@ window.addEventListener('resize', setTopbarHeight);
             console.error('فشل حفظ البرنامج الغذائي', e);
             if (typeof showToast === 'function') showToast('فشل حفظ البرنامج الغذائي — حاول مجدداً', 'error');
         });
+    }
+
+    // حفظ صامت للبرنامج الغذائي (بدون toast) + مزامنة تلقائية
+    function _silentSaveDiet() {
+        if (!currentViewPatient || !currentViewVisit) return;
+        const patient = appData.patients.find(function(p) { return p.id === currentViewPatient.id; });
+        if (patient) {
+            const visitInData = patient.visits.find(function(v) { return v === currentViewVisit; });
+            if (!visitInData) {
+                const matchedVisit = patient.visits.find(function(v) { return v.date === currentViewVisit.date; });
+                if (matchedVisit) { currentViewVisit = matchedVisit; }
+            }
+        }
+        currentViewVisit.diet = collectDietData();
+        idbSet('medboxPediaData', (function() {
+            var d = Object.assign({}, appData);
+            delete d.currentUser; delete d.currentAccountId;
+            if (!d.accounts) d.accounts = getAccounts();
+            return d;
+        })())
+        .then(function() {
+            isDataDirty = false;
+            triggerAutoGoogleDriveSync('البرنامج الغذائي');
+        })
+        .catch(function(e) { console.error('_silentSaveDiet failed', e); });
     }
 
     function restoreDietDataFromVisit(visit) {
@@ -16108,6 +16137,9 @@ window.addEventListener('resize', setTopbarHeight);
 
                 renderMealPlanTable();
 
+                // حفظ مباشر ومزامنة تلقائية
+                setTimeout(_silentSaveDiet, 200);
+
                 // تأثير بصري
                 altViewInsertToTableBtn.textContent = '✓ تم الإدراج';
                 altViewInsertToTableBtn.style.background = '#16a34a';
@@ -16155,6 +16187,8 @@ window.addEventListener('resize', setTopbarHeight);
         if (showDistBtn) {
             showDistBtn.addEventListener('click', function() {
                 setTimeout(renderMealPlanHeader, 300);
+                // حفظ مباشر ومزامنة تلقائية عند عرض نتائج التوزيع
+                setTimeout(_silentSaveDiet, 500);
             });
         }
 
