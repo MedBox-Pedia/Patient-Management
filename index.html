@@ -16548,9 +16548,16 @@ window.addEventListener('resize', setTopbarHeight);
     // specInfo: بيانات الطبيب/الأخصائي
     // visitDate: تاريخ الزيارة
     function buildPrintHeader(reportTitle, qrHtml, patientName, patientAge, diagnosis, specInfo, visitDate) {
-        const today = new Date().toLocaleDateString('ar-SA', { year: 'numeric', month: 'long', day: 'numeric' });
+        // التاريخ الميلادي
+        const todayGreg = new Date().toLocaleDateString('ar-SA', { year: 'numeric', month: 'long', day: 'numeric' });
+        // التاريخ الهجري
+        let todayHijri = '';
+        try {
+            todayHijri = new Intl.DateTimeFormat('ar-SA-u-ca-islamic-umalqura', { year: 'numeric', month: 'long', day: 'numeric' }).format(new Date());
+        } catch(e) { todayHijri = ''; }
+        const today = todayGreg + (todayHijri ? ' | ' + todayHijri : '');
         const titleBg = reportTitle.includes('وصفة') ? '#0790AC' :
-                        reportTitle.includes('تحاليل') ? '#7c3aed' :
+                        reportTitle.includes('تحاليل') ? '#0790AC' :
                         reportTitle.includes('غذائي') || reportTitle.includes('تغذية') ? '#15803d' : '#0790AC';
         const genderBadge = '';
         return `
@@ -16605,7 +16612,12 @@ window.addEventListener('resize', setTopbarHeight);
 
     // ===== دالة مساعدة: بناء فوتر التوقيع الموحد =====
     function buildPrintFooter(specInfo, visitDate) {
-        const today = new Date().toLocaleDateString('ar-SA', { year: 'numeric', month: 'long', day: 'numeric' });
+        const todayGreg = new Date().toLocaleDateString('ar-SA', { year: 'numeric', month: 'long', day: 'numeric' });
+        let todayHijri = '';
+        try {
+            todayHijri = new Intl.DateTimeFormat('ar-SA-u-ca-islamic-umalqura', { year: 'numeric', month: 'long', day: 'numeric' }).format(new Date());
+        } catch(e) { todayHijri = ''; }
+        const today = todayGreg + (todayHijri ? ' | ' + todayHijri : '');
         const specialistLabel = specInfo.specialty
             ? (specInfo.specialty.includes('طبيب') || specInfo.specialty.includes('دكتور') ? 'الطبيب المعالج' : 'الأخصائي المسؤول')
             : 'الطبيب المعالج';
@@ -17222,13 +17234,83 @@ window.addEventListener('resize', setTopbarHeight);
             const labSpecInfo = getSpecialistInfoForPrint();
             const specialistName = labSpecInfo.fullName;
 
-            // تجميع التحاليل المختارة مع ترقيم
-            const selectedLabs = Array.from(checkedBoxes).map((cb, i) => `
-                <tr style="background:${i % 2 === 0 ? '#ffffff' : '#f9fafb'}">
-                    <td style="padding:8px 12px;border:1px solid #e5e7eb;text-align:center;color:#6b7280;font-size:13px">${i + 1}</td>
-                    <td style="padding:8px 14px;border:1px solid #e5e7eb;font-size:13px;font-weight:500">${cb.value}</td>
-                    <td style="padding:8px 12px;border:1px solid #e5e7eb;text-align:center;color:#9ca3af;font-size:12px">□</td>
-                </tr>`).join('');
+            // خريطة تصنيف التحاليل حسب القيمة → الفئة
+            const labCategoryMap = [
+                { label: '🩸 تحاليل دموية (Hematology)', color: '#dc2626', bg: '#fff1f2', keys: ['WBC','RBC','MCV','MCH','MCHC','RDW','Platelets','HB (Hemoglobin)','Neutrophils','Lymphocytes','Monocytes','Eosinophils','Basophils'] },
+                { label: '🫘 دراسات الحديد', color: '#92400e', bg: '#fffbeb', keys: ['Serum Iron (FR)','TIBC (Total Iron Binding Capacity)','Ferritin'] },
+                { label: '🍬 تقييم السكر', color: '#15803d', bg: '#f0fdf4', keys: ['سكر الصيامي (Fasting Glucose)','سكر عشوائي (Random Glucose)','مقاومة الانسولين (HOMA-IR)','HbA1c'] },
+                { label: '🫘 وظائف الكلية', color: '#0369a1', bg: '#f0f9ff', keys: ['Creatinine (Cr)','Urea','Uric Acid (UA)','Creatinine Clearance (CrCl)','eGFR'] },
+                { label: '🫀 وظائف الكبد', color: '#d97706', bg: '#fffbeb', keys: ['ALT','AST','T.Bilirubin (Direct & Indirect)','Albumin','CRP'] },
+                { label: '💊 فيتامينات', color: '#7c3aed', bg: '#faf5ff', keys: ['Vitamin B6','Vitamin B9 (Folic Acid)','Vitamin B12','Vitamin D3'] },
+                { label: '⚡ الشوارد', color: '#0891b2', bg: '#f0fdfa', keys: ['Potassium (K)','Sodium (Na)','Chloride (Cl)','Magnesium (Mg)','Phosphorus (P)','Calcium (Ca)'] },
+                { label: '🔬 الهرمونات', color: '#6d28d9', bg: '#f5f3ff', keys: ['TSH','T3','T4','FSH','LH','Testosterone','PTH'] },
+                { label: '🫀 الدهون (Lipid Profile)', color: '#ea580c', bg: '#fff7ed', keys: ['Total Cholesterol (الكولسترول الكلي)','Triglycerides (TG / الشحوم الثلاثية)','HDL Cholesterol (الكولسترول الجيد)','LDL Cholesterol (الكولسترول الضار)','Lipid Profile كامل (TC, TG, HDL, LDL)'] },
+                { label: '❤️ خمائر القلب (Cardiac Enzymes)', color: '#be123c', bg: '#fff1f2', keys: ['Troponin','CK (Creatine Kinase)','CK-MB','Myoglobin'] },
+                { label: '🫁 غازات الدم الشرياني (ABG)', color: '#0369a1', bg: '#eff6ff', keys: ['ABG كامل (pH, PaO2, PaCO2, HCO3, BE, SaO2)','pH الدم الشرياني','PaO2 (ضغط الأكسجين الشرياني)','PaCO2 (ضغط ثاني أكسيد الكربون الشرياني)','HCO3 (البيكربونات)','BE (Base Excess / فائض القاعدة)','SaO2 (تشبع الأكسجين الشرياني)','Lactate (حمض اللاكتيك)'] },
+                { label: '🦠 تحاليل فيروسية (Viral Serology)', color: '#be185d', bg: '#fff0f6', keys: ['HBsAg (التهاب الكبد B)','Anti-HCV (التهاب الكبد C)','HIV Ag/Ab (الإيدز)'] },
+                { label: '🔬 تحليل البول والراسب', color: '#0f766e', bg: '#f0fdfa', keys: ['تحليل البول الكامل والراسب (Urine Analysis & Sediment)','كثافة البول (Urine Density)','جراثيم البول (Urine Bacteria)','بروتين البول (Urine Protein)','كريات حمراء في البول (Urine RBC/HPF)','كريات بيضاء في البول (Urine WBC/HPF)','أوكزالات البول (Urine Oxalate)'] },
+                { label: '🩻 إجراءات تشخيصية', color: '#374151', bg: '#f9fafb', keys: ['X-Ray (أشعة سينية)','Ultra Sound / Eco (إيكو / موجات فوق صوتية)','CT Scan','MRI (رنين مغناطيسي)'] },
+            ];
+
+            // تصنيف التحاليل المختارة
+            const selectedValues = Array.from(checkedBoxes).map(cb => cb.value);
+            let categorized = {};
+            let uncategorized = [];
+            selectedValues.forEach(val => {
+                let found = false;
+                labCategoryMap.forEach(cat => {
+                    if (cat.keys.includes(val)) {
+                        if (!categorized[cat.label]) categorized[cat.label] = { items: [], color: cat.color, bg: cat.bg };
+                        categorized[cat.label].items.push(val);
+                        found = true;
+                    }
+                });
+                if (!found) uncategorized.push(val);
+            });
+
+            // بناء HTML الجداول المصنّفة
+            let globalCounter = 0;
+            let selectedLabsHtml = '';
+            labCategoryMap.forEach(cat => {
+                const group = categorized[cat.label];
+                if (!group) return;
+                selectedLabsHtml += `
+                    <div style="margin-bottom:8px;">
+                        <div style="font-size:11px;font-weight:700;color:${cat.color};background:${cat.bg};border-right:3px solid ${cat.color};padding:4px 10px;margin-bottom:3px;border-radius:0 4px 4px 0;">
+                            ${cat.label}
+                        </div>
+                        <table style="width:100%;border-collapse:collapse;font-family:'Cairo',sans-serif;font-size:12px;">
+                            <tbody>`;
+                group.items.forEach((val, idx) => {
+                    globalCounter++;
+                    selectedLabsHtml += `
+                                <tr style="background:${idx % 2 === 0 ? '#ffffff' : '#f9fafb'}">
+                                    <td style="padding:6px 10px;border:1px solid #e5e7eb;text-align:center;color:#9ca3af;font-size:12px;width:32px;">${globalCounter}</td>
+                                    <td style="padding:6px 12px;border:1px solid #e5e7eb;font-size:12px;font-weight:500;">${val}</td>
+                                    <td style="padding:6px 10px;border:1px solid #e5e7eb;text-align:center;color:#9ca3af;font-size:13px;width:50px;">□</td>
+                                </tr>`;
+                });
+                selectedLabsHtml += `
+                            </tbody>
+                        </table>
+                    </div>`;
+            });
+            // غير مصنّف
+            if (uncategorized.length > 0) {
+                selectedLabsHtml += `
+                    <div style="margin-bottom:8px;">
+                        <div style="font-size:11px;font-weight:700;color:#6b7280;background:#f3f4f6;border-right:3px solid #9ca3af;padding:4px 10px;margin-bottom:3px;border-radius:0 4px 4px 0;">🔬 أخرى</div>
+                        <table style="width:100%;border-collapse:collapse;font-family:'Cairo',sans-serif;font-size:12px;"><tbody>`;
+                uncategorized.forEach((val, idx) => {
+                    globalCounter++;
+                    selectedLabsHtml += `<tr style="background:${idx % 2 === 0 ? '#ffffff' : '#f9fafb'}">
+                        <td style="padding:6px 10px;border:1px solid #e5e7eb;text-align:center;color:#9ca3af;font-size:12px;width:32px;">${globalCounter}</td>
+                        <td style="padding:6px 12px;border:1px solid #e5e7eb;font-size:12px;font-weight:500;">${val}</td>
+                        <td style="padding:6px 10px;border:1px solid #e5e7eb;text-align:center;color:#9ca3af;font-size:13px;width:50px;">□</td>
+                    </tr>`;
+                });
+                selectedLabsHtml += `</tbody></table></div>`;
+            }
 
             const printArea = document.getElementById('lab-request-print-area');
             // الحصول على بيانات المريض لـ QR
@@ -17247,19 +17329,10 @@ window.addEventListener('resize', setTopbarHeight);
 
                 <!-- جدول التحاليل المطلوبة -->
                 <div style="margin:12px 0 10px 0;">
-                    <div style="font-size:12px;font-weight:700;color:#374151;border-right:4px solid #7c3aed;padding-right:10px;margin-bottom:8px;">
+                    <div style="font-size:12px;font-weight:700;color:#0790AC;border-right:4px solid #0790AC;padding-right:10px;margin-bottom:8px;">
                         🔬 التحاليل والإجراءات التشخيصية المطلوبة (${checkedBoxes.length})
                     </div>
-                    <table style="width:100%;border-collapse:collapse;font-family:'Cairo',sans-serif;font-size:12px;">
-                        <thead>
-                            <tr style="background:#7c3aed;color:white;">
-                                <th style="padding:8px;border:1px solid #ccc;width:40px;text-align:center;">#</th>
-                                <th style="padding:8px;border:1px solid #ccc;text-align:right;">اسم التحليل / الإجراء</th>
-                                <th style="padding:8px;border:1px solid #ccc;width:70px;text-align:center;">تم ✓</th>
-                            </tr>
-                        </thead>
-                        <tbody>${selectedLabs}</tbody>
-                    </table>
+                    ${selectedLabsHtml}
                 </div>
 
                 <!-- ملاحظات -->
