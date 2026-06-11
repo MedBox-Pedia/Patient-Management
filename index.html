@@ -10,6 +10,7 @@
     
     <!-- QRCode.js library (توليد QR) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <!-- jsQR library (قراءة QR من الكاميرا) -->
     <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
     
@@ -18270,23 +18271,56 @@ window.addEventListener('resize', setTopbarHeight);
 
                 closeLabRequestModal();
                 pdfPrintArea.style.display = 'block';
-                window.print();
-                setTimeout(() => { pdfPrintArea.style.display = 'none'; }, 600);
+                pdfPrintArea.style.position = 'fixed';
+                pdfPrintArea.style.left = '-99999px';
+                pdfPrintArea.style.top = '0';
+                pdfPrintArea.style.width = '210mm';
+                pdfPrintArea.style.background = '#fff';
 
-                // فتح واتساب لإرسال الـ PDF بعد الحفظ
-                setTimeout(function() {
+                const fileName = 'طلب_تحاليل_' + (patientName || 'مريض').replace(/\s+/g, '_') + '.pdf';
+                const html2pdfOpts = {
+                    margin: [10, 10, 10, 10],
+                    filename: fileName,
+                    image: { type: 'jpeg', quality: 0.98 },
+                    html2canvas: { scale: 2, useCORS: true },
+                    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+                    pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+                };
+
+                if (typeof html2pdf === 'undefined') {
+                    showToast('تعذر تحميل مكتبة PDF، يرجى التحقق من الاتصال بالإنترنت', 'error');
+                    pdfPrintArea.style.display = 'none';
+                    pdfPrintArea.style.position = '';
+                    pdfPrintArea.style.left = '';
+                    return;
+                }
+
+                html2pdf().set(html2pdfOpts).from(pdfPrintArea).save().then(function() {
+                    pdfPrintArea.style.display = 'none';
+                    pdfPrintArea.style.position = '';
+                    pdfPrintArea.style.left = '';
+                    pdfPrintArea.style.width = '';
+
+                    // فتح واتساب لإرسال الـ PDF بعد تنزيله
                     const p = window.currentViewPatient;
                     let waNum = (p.whatsapp || p.phone || '').replace(/[^0-9]/g, '');
                     if (!waNum && p.visits && p.visits.length > 0) {
                         const lv = p.visits[p.visits.length - 1];
                         waNum = ((lv.personal && (lv.personal.whatsapp || lv.personal.phone)) || '').replace(/[^0-9]/g, '');
                     }
+                    showToast('تم تحميل ملف PDF: ' + fileName, 'success');
                     openWaModal({
                         title: '📄 إرسال طلب التحاليل (PDF) عبر واتساب',
-                        defaultText: 'السلام عليكم ' + (patientName || '') + ' 🌿\nمرفق طلب التحاليل والإجراءات التشخيصية الخاص بزيارتكم.\nيرجى إجراء التحاليل وإحضار النتائج في الزيارة القادمة.\n\nنتمنى لكم الصحة والعافية 💙',
+                        defaultText: 'السلام عليكم ' + (patientName || '') + ' 🌿\nمرفق طلب التحاليل والإجراءات التشخيصية الخاص بزيارتكم.\nيرجى إجراء التحاليل وإحضار النتائج في الزيارة القادمة.\n\nنتمنى لكم الصحة والعافية 💙\n\n📎 يرجى إرفاق ملف "' + fileName + '" الذي تم تنزيله للتو.',
                         rawNumber: waNum
                     });
-                }, 900);
+                }).catch(function(err) {
+                    console.error('PDF generation error:', err);
+                    showToast('حدث خطأ أثناء توليد ملف PDF', 'error');
+                    pdfPrintArea.style.display = 'none';
+                    pdfPrintArea.style.position = '';
+                    pdfPrintArea.style.left = '';
+                });
             });
         });
     }
