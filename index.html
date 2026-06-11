@@ -6503,6 +6503,10 @@ window.addEventListener('resize', setTopbarHeight);
                 </svg>
                 طباعة طلب التحاليل
             </button>
+            <button type="button" id="pdf-lab-request-wa-btn" class="hidden bg-[#0790AC] text-white px-6 py-2 rounded-lg font-semibold hover:bg-[#056a80] transition items-center gap-2 shadow">
+                <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
+                إرسال PDF عبر واتساب
+            </button>
             <button type="button" id="send-lab-request-wa-btn" class="hidden bg-[#25d366] text-white px-6 py-2 rounded-lg font-semibold hover:bg-[#1ebe5b] transition items-center gap-2 shadow">
                 <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
                 إرسال طلب تحاليل كتابي
@@ -17636,6 +17640,7 @@ window.addEventListener('resize', setTopbarHeight);
     const labReqSelectedCount = document.getElementById('lab-req-selected-count');
     const printLabRequestBtn  = document.getElementById('print-lab-request-btn');
     const sendLabRequestWaBtn = document.getElementById('send-lab-request-wa-btn');
+    const pdfLabRequestWaBtn  = document.getElementById('pdf-lab-request-wa-btn');
 
     /** فتح نافذة طلب التحاليل */
     function openLabRequestModal() {
@@ -17643,13 +17648,24 @@ window.addEventListener('resize', setTopbarHeight);
         if (!window._labRequestFromView) window._labRequestFromView = false;
         labRequestModal.classList.remove('hidden');
         updateLabReqCount();
-        // تبديل الأزرار حسب الوضع (طباعة عادية / مشاركة واتساب)
-        if (window._labRequestWaMode) {
-            if (printLabRequestBtn) printLabRequestBtn.classList.add('hidden');
-            if (sendLabRequestWaBtn) { sendLabRequestWaBtn.classList.remove('hidden'); sendLabRequestWaBtn.classList.add('flex'); }
+        // تبديل الأزرار حسب الوضع (طباعة عادية / مشاركة كتابي / مشاركة PDF)
+        const setBtnVisible = (btn, visible) => {
+            if (!btn) return;
+            if (visible) { btn.classList.remove('hidden'); btn.classList.add('flex'); }
+            else { btn.classList.add('hidden'); btn.classList.remove('flex'); }
+        };
+        if (window._labRequestPdfWaMode) {
+            setBtnVisible(printLabRequestBtn, false);
+            setBtnVisible(sendLabRequestWaBtn, false);
+            setBtnVisible(pdfLabRequestWaBtn, true);
+        } else if (window._labRequestWaMode) {
+            setBtnVisible(printLabRequestBtn, false);
+            setBtnVisible(sendLabRequestWaBtn, true);
+            setBtnVisible(pdfLabRequestWaBtn, false);
         } else {
-            if (printLabRequestBtn) printLabRequestBtn.classList.remove('hidden');
-            if (sendLabRequestWaBtn) { sendLabRequestWaBtn.classList.add('hidden'); sendLabRequestWaBtn.classList.remove('flex'); }
+            setBtnVisible(printLabRequestBtn, true);
+            setBtnVisible(sendLabRequestWaBtn, false);
+            setBtnVisible(pdfLabRequestWaBtn, false);
         }
     }
 
@@ -17658,6 +17674,7 @@ window.addEventListener('resize', setTopbarHeight);
         labRequestModal.classList.add('hidden');
         window._labRequestFromView = false;
         window._labRequestWaMode = false;
+        window._labRequestPdfWaMode = false;
     }
 
     /** فتح نافذة طلب التحاليل من صفحة عرض المريض (وليس من النموذج) */
@@ -17670,6 +17687,13 @@ window.addEventListener('resize', setTopbarHeight);
     window._openLabRequestForWa = function() {
         window._labRequestFromView = true;
         window._labRequestWaMode = true;
+        openLabRequestModal();
+    };
+
+    /** فتح نافذة طلب التحاليل لتجهيز ملف PDF يُرسل عبر واتساب */
+    window._openLabRequestForPdfWa = function() {
+        window._labRequestFromView = true;
+        window._labRequestPdfWaMode = true;
         openLabRequestModal();
     };
 
@@ -18127,6 +18151,143 @@ window.addEventListener('resize', setTopbarHeight);
             window.print();
             setTimeout(() => { printArea.style.display = 'none'; }, 600);
             }); // end getQRImageHTMLForPrint lab
+        });
+    }
+
+    /** إرسال طلب التحاليل كملف PDF عبر واتساب */
+    if (pdfLabRequestWaBtn) {
+        pdfLabRequestWaBtn.addEventListener('click', () => {
+            const checkedBoxes = document.querySelectorAll('#lab-request-list .lab-req-checkbox:checked');
+            if (checkedBoxes.length === 0) {
+                showToast('الرجاء تحديد تحليل واحد على الأقل', 'error');
+                return;
+            }
+
+            let patientName, patientAge, diagnosis;
+            if (window.currentViewPatient && window.currentViewVisit) {
+                patientName = window.currentViewPatient.name_ar || '—';
+                patientAge  = window.currentViewVisit.personal?.age || '—';
+                diagnosis   = window.currentViewVisit.health?.medical_diagnosis || window.currentViewVisit.health?.current_complaint || '—';
+            } else {
+                showToast('يرجى فتح ملف مريض أولاً', 'info');
+                return;
+            }
+
+            const pdfLabSpecInfo = getSpecialistInfoForPrint();
+
+            const pdfLabCategoryMap = [
+                { label: '🩸 تحاليل دموية (Hematology)', color: '#dc2626', bg: '#fff1f2', keys: ['WBC','RBC','MCV','MCH','MCHC','RDW','Platelets','HB (Hemoglobin)','HT (Hematocrit)','ESR'] },
+                { label: '🫘 دراسات الحديد', color: '#92400e', bg: '#fffbeb', keys: ['Serum Iron (FR)','TIBC (Total Iron Binding Capacity)','Ferritin'] },
+                { label: '🍬 تقييم السكر', color: '#15803d', bg: '#f0fdf4', keys: ['سكر الصيامي (Fasting Glucose)','سكر عشوائي (Random Glucose)','مقاومة الانسولين (HOMA-IR)','HbA1c'] },
+                { label: '🫘 وظائف الكلية', color: '#0369a1', bg: '#f0f9ff', keys: ['Creatinine (Cr)','Urea','Uric Acid (UA)','Creatinine Clearance (CrCl)','eGFR'] },
+                { label: '🫀 وظائف الكبد', color: '#d97706', bg: '#fffbeb', keys: ['ALT','AST','T.Bilirubin (Direct & Indirect)','Albumin','CRP'] },
+                { label: '💊 فيتامينات', color: '#7c3aed', bg: '#faf5ff', keys: ['Vitamin B6','Vitamin B9 (Folic Acid)','Vitamin B12','Vitamin D3'] },
+                { label: '⚡ الشوارد', color: '#0891b2', bg: '#f0fdfa', keys: ['Potassium (K)','Sodium (Na)','Chloride (Cl)','Magnesium (Mg)','Phosphorus (P)','Calcium (Ca)'] },
+                { label: '🔬 الهرمونات', color: '#6d28d9', bg: '#f5f3ff', keys: ['TSH','T3','T4','FSH','LH','Testosterone','PTH'] },
+                { label: '🫀 الدهون (Lipid Profile)', color: '#ea580c', bg: '#fff7ed', keys: ['Total Cholesterol (الكولسترول الكلي)','Triglycerides (TG / الشحوم الثلاثية)','HDL Cholesterol (الكولسترول الجيد)','LDL Cholesterol (الكولسترول الضار)','Lipid Profile كامل (TC, TG, HDL, LDL)'] },
+                { label: '❤️ خمائر القلب (Cardiac Enzymes)', color: '#be123c', bg: '#fff1f2', keys: ['Troponin','CK (Creatine Kinase)','CK-MB','Myoglobin'] },
+                { label: '🫁 غازات الدم الشرياني (ABG)', color: '#0369a1', bg: '#eff6ff', keys: ['ABG كامل (pH, PaO2, PaCO2, HCO3, BE, SaO2)','pH الدم الشرياني','PaO2 (ضغط الأكسجين الشرياني)','PaCO2 (ضغط ثاني أكسيد الكربون الشرياني)','HCO3 (البيكربونات)','BE (Base Excess / فائض القاعدة)','SaO2 (تشبع الأكسجين الشرياني)','Lactate (حمض اللاكتيك)'] },
+                { label: '🦠 تحاليل فيروسية (Viral Serology)', color: '#be185d', bg: '#fff0f6', keys: ['HBsAg (التهاب الكبد B)','Anti-HCV (التهاب الكبد C)','HIV Ag/Ab (الإيدز)'] },
+                { label: '🔬 تحليل البول والراسب', color: '#0f766e', bg: '#f0fdfa', keys: ['تحليل البول الكامل والراسب (Urine Analysis & Sediment)','كثافة البول (Urine Density)','جراثيم البول (Urine Bacteria)','بروتين البول (Urine Protein)','كريات حمراء في البول (Urine RBC/HPF)','كريات بيضاء في البول (Urine WBC/HPF)','أوكزالات البول (Urine Oxalate)'] },
+                { label: '🩻 إجراءات تشخيصية', color: '#374151', bg: '#f9fafb', keys: ['X-Ray (أشعة سينية)','Ultra Sound / Eco (إيكو / موجات فوق صوتية)','CT Scan','MRI (رنين مغناطيسي)'] },
+            ];
+
+            const selectedValues = Array.from(checkedBoxes).map(cb => cb.value);
+            let categorized = {};
+            let uncategorized = [];
+            selectedValues.forEach(val => {
+                let found = false;
+                pdfLabCategoryMap.forEach(cat => {
+                    if (cat.keys.includes(val)) {
+                        if (!categorized[cat.label]) categorized[cat.label] = { items: [], color: cat.color, bg: cat.bg };
+                        categorized[cat.label].items.push(val);
+                        found = true;
+                    }
+                });
+                if (!found) uncategorized.push(val);
+            });
+
+            let globalCounter = 0;
+            let selectedLabsHtml = '';
+            pdfLabCategoryMap.forEach(cat => {
+                const group = categorized[cat.label];
+                if (!group) return;
+                selectedLabsHtml += `
+                    <div style="margin-bottom:8px;">
+                        <div style="font-size:11px;font-weight:700;color:${cat.color};background:${cat.bg};border-right:3px solid ${cat.color};padding:4px 10px;margin-bottom:3px;border-radius:0 4px 4px 0;">
+                            ${cat.label}
+                        </div>
+                        <table style="width:100%;border-collapse:collapse;font-family:'Cairo',sans-serif;font-size:12px;">
+                            <tbody>`;
+                group.items.forEach((val, idx) => {
+                    globalCounter++;
+                    selectedLabsHtml += `
+                                <tr style="background:${idx % 2 === 0 ? '#ffffff' : '#f9fafb'}">
+                                    <td style="padding:6px 10px;border:1px solid #e5e7eb;text-align:center;color:#9ca3af;font-size:12px;width:32px;">${globalCounter}</td>
+                                    <td style="padding:6px 12px;border:1px solid #e5e7eb;font-size:12px;font-weight:500;">${val}</td>
+                                    <td style="padding:6px 10px;border:1px solid #e5e7eb;text-align:center;color:#9ca3af;font-size:13px;width:50px;">□</td>
+                                </tr>`;
+                });
+                selectedLabsHtml += `
+                            </tbody>
+                        </table>
+                    </div>`;
+            });
+            if (uncategorized.length > 0) {
+                selectedLabsHtml += `
+                    <div style="margin-bottom:8px;">
+                        <div style="font-size:11px;font-weight:700;color:#6b7280;background:#f3f4f6;border-right:3px solid #9ca3af;padding:4px 10px;margin-bottom:3px;border-radius:0 4px 4px 0;">🔬 أخرى</div>
+                        <table style="width:100%;border-collapse:collapse;font-family:'Cairo',sans-serif;font-size:12px;"><tbody>`;
+                uncategorized.forEach((val, idx) => {
+                    globalCounter++;
+                    selectedLabsHtml += `<tr style="background:${idx % 2 === 0 ? '#ffffff' : '#f9fafb'}">
+                        <td style="padding:6px 10px;border:1px solid #e5e7eb;text-align:center;color:#9ca3af;font-size:12px;width:32px;">${globalCounter}</td>
+                        <td style="padding:6px 12px;border:1px solid #e5e7eb;font-size:12px;font-weight:500;">${val}</td>
+                        <td style="padding:6px 10px;border:1px solid #e5e7eb;text-align:center;color:#9ca3af;font-size:13px;width:50px;">□</td>
+                    </tr>`;
+                });
+                selectedLabsHtml += `</tbody></table></div>`;
+            }
+
+            const pdfPrintArea = document.getElementById('lab-request-print-area');
+            getQRImageHTMLForPrint(window.currentViewPatient, 80).then(function(labQrHtml) {
+                const labHeaderHtml = buildPrintHeader('🧪 طلب تحاليل مخبرية وإجراءات تشخيصية', labQrHtml, patientName, patientAge, diagnosis, pdfLabSpecInfo, window.currentViewVisit?.date || '');
+                pdfPrintArea.innerHTML = `
+                <div style="font-family:'Cairo',sans-serif;direction:rtl;padding:12px 14px;">
+                    ${labHeaderHtml}
+                    <div style="margin:12px 0 10px 0;">
+                        <div style="font-size:12px;font-weight:700;color:#0790AC;border-right:4px solid #0790AC;padding-right:10px;margin-bottom:8px;">
+                            🔬 التحاليل والإجراءات التشخيصية المطلوبة (${checkedBoxes.length})
+                        </div>
+                        ${selectedLabsHtml}
+                    </div>
+                    <div class="print-no-break" style="background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:8px 12px;margin-bottom:12px;font-size:11.5px;color:#92400e;">
+                        <b>⚠️ ملاحظة:</b> يرجى تسليم نتائج التحاليل للأخصائي عند المراجعة القادمة.
+                    </div>
+                    ${buildPrintFooter(pdfLabSpecInfo, window.currentViewVisit?.date || '')}
+                </div>
+                `;
+
+                closeLabRequestModal();
+                pdfPrintArea.style.display = 'block';
+                window.print();
+                setTimeout(() => { pdfPrintArea.style.display = 'none'; }, 600);
+
+                // فتح واتساب لإرسال الـ PDF بعد الحفظ
+                setTimeout(function() {
+                    const p = window.currentViewPatient;
+                    let waNum = (p.whatsapp || p.phone || '').replace(/[^0-9]/g, '');
+                    if (!waNum && p.visits && p.visits.length > 0) {
+                        const lv = p.visits[p.visits.length - 1];
+                        waNum = ((lv.personal && (lv.personal.whatsapp || lv.personal.phone)) || '').replace(/[^0-9]/g, '');
+                    }
+                    openWaModal({
+                        title: '📄 إرسال طلب التحاليل (PDF) عبر واتساب',
+                        defaultText: 'السلام عليكم ' + (patientName || '') + ' 🌿\nمرفق طلب التحاليل والإجراءات التشخيصية الخاص بزيارتكم.\nيرجى إجراء التحاليل وإحضار النتائج في الزيارة القادمة.\n\nنتمنى لكم الصحة والعافية 💙',
+                        rawNumber: waNum
+                    });
+                }, 900);
+            });
         });
     }
 
@@ -23726,10 +23887,12 @@ window._loadGeminiKeyFromDrive = async function() {
                 break;
             }
             case 'lab_pdf_wa':
-                _printThenShowPdfWaHint(function() {
-                    if (typeof window._openLabRequestFromView === 'function') window._openLabRequestFromView();
-                    else { var b2 = document.getElementById('open-lab-request-btn'); if (b2) b2.click(); }
-                }, 'طلب التحاليل');
+                if (!window.currentViewPatient || !window.currentViewVisit) { showToast('يرجى فتح زيارة مريض أولاً', 'info'); break; }
+                if (typeof window._openLabRequestForPdfWa === 'function') {
+                    window._openLabRequestForPdfWa();
+                } else {
+                    showToast('نافذة طلب التحاليل غير متاحة', 'error');
+                }
                 break;
 
             // ── البرنامج الغذائي ──
