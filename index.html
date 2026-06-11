@@ -7575,7 +7575,7 @@ window.addEventListener('resize', setTopbarHeight);
                                     </div>
                                     <div>
                                         <p class="text-xs text-gray-500 font-semibold">رقم الإصدار</p>
-                                        <p class="text-2xl font-black text-purple-600 ltr" dir="ltr">V3.3.4</p>
+                                        <p class="text-2xl font-black text-purple-600 ltr" dir="ltr">V3.3.3</p>
                                     </div>
                                 </div>
                                 <div class="bg-white px-4 py-2 rounded-xl border border-gray-200">
@@ -18250,59 +18250,69 @@ window.addEventListener('resize', setTopbarHeight);
                 selectedLabsHtml += `</tbody></table></div>`;
             }
 
+            const pdfPrintArea = document.getElementById('lab-request-print-area');
             getQRImageHTMLForPrint(window.currentViewPatient, 80).then(function(labQrHtml) {
                 const labHeaderHtml = buildPrintHeader('🧪 طلب تحاليل مخبرية وإجراءات تشخيصية', labQrHtml, patientName, patientAge, diagnosis, pdfLabSpecInfo, window.currentViewVisit?.date || '');
-
-                // ── بناء HTML الكامل كـ string مستقل بدلاً من DOM element مخفي ──
-                // html2canvas يفشل في تصوير العناصر المخفية خارج الـ viewport
-                // الحل: نُمرر HTML string مباشرة لـ html2pdf دون الاعتماد على عنصر DOM مخفي
-                const fullPdfHtml = `<!DOCTYPE html>
-<html dir="rtl" lang="ar">
-<head>
-<meta charset="UTF-8"/>
-<style>
-  @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap');
-  * { box-sizing: border-box; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-  body { font-family: 'Cairo', sans-serif; direction: rtl; margin: 0; padding: 12px 14px; background: #fff; }
-  table { border-collapse: collapse; width: 100%; }
-  td, th { border: 1px solid #e5e7eb; padding: 6px 10px; }
-</style>
-</head>
-<body>
-${labHeaderHtml}
-<div style="margin:12px 0 10px 0;">
-  <div style="font-size:12px;font-weight:700;color:#0790AC;border-right:4px solid #0790AC;padding-right:10px;margin-bottom:8px;">
-    🔬 التحاليل والإجراءات التشخيصية المطلوبة (${checkedBoxes.length})
-  </div>
-  ${selectedLabsHtml}
-</div>
-<div style="background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:8px 12px;margin-bottom:12px;font-size:11.5px;color:#92400e;">
-  <b>⚠️ ملاحظة:</b> يرجى تسليم نتائج التحاليل للأخصائي عند المراجعة القادمة.
-</div>
-${buildPrintFooter(pdfLabSpecInfo, window.currentViewVisit?.date || '')}
-</body>
-</html>`;
+                pdfPrintArea.innerHTML = `
+                <div style="font-family:'Cairo',sans-serif;direction:rtl;padding:12px 14px;">
+                    ${labHeaderHtml}
+                    <div style="margin:12px 0 10px 0;">
+                        <div style="font-size:12px;font-weight:700;color:#0790AC;border-right:4px solid #0790AC;padding-right:10px;margin-bottom:8px;">
+                            🔬 التحاليل والإجراءات التشخيصية المطلوبة (${checkedBoxes.length})
+                        </div>
+                        ${selectedLabsHtml}
+                    </div>
+                    <div class="print-no-break" style="background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:8px 12px;margin-bottom:12px;font-size:11.5px;color:#92400e;">
+                        <b>⚠️ ملاحظة:</b> يرجى تسليم نتائج التحاليل للأخصائي عند المراجعة القادمة.
+                    </div>
+                    ${buildPrintFooter(pdfLabSpecInfo, window.currentViewVisit?.date || '')}
+                </div>
+                `;
 
                 closeLabRequestModal();
+                // ── تحضير العنصر لتصوير html2canvas ──
+                // نستخدم position:absolute خارج نطاق الرؤية بدلاً من position:fixed
+                // لأن html2canvas لا يصوّر العناصر ذات position:fixed الموجودة خارج الشاشة
+                pdfPrintArea.style.position = 'absolute';
+                pdfPrintArea.style.top = '0';
+                pdfPrintArea.style.left = '0';
+                pdfPrintArea.style.width = '210mm';
+                pdfPrintArea.style.background = '#fff';
+                pdfPrintArea.style.zIndex = '-9999';
+                pdfPrintArea.style.opacity = '0';
+                pdfPrintArea.style.pointerEvents = 'none';
+                pdfPrintArea.style.display = 'block';
 
                 const fileName = 'طلب_تحاليل_' + (patientName || 'مريض').replace(/\s+/g, '_') + '.pdf';
                 const html2pdfOpts = {
                     margin: [10, 10, 10, 10],
                     filename: fileName,
                     image: { type: 'jpeg', quality: 0.98 },
-                    html2canvas: { scale: 2, useCORS: true, allowTaint: true },
+                    html2canvas: { scale: 2, useCORS: true, logging: false, allowTaint: true },
                     jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
                     pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
                 };
 
+                function _resetPdfPrintArea() {
+                    pdfPrintArea.style.display = 'none';
+                    pdfPrintArea.style.position = '';
+                    pdfPrintArea.style.top = '';
+                    pdfPrintArea.style.left = '';
+                    pdfPrintArea.style.width = '';
+                    pdfPrintArea.style.zIndex = '';
+                    pdfPrintArea.style.opacity = '';
+                    pdfPrintArea.style.pointerEvents = '';
+                }
+
                 if (typeof html2pdf === 'undefined') {
                     showToast('تعذر تحميل مكتبة PDF، يرجى التحقق من الاتصال بالإنترنت', 'error');
+                    _resetPdfPrintArea();
                     return;
                 }
 
-                // استخدام .from(htmlString, 'string') بدلاً من .from(element)
-                // هذا يجعل html2pdf يُنشئ عنصراً مؤقتاً مرئياً داخلياً ثم يحذفه
-                html2pdf().set(html2pdfOpts).from(fullPdfHtml, 'string').save().then(function() {
+                html2pdf().set(html2pdfOpts).from(pdfPrintArea).save().then(function() {
+                    _resetPdfPrintArea();
+
                     // فتح واتساب لإرسال الـ PDF بعد تنزيله
                     const p = window.currentViewPatient;
                     let waNum = (p.whatsapp || p.phone || '').replace(/[^0-9]/g, '');
@@ -18319,6 +18329,7 @@ ${buildPrintFooter(pdfLabSpecInfo, window.currentViewVisit?.date || '')}
                 }).catch(function(err) {
                     console.error('PDF generation error:', err);
                     showToast('حدث خطأ أثناء توليد ملف PDF', 'error');
+                    _resetPdfPrintArea();
                 });
             });
         });
