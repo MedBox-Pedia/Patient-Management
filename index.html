@@ -17966,9 +17966,18 @@ window.addEventListener('resize', setTopbarHeight);
             lines.push('');
             lines.push('نتمنى لكم الصحة والعافية 💙');
 
-            const waNumber = (window.currentViewPatient)
-                ? _getPatientWaNumber()
-                : (document.getElementById('whatsapp')?.value || document.getElementById('phone')?.value || '');
+            const waNumber = (function() {
+                if (window.currentViewPatient) {
+                    const p = window.currentViewPatient;
+                    let num = (p.whatsapp || p.phone || '').replace(/[^0-9]/g, '');
+                    if (!num && p.visits && p.visits.length > 0) {
+                        const lv = p.visits[p.visits.length - 1];
+                        num = ((lv.personal && (lv.personal.whatsapp || lv.personal.phone)) || '').replace(/[^0-9]/g, '');
+                    }
+                    return num;
+                }
+                return (document.getElementById('whatsapp')?.value || document.getElementById('phone')?.value || '').replace(/[^0-9]/g, '');
+            })();
 
             openWaModal({ title: '🧪 طلب التحاليل', defaultText: lines.join('\n'), rawNumber: waNumber });
         });
