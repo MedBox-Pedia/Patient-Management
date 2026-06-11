@@ -17277,8 +17277,350 @@ window.addEventListener('resize', setTopbarHeight);
         }); // end getQRImageHTMLForPrint diet
     }
 
-    // ============================================================
-    // === وظائف نافذة طلب التحاليل والإجراءات التشخيصية ===
+    // ===== وظيفة طباعة تقرير الزيارة الشامل (جميع التبويبات) =====
+    function printVisitReportFull(patient, visit) {
+        const p  = visit.personal || {};
+        const ph = visit.physical || {};
+        const v  = visit.vitals   || {};
+        const h  = visit.health   || {};
+        const l  = visit.labs     || {};
+        const d  = visit.diagnostics || {};
+        const i  = visit.inbody   || {};
+        const n  = visit.nutritional || {};
+        const specInfo = getSpecialistInfoForPrint();
+        const visitDate = visit.date || '';
+
+        const field = (label, value) => {
+            if (value === null || value === undefined || value === '') return '';
+            return `<div style="padding:5px 8px;border:1px solid #e5e7eb;border-radius:6px;background:#f9fafb;font-size:11.5px;">
+                <span style="color:#6b7280;">${label}:</span>
+                <span style="font-weight:700;color:#1f2937;margin-right:4px;">${value}</span>
+            </div>`;
+        };
+        const labField = (label, value, key) => {
+            if (value === null || value === undefined || value === '') return '';
+            let color = '#1f2937', icon = '';
+            const val = parseFloat(value);
+            const range = normalRanges[key];
+            if (range && !isNaN(val)) {
+                if (range.high !== undefined && val > range.high) { color = '#dc2626'; icon = ' ↑'; }
+                else if (range.low !== undefined && val < range.low) { color = '#2563eb'; icon = ' ↓'; }
+                else { color = '#15803d'; icon = ' ✓'; }
+            }
+            return `<div style="padding:5px 8px;border:1px solid #e5e7eb;border-radius:6px;background:#f9fafb;font-size:11.5px;">
+                <span style="color:#6b7280;">${label}:</span>
+                <span style="font-weight:700;color:${color};margin-right:4px;">${value}${icon}</span>
+            </div>`;
+        };
+        const viralField = (label, value) => {
+            if (!value) return '';
+            const isPos = value === 'ايجابي';
+            const color = isPos ? '#dc2626' : '#15803d';
+            const txt = isPos ? 'إيجابي' : 'سلبي';
+            return `<div style="padding:5px 8px;border:1px solid #e5e7eb;border-radius:6px;background:#f9fafb;font-size:11.5px;">
+                <span style="color:#6b7280;">${label}:</span>
+                <span style="font-weight:700;color:${color};margin-right:4px;">${txt}</span>
+            </div>`;
+        };
+        const textBlock = (label, value) => {
+            if (!value) return '';
+            return `<div class="print-no-break" style="margin:6px 0;">
+                <div style="font-size:11px;font-weight:700;color:#374151;margin-bottom:3px;">${label}</div>
+                <div style="background:#f9fafb;border:1px solid #e5e7eb;border-radius:6px;padding:6px 10px;font-size:11.5px;color:#374151;white-space:pre-wrap;">${value.replace(/\n/g,'<br>')}</div>
+            </div>`;
+        };
+        const sectionTitle = (title, color) => `<div class="print-no-break" style="font-size:13px;font-weight:700;color:${color||'#0790AC'};border-right:4px solid ${color||'#0790AC'};padding-right:10px;margin:12px 0 8px 0;">${title}</div>`;
+        const grid = (htmlItems) => {
+            const items = htmlItems.filter(Boolean);
+            if (items.length === 0) return '';
+            return `<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;">${items.join('')}</div>`;
+        };
+
+        // ── Tab1: المعلومات الشخصية ──
+        const tab1 = `
+            ${sectionTitle('👤 المعلومات الشخصية')}
+            ${grid([
+                field('الاسم (انجليزي)', p.name_en),
+                field('العمر', p.age),
+                field('الجنس', p.gender === 'male' ? 'ذكر' : (p.gender === 'female' ? 'أنثى' : '')),
+                field('الحالة الاجتماعية', p.marital_status),
+                field('عدد الأطفال', p.children_count),
+                field('التدخين', p.smoking ? `نعم (${p.cigarettes_per_day||''} سجارة/يوم)` : 'لا'),
+                field('الكحول', p.alcohol ? `نعم (${p.liters_per_week||''} ليتر/أسبوع)` : 'لا'),
+                field('الوضع المادي', p.financial_status),
+                field('الهاتف', p.phone),
+                field('الواتساب', p.whatsapp),
+                field('العنوان', p.address),
+            ])}
+            ${textBlock('معتقدات دينية/ثقافية', p.beliefs_notes)}
+        `;
+
+        // ── Tab2: القياسات والعلامات الحيوية ──
+        const tab2 = `
+            ${sectionTitle('📏 القياسات الجسدية')}
+            ${grid([
+                field('الطول', ph.height ? `${ph.height} سم` : ''),
+                field('الوزن', ph.weight ? `${ph.weight} كغ` : ''),
+                field('محيط الرقبة', ph.neck_circ ? `${ph.neck_circ} سم` : ''),
+                field('محيط الذراع', ph.arm_circ ? `${ph.arm_circ} سم` : ''),
+                field('محيط الخصر', ph.waist_circ ? `${ph.waist_circ} سم` : ''),
+                field('محيط الورك', ph.hip_circ ? `${ph.hip_circ} سم` : ''),
+            ])}
+            ${sectionTitle('💓 العلامات الحيوية')}
+            ${grid([
+                labField('الضغط الانقباضي', v.bp_sys, 'bp_sys'),
+                labField('الضغط الانبساطي', v.bp_dias, 'bp_dias'),
+                labField('النبض', v.pulse, 'pulse'),
+                labField('التنفس', v.resp, 'resp'),
+                labField('الاشباع', v.spo2, 'spo2'),
+                labField('الحرارة', v.temp, 'temp'),
+            ])}
+        `;
+
+        // ── Tab3: الحالة الصحية ──
+        const medsRows3 = (h.medications && h.medications.length > 0)
+            ? h.medications.map((m, idx) => `
+                <tr style="background:${idx%2===0?'#fff':'#f8fafc'}">
+                    <td style="padding:6px 8px;border:1px solid #e2e8f0;font-weight:600;color:#0790AC">${m.name||'—'}</td>
+                    <td style="padding:6px 8px;border:1px solid #e2e8f0">${m.concentration||'—'}</td>
+                    <td style="padding:6px 8px;border:1px solid #e2e8f0">${m.drugForm||'—'}</td>
+                    <td style="padding:6px 8px;border:1px solid #e2e8f0">${m.dose||'—'}</td>
+                    <td style="padding:6px 8px;border:1px solid #e2e8f0">${m.frequency||'—'}</td>
+                    <td style="padding:6px 8px;border:1px solid #e2e8f0">${m.route||'—'}</td>
+                    <td style="padding:6px 8px;border:1px solid #e2e8f0">${m.start||'—'}</td>
+                    <td style="padding:6px 8px;border:1px solid #e2e8f0">${m.duration||'—'}</td>
+                </tr>`).join('')
+            : '';
+        const tab3 = `
+            ${sectionTitle('🩺 الحالة الصحية')}
+            ${textBlock('الشكوى الحالية', h.current_complaint)}
+            ${textBlock('التشخيص الطبي', h.medical_diagnosis)}
+            ${textBlock('الأمراض المزمنة', h.chronic_diseases)}
+            ${textBlock('الأمراض الوراثية', h.genetic_diseases)}
+            ${textBlock('السوابق الجراحية', h.surgical_history)}
+            ${h.allergies ? `<div class="print-no-break" style="margin:8px 0;background:#fef9c3;border:1px solid #fde047;border-radius:8px;padding:8px 12px;font-size:11.5px;color:#92400e;"><strong>⚠️ السوابق التحسسية:</strong> ${h.allergies}</div>` : ''}
+            ${medsRows3 ? `
+            <div style="margin:10px 0;">
+                <div style="font-size:12px;font-weight:700;color:#374151;margin-bottom:6px;">💊 الأدوية المستخدمة</div>
+                <table style="width:100%;border-collapse:collapse;font-size:11px;">
+                    <thead><tr style="background:#0790AC;color:#fff;">
+                        <th style="padding:6px;border:1px solid #0790AC;text-align:right;">اسم الدواء</th>
+                        <th style="padding:6px;border:1px solid #0790AC;">التركيز</th>
+                        <th style="padding:6px;border:1px solid #0790AC;">الشكل</th>
+                        <th style="padding:6px;border:1px solid #0790AC;">الجرعة</th>
+                        <th style="padding:6px;border:1px solid #0790AC;">التكرار</th>
+                        <th style="padding:6px;border:1px solid #0790AC;">طريقة الاستخدام</th>
+                        <th style="padding:6px;border:1px solid #0790AC;">تاريخ البداية</th>
+                        <th style="padding:6px;border:1px solid #0790AC;">المدة</th>
+                    </tr></thead>
+                    <tbody>${medsRows3}</tbody>
+                </table>
+            </div>` : ''}
+        `;
+
+        // ── Tab4: الإجراءات التشخيصية والمخبرية ──
+        const tab4 = `
+            ${sectionTitle('🧪 A. التحاليل الدموية')}
+            ${grid([
+                labField('WBC', l.wbc, 'wbc'),
+                field('Neutrophils %', l.wbc_neu),
+                field('Lymphocytes %', l.wbc_lym),
+                field('Monocytes %', l.wbc_mon),
+                field('Eosinophils %', l.wbc_eos),
+                field('Basophils %', l.wbc_bas),
+                labField('RBC', l.rbc, 'rbc'),
+                labField('MCV', l.mcv, 'mcv'),
+                labField('MCH', l.mch, 'mch'),
+                labField('MCHC', l.mchc, 'mchc'),
+                labField('RDW', l.rdw, 'rdw'),
+                labField('HB', l.hb, 'hb'),
+                labField('HT', l.ht, 'ht'),
+                labField('Platelets', l.platelets, 'platelets'),
+                labField('ESR', l.esr, 'esr'),
+                labField('Serum Iron (FR)', l.serum_iron, 'serum_iron'),
+                labField('TIBC', l.tibc, 'tibc'),
+                labField('Ferritin', l.ferritin, 'ferritin'),
+            ])}
+
+            ${sectionTitle('🧪 B. التحاليل الكيميائية')}
+            <div style="font-size:11px;font-weight:700;color:#6b7280;margin:6px 0 4px;">a) تقييم السكر</div>
+            ${grid([
+                labField('سكر صيامي', l.glucose_fast, 'glucose_fast'),
+                labField('سكر عشوائي', l.glucose_random, 'glucose_random'),
+                labField('مقاومة الانسولين', l.homa_ir, 'homa_ir'),
+            ])}
+            <div style="font-size:11px;font-weight:700;color:#6b7280;margin:6px 0 4px;">b) وظائف الكلية</div>
+            ${grid([
+                labField('Cr', l.cr, 'cr'),
+                labField('Urea', l.urea, 'urea'),
+                labField('UA', l.ua, 'ua'),
+                labField('CrCl', l.crcl, 'crcl'),
+                labField('eGFR', l.egfr, 'egfr'),
+            ])}
+            <div style="font-size:11px;font-weight:700;color:#6b7280;margin:6px 0 4px;">c) وظائف الكبد</div>
+            ${grid([
+                labField('ALT', l.alt, 'alt'),
+                labField('AST', l.ast, 'ast'),
+                labField('T.Bilirubin', l.bili_t, 'bili_t'),
+                field('Direct', l.bili_d),
+                field('Indirect', l.bili_i),
+                labField('Albumin', l.albumin, 'albumin'),
+                labField('CRP', l.crp, 'crp'),
+            ])}
+            <div style="font-size:11px;font-weight:700;color:#6b7280;margin:6px 0 4px;">d) فيتامينات</div>
+            ${grid([
+                labField('V.B6', l.vit_b6, 'vit_b6'),
+                labField('B9 (الفوليك)', l.vit_b9, 'vit_b9'),
+                labField('V.B12', l.vit_b12, 'vit_b12'),
+                labField('V.D3', l.vit_d3, 'vit_d3'),
+            ])}
+            <div style="font-size:11px;font-weight:700;color:#6b7280;margin:6px 0 4px;">e) الشوارد</div>
+            ${grid([
+                labField('K', l.k, 'k'),
+                labField('Na', l.na, 'na'),
+                labField('Cl', l.cl, 'cl'),
+                labField('Mg', l.mg, 'mg'),
+                labField('P', l.p, 'p'),
+                labField('Ca', l.ca, 'ca'),
+            ])}
+            <div style="font-size:11px;font-weight:700;color:#6b7280;margin:6px 0 4px;">f) الهرمونات</div>
+            ${grid([
+                labField('TSH', l.tsh, 'tsh'),
+                labField('T3', l.t3, 't3'),
+                labField('T4', l.t4, 't4'),
+                labField('FSH', l.fsh, 'fsh'),
+                labField('LH', l.lh, 'lh'),
+                labField('Testosterone', l.testo, 'testo'),
+                labField('PTH', l.pth, 'pth'),
+            ])}
+
+            ${(l.troponin||l.ck||l.ckmb||l.myoglobin) ? `
+            ${sectionTitle('❤️ خمائر القلب', '#dc2626')}
+            ${grid([
+                labField('Troponin', l.troponin, 'troponin'),
+                labField('CK', l.ck, 'ck'),
+                labField('CK-MB', l.ckmb, 'ckmb'),
+                labField('Myoglobin', l.myoglobin, 'myoglobin'),
+            ])}` : ''}
+
+            ${(l.abg_ph||l.abg_pao2||l.abg_paco2||l.abg_hco3||l.abg_be||l.abg_sao2||l.abg_lactate) ? `
+            ${sectionTitle('🫁 غازات الدم الشرياني (ABG)', '#0369a1')}
+            ${grid([
+                labField('pH الشرياني', l.abg_ph, 'abg_ph'),
+                labField('PaO₂ (mmHg)', l.abg_pao2, 'abg_pao2'),
+                labField('PaCO₂ (mmHg)', l.abg_paco2, 'abg_paco2'),
+                labField('HCO₃ (mEq/L)', l.abg_hco3, 'abg_hco3'),
+                labField('BE (mEq/L)', l.abg_be, 'abg_be'),
+                labField('SaO₂ (%)', l.abg_sao2, 'abg_sao2'),
+                labField('Lactate (mmol/L)', l.abg_lactate, 'abg_lactate'),
+            ])}` : ''}
+
+            ${(l.hbsag||l.hbsag_quant||l.hcv||l.hcv_quant||l.hiv||l.hiv_quant) ? `
+            ${sectionTitle('🦠 التحاليل الفيروسية', '#be185d')}
+            ${grid([
+                viralField('التهاب الكبد B (HBsAg)', l.hbsag),
+                labField('HBsAg كمي', l.hbsag_quant, 'hbsag_quant'),
+                viralField('التهاب الكبد C (Anti-HCV)', l.hcv),
+                labField('HCV كمي', l.hcv_quant, 'hcv_quant'),
+                viralField('الإيدز (HIV)', l.hiv),
+                labField('HIV كمي', l.hiv_quant, 'hiv_quant'),
+            ])}` : ''}
+
+            ${sectionTitle('🔬 C. تحليل البول والراسب')}
+            ${grid([
+                labField('الكثافة', l.urine_density, 'urine_density'),
+                field('جراثيم', l.urine_bacteria),
+                field('بروتين', l.urine_protein),
+                labField('كريات حمراء (RBC/HPF)', l.urine_rbc, 'urine_rbc'),
+                labField('كريات بيضاء (WBC/HPF)', l.urine_wbc, 'urine_wbc'),
+                field('أوكزالات', l.urine_oxalate),
+            ])}
+            ${textBlock('ملاحظات إضافية', l.urine_notes)}
+            ${textBlock('ملاحظات قديمة', l.urine_analysis)}
+
+            ${(d && Object.keys(d).some(k => d[k])) ? `
+            ${sectionTitle('🩻 D. الإجراءات التشخيصية')}
+            <div style="font-size:11.5px;color:#374151;">تم تسجيل بيانات إجراءات تشخيصية لهذه الزيارة (الصور والتقارير التفصيلية متوفرة داخل النظام).</div>
+            ` : ''}
+        `;
+
+        // ── Tab5: الحالة التغذوية ──
+        const activityText = (function(){
+            try { return document.querySelector(`#activity-level option[value="${n.activity_level}"]`)?.text || n.activity_level || ''; }
+            catch(e) { return n.activity_level || ''; }
+        })();
+        const tab5 = `
+            ${sectionTitle('🥗 الحالة التغذوية', '#15803d')}
+            ${grid([
+                field('مستوى الإجهاد', n.stress_level),
+                field('جودة النوم', n.sleep_quality),
+                field('معدل النشاط', activityText),
+                field('الوجبات اليومية', n.meals_per_day),
+                field('السوائل اليومية', n.fluid_intake ? `${n.fluid_intake} لتر` : ''),
+            ])}
+            ${textBlock('مصادر البروتين المفضلة', n.protein_sources)}
+            ${textBlock('مصادر الكربوهيدرات المفضلة', n.carb_sources)}
+            ${(i && (i.inbody_bmi || i.inbody_tbf || i.inbody_vfi)) ? `
+            ${sectionTitle('⚖️ فحوصات Inbody', '#15803d')}
+            ${grid([
+                labField('BMI', i.inbody_bmi, 'bmi'),
+                labField('TBF %', i.inbody_tbf, 'tbf'),
+                labField('VFI', i.inbody_vfi, 'vfi'),
+            ])}` : ''}
+        `;
+
+        // ── Tab6: البرنامج الغذائي ──
+        const exRows = (typeof exchangeRows !== 'undefined' && exchangeRows.length > 0)
+            ? exchangeRows.map((r, idx) => `
+                <tr style="background:${idx%2===0?'#fff':'#f9fafb'}">
+                    <td style="padding:5px 8px;border:1px solid #e5e7eb;text-align:right;">${r.name}</td>
+                    <td style="padding:5px 8px;border:1px solid #e5e7eb;text-align:center;">${r.servings}</td>
+                    <td style="padding:5px 8px;border:1px solid #e5e7eb;text-align:center;color:#15803d;">${r.carb.toFixed(1)}</td>
+                    <td style="padding:5px 8px;border:1px solid #e5e7eb;text-align:center;color:#1d4ed8;">${r.prot.toFixed(1)}</td>
+                    <td style="padding:5px 8px;border:1px solid #e5e7eb;text-align:center;color:#c2410c;">${r.fat.toFixed(1)}</td>
+                    <td style="padding:5px 8px;border:1px solid #e5e7eb;text-align:center;color:#0790AC;">${r.kcal.toFixed(1)}</td>
+                </tr>`).join('')
+            : '';
+        const tab6 = exRows ? `
+            ${sectionTitle('📋 البرنامج الغذائي', '#15803d')}
+            <table style="width:100%;border-collapse:collapse;font-size:11px;">
+                <thead><tr style="background:#0790AC;color:#fff;">
+                    <th style="padding:6px 8px;border:1px solid #ccc;text-align:right;">القائمة</th>
+                    <th style="padding:6px;border:1px solid #ccc;">الحصص</th>
+                    <th style="padding:6px;border:1px solid #ccc;">كربوهيدرات</th>
+                    <th style="padding:6px;border:1px solid #ccc;">بروتين</th>
+                    <th style="padding:6px;border:1px solid #ccc;">دهون</th>
+                    <th style="padding:6px;border:1px solid #ccc;">طاقة</th>
+                </tr></thead>
+                <tbody>${exRows}</tbody>
+            </table>
+        ` : '';
+
+        const printArea = document.getElementById('prescription-print-area');
+        getQRImageHTMLForPrint(patient, 80).then(function(qrHtml) {
+            const headerHtml = buildPrintHeader('📝 تقرير الزيارة الشامل', qrHtml, p.name_ar || patient.name_ar || '—', p.age || '—', h.medical_diagnosis || '', specInfo, visitDate);
+            printArea.innerHTML = `
+            <div style="font-family:'Cairo',sans-serif;direction:rtl;padding:12px 14px;">
+                ${headerHtml}
+                ${tab1}
+                <div class="print-break-before"></div>
+                ${tab2}
+                ${tab3}
+                <div class="print-break-before"></div>
+                ${tab4}
+                <div class="print-break-before"></div>
+                ${tab5}
+                ${tab6}
+                ${buildPrintFooter(specInfo, visitDate)}
+            </div>
+            `;
+            printArea.style.display = 'block';
+            window.print();
+            setTimeout(() => { printArea.style.display = 'none'; }, 800);
+        });
+    }
+
+
     // ============================================================
 
     const labRequestModal     = document.getElementById('lab-request-modal');
@@ -23355,14 +23697,15 @@ window._loadGeminiKeyFromDrive = async function() {
             // ── تقرير الزيارة - مشاركة PDF واتساب ──
             case 'visit_report_pdf_wa':
                 _printThenShowPdfWaHint(function() {
-                    window.print();
+                    if (window.currentViewPatient && window.currentViewVisit)
+                        printVisitReportFull(window.currentViewPatient, window.currentViewVisit);
                 }, 'تقرير الزيارة');
                 break;
 
             // ── تقرير الزيارة - طباعة ──
             case 'visit_report_print':
-                if (!window.currentViewPatient) { showToast('يرجى فتح ملف مريض أولاً', 'info'); break; }
-                window.print();
+                if (!window.currentViewPatient || !window.currentViewVisit) { showToast('يرجى فتح ملف مريض أولاً', 'info'); break; }
+                printVisitReportFull(window.currentViewPatient, window.currentViewVisit);
                 break;
 
             // ── تقرير Gemini ──
