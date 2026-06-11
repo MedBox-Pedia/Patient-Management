@@ -18270,36 +18270,48 @@ window.addEventListener('resize', setTopbarHeight);
                 `;
 
                 closeLabRequestModal();
-                pdfPrintArea.style.display = 'block';
-                pdfPrintArea.style.position = 'fixed';
-                pdfPrintArea.style.left = '-99999px';
+                // ── تحضير العنصر لتصوير html2canvas ──
+                // نستخدم position:absolute خارج نطاق الرؤية بدلاً من position:fixed
+                // لأن html2canvas لا يصوّر العناصر ذات position:fixed الموجودة خارج الشاشة
+                pdfPrintArea.style.position = 'absolute';
                 pdfPrintArea.style.top = '0';
+                pdfPrintArea.style.left = '0';
                 pdfPrintArea.style.width = '210mm';
                 pdfPrintArea.style.background = '#fff';
+                pdfPrintArea.style.zIndex = '-9999';
+                pdfPrintArea.style.opacity = '0';
+                pdfPrintArea.style.pointerEvents = 'none';
+                pdfPrintArea.style.display = 'block';
 
                 const fileName = 'طلب_تحاليل_' + (patientName || 'مريض').replace(/\s+/g, '_') + '.pdf';
                 const html2pdfOpts = {
                     margin: [10, 10, 10, 10],
                     filename: fileName,
                     image: { type: 'jpeg', quality: 0.98 },
-                    html2canvas: { scale: 2, useCORS: true },
+                    html2canvas: { scale: 2, useCORS: true, logging: false, allowTaint: true },
                     jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
                     pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
                 };
 
-                if (typeof html2pdf === 'undefined') {
-                    showToast('تعذر تحميل مكتبة PDF، يرجى التحقق من الاتصال بالإنترنت', 'error');
+                function _resetPdfPrintArea() {
                     pdfPrintArea.style.display = 'none';
                     pdfPrintArea.style.position = '';
+                    pdfPrintArea.style.top = '';
                     pdfPrintArea.style.left = '';
+                    pdfPrintArea.style.width = '';
+                    pdfPrintArea.style.zIndex = '';
+                    pdfPrintArea.style.opacity = '';
+                    pdfPrintArea.style.pointerEvents = '';
+                }
+
+                if (typeof html2pdf === 'undefined') {
+                    showToast('تعذر تحميل مكتبة PDF، يرجى التحقق من الاتصال بالإنترنت', 'error');
+                    _resetPdfPrintArea();
                     return;
                 }
 
                 html2pdf().set(html2pdfOpts).from(pdfPrintArea).save().then(function() {
-                    pdfPrintArea.style.display = 'none';
-                    pdfPrintArea.style.position = '';
-                    pdfPrintArea.style.left = '';
-                    pdfPrintArea.style.width = '';
+                    _resetPdfPrintArea();
 
                     // فتح واتساب لإرسال الـ PDF بعد تنزيله
                     const p = window.currentViewPatient;
@@ -18317,9 +18329,7 @@ window.addEventListener('resize', setTopbarHeight);
                 }).catch(function(err) {
                     console.error('PDF generation error:', err);
                     showToast('حدث خطأ أثناء توليد ملف PDF', 'error');
-                    pdfPrintArea.style.display = 'none';
-                    pdfPrintArea.style.position = '';
-                    pdfPrintArea.style.left = '';
+                    _resetPdfPrintArea();
                 });
             });
         });
